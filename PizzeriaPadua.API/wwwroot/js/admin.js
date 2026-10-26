@@ -1,4 +1,4 @@
-﻿const API = { products: "/Pizzería Padua/api/v1/Products", orders: "/Pizzería Padua/api/v1/Orders", categories: "/Pizzería Padua/api/v1/Categories" };
+﻿const API = { products: "/PizzeriaPadua/api/v1/Products", orders: "/PizzeriaPadua/api/v1/Orders", categories: "/PizzeriaPadua/api/v1/Categories" };
 
 function resolveImageUrl(url) {
   if (!url) return "img/hero-tech.jpg";
@@ -37,7 +37,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (tab !== "license") {
         const gate = document.getElementById("licenseGate");
         try {
-          const res = await fetch("/Pizzería Padua/api/v1/License/status");
+          const res = await fetch("/PizzeriaPadua/api/v1/License/status");
           const data = await res.json();
           if (!data.licensed) {
             gate.classList.add("show");
@@ -116,7 +116,7 @@ function initializeAdminRealtime() {
   window.addEventListener("focus", refreshActiveAdminSection);
 
   if (!window.EventSource) return;
-  const eventSource = new EventSource("/Pizzería Padua/api/v1/Events/stream");
+  const eventSource = new EventSource("/PizzeriaPadua/api/v1/Events/stream");
   eventSource.addEventListener("connected", refreshActiveAdminSection);
   eventSource.addEventListener("order-updated", () => scheduleRealtimeRefresh("orders", 250));
   eventSource.addEventListener("session-changed", () => scheduleRealtimeRefresh("users", 100));
@@ -135,7 +135,7 @@ function goToLicenseTab() {
 async function checkLicenseOnLoad() {
   const gate = document.getElementById("licenseGate");
   try {
-    const res = await fetch("/Pizzería Padua/api/v1/License/status");
+    const res = await fetch("/PizzeriaPadua/api/v1/License/status");
     const data = await res.json();
     if (data.licensed) {
       gate.classList.remove("show");
@@ -776,7 +776,7 @@ function closeAuthModal() {
 async function confirmDeleteProduct() {
   const user = document.getElementById("authUser").value.replace(/\s/g, "");
   const pass = document.getElementById("authPass").value.replace(/\s/g, "");
-  const authResponse = await fetch("/Pizzería Padua/api/v1/License/auth", {
+  const authResponse = await fetch("/PizzeriaPadua/api/v1/License/auth", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ username: user, password: pass })
@@ -819,7 +819,7 @@ async function loadLicenseStatus() {
   const revokeBtn = document.getElementById("btnRevokeLicense");
   if (!container) return;
   try {
-    const res = await fetch("/Pizzería Padua/api/v1/License/status");
+    const res = await fetch("/PizzeriaPadua/api/v1/License/status");
     const data = await res.json();
     if (data.licensed) {
       container.innerHTML = `
@@ -862,7 +862,7 @@ async function confirmRevoke() {
   const pass = document.getElementById("revokePass").value.trim();
   const token = btoa(user + ":" + pass);
   try {
-    const res = await fetch("/Pizzería Padua/api/v1/License/revoke", {
+    const res = await fetch("/PizzeriaPadua/api/v1/License/revoke", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -903,7 +903,7 @@ async function confirmLicenseAuth() {
   const user = document.getElementById("licenseUser").value.trim();
   const pass = document.getElementById("licensePass").value.trim();
   try {
-    const res = await fetch("/Pizzería Padua/api/v1/License/auth", {
+    const res = await fetch("/PizzeriaPadua/api/v1/License/auth", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ username: user, password: pass })
@@ -937,7 +937,7 @@ async function uploadLicense() {
     return;
   }
   try {
-    const res = await fetch("/Pizzería Padua/api/v1/License/upload", {
+    const res = await fetch("/PizzeriaPadua/api/v1/License/upload", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -1076,7 +1076,7 @@ async function saveEditProduct(e) {
       const formData = new FormData();
       formData.append("productId", pendingEditId);
       formData.append("file", fileInput.files[0]);
-      const uploadRes = await fetch("/Pizzería Padua/api/v1/Products/upload-image", { method: "POST", body: formData });
+      const uploadRes = await fetch("/PizzeriaPadua/api/v1/Products/upload-image", { method: "POST", body: formData });
       const uploadData = await uploadRes.json();
       if (uploadData.success) {
         imageUrl = uploadData.imageUrl;
@@ -1180,7 +1180,7 @@ async function uploadImage() {
   formData.append("file", file);
 
   try {
-    const res = await fetch("/Pizzería Padua/api/v1/Products/upload-image", {
+    const res = await fetch("/PizzeriaPadua/api/v1/Products/upload-image", {
       method: "POST",
       body: formData
     });
@@ -1404,7 +1404,7 @@ async function uploadPromoMedia(index, input) {
   var formData = new FormData();
   formData.append("file", file);
   try {
-    var res = await fetch("/Pizzería Padua/api/v1/Settings/upload-promo-media", {
+    var res = await fetch("/PizzeriaPadua/api/v1/Settings/upload-promo-media", {
       method: "POST",
       headers: { "X-License-Auth": auth },
       body: formData
@@ -1426,7 +1426,7 @@ function loadSettings() {
       b.addEventListener("click", function() { this.classList.toggle("active"); });
     });
   }
-  fetch("/Pizzería Padua/api/v1/Settings").then(r => r.json()).then(s => {
+  fetch("/PizzeriaPadua/api/v1/Settings").then(r => r.json()).then(s => {
     var parts = (s.address || "").split("|");
     document.getElementById("setAddress").value = parts[0] || "";
     document.getElementById("setPhone").value = parts[1] || "";
@@ -1476,7 +1476,7 @@ function saveSettings(context) {
     openingTime: document.getElementById("setOpening").value,
     closingTime: document.getElementById("setClosing").value
   };
-  fetch("/Pizzería Padua/api/v1/Settings", {
+  fetch("/PizzeriaPadua/api/v1/Settings", {
     method: "PUT",
     headers: { "Content-Type": "application/json", "X-License-Auth": auth },
     body: JSON.stringify(data)
@@ -1696,7 +1696,7 @@ async function saveHistoryToFile(forceDownload = false) {
     // Obtener datos actuales
     const orders = await apiFetch(API.orders);
     const completed = orders.filter(o => o.status === 2);
-    const users = await fetch("/Pizzería Padua/api/v1/Accounts").then(r => r.json());
+    const users = await fetch("/PizzeriaPadua/api/v1/Accounts").then(r => r.json());
     
     // Verificar si hay cambios
     const dateStamp = getHistoryDateStamp();
@@ -1767,7 +1767,7 @@ async function loadUsers() {
   if (usersRefreshInProgress) return;
   usersRefreshInProgress = true;
   try {
-    const res = await fetch("/Pizzería Padua/api/v1/Accounts");
+    const res = await fetch("/PizzeriaPadua/api/v1/Accounts");
     if (!res.ok) throw new Error("HTTP " + res.status);
     const users = await res.json();
     const tbody = document.getElementById("usersTableBody");
@@ -1813,7 +1813,7 @@ async function forceLogoutUser(userId) {
   if (!confirm("¿Cerrar la sesión activa de este usuario?")) return;
 
   try {
-    const response = await fetch(`/Pizzería Padua/api/v1/Accounts/${userId}/force-logout`, { method: "POST" });
+    const response = await fetch(`/PizzeriaPadua/api/v1/Accounts/${userId}/force-logout`, { method: "POST" });
     const data = await response.json();
     if (!response.ok || !data.success) {
       alert(data.message || "No se pudo cerrar la sesión");
@@ -1831,7 +1831,7 @@ async function deleteUser(userId, username) {
   }
   
   try {
-    const res = await fetch(`/Pizzería Padua/api/v1/Accounts/${userId}`, {
+    const res = await fetch(`/PizzeriaPadua/api/v1/Accounts/${userId}`, {
       method: "DELETE"
     });
     const data = await res.json();
@@ -1854,7 +1854,7 @@ async function blockUser(userId, username, block) {
   }
   
   try {
-    const res = await fetch(`/Pizzería Padua/api/v1/Accounts/block`, {
+    const res = await fetch(`/PizzeriaPadua/api/v1/Accounts/block`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ userId: userId, isBlocked: block })
@@ -1887,7 +1887,7 @@ async function confirmDeleteHistory() {
       alert("Vuelve a iniciar sesión de administrador.");
       return;
     }
-    const res = await fetch("/Pizzería Padua/api/v1/Orders/history", {
+    const res = await fetch("/PizzeriaPadua/api/v1/Orders/history", {
       method: "DELETE",
       headers: { "X-License-Auth": auth }
     });

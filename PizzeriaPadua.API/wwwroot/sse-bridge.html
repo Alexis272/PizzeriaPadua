@@ -7,7 +7,7 @@ evtSource.addEventListener("order-updated", function(e) {
     if (window.ReactNativeWebView && window.ReactNativeWebView.postMessage) {
       window.ReactNativeWebView.postMessage(JSON.stringify({
         type: "order-updated",
-        store: "Pizzería Padua",
+        store: "PizzeriaPadua",
         orderId: data.orderId,
         customerName: data.customerName || "Cliente",
         status: data.status,

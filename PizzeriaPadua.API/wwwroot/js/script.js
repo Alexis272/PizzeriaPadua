@@ -20,7 +20,7 @@ var mercadoPagoConfigured = false;
 var licenseValid = false;
 
 function checkLicense() {
-  return fetch("/Pizzería Padua/api/v1/License/status?_=" + Date.now()).then(function(r) { return r.json(); }).then(function(d) {
+  return fetch("/PizzeriaPadua/api/v1/License/status?_=" + Date.now()).then(function(r) { return r.json(); }).then(function(d) {
     licenseValid = d.licensed && !d.expired;
     var btn = document.getElementById("userBtn");
     if (!licenseValid) {
@@ -49,7 +49,7 @@ function openAuth() {
 function checkMercadoPagoConfiguration() {
   const button = document.getElementById("checkoutButton");
   const note = document.getElementById("paymentFeeNote");
-  return fetch("/Pizzería Padua/api/v1/Payments/mercadopago/status?_=" + Date.now())
+  return fetch("/PizzeriaPadua/api/v1/Payments/mercadopago/status?_=" + Date.now())
     .then(response => response.ok ? response.json() : { configured: false })
     .then(data => {
       mercadoPagoConfigured = data.configured === true;
@@ -157,7 +157,7 @@ function sendUserSessionHeartbeat() {
   var sessionUserId = currentUser.id;
   var sessionToken = currentUser.sessionToken;
 
-  fetch("/Pizzería Padua/api/v1/Accounts/session/heartbeat", {
+  fetch("/PizzeriaPadua/api/v1/Accounts/session/heartbeat", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ userId: sessionUserId, sessionToken: sessionToken })
@@ -175,7 +175,7 @@ function login(e) {
   e.preventDefault();
   var btn = e.target.querySelector("button[type=submit]");
   btn.disabled = true; btn.textContent = "Entrando...";
-  fetch("/Pizzería Padua/api/v1/Accounts/login", {
+  fetch("/PizzeriaPadua/api/v1/Accounts/login", {
     method: "POST", headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ username: document.getElementById("loginUser").value.trim(), password: document.getElementById("loginPass").value })
   }).then(function(r) { return r.json(); }).then(function(d) {
@@ -194,7 +194,7 @@ function facebookLogin() {
   FB.login(function(response) {
     if (response.authResponse) {
       var accessToken = response.authResponse.accessToken;
-      fetch("/Pizzería Padua/api/v1/Accounts/facebook-login", {
+      fetch("/PizzeriaPadua/api/v1/Accounts/facebook-login", {
         method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ accessToken: accessToken })
       }).then(function(r) { return r.json(); }).then(function(d) {
@@ -287,7 +287,7 @@ function handleGoogleResponse(response) {
 
   errorEl.textContent = "Validando tu cuenta de Google...";
   errorEl.style.color = "#555";
-  fetch("/Pizzería Padua/api/v1/Accounts/google-login", {
+  fetch("/PizzeriaPadua/api/v1/Accounts/google-login", {
     method: "POST", headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ credential: response.credential })
   }).then(function(r) { return r.json(); }).then(function(d) {
@@ -341,7 +341,7 @@ function sendPhoneCode() {
   errorEl.textContent = "Enviando código...";
   errorEl.style.color = "#555";
 
-  fetch("/Pizzería Padua/api/v1/Accounts/send-phone-code", {
+  fetch("/PizzeriaPadua/api/v1/Accounts/send-phone-code", {
     method: "POST", headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ phoneNumber: phone })
   }).then(function(r) { return r.json(); }).then(function(d) {
@@ -379,7 +379,7 @@ function verifyPhoneCode() {
   errorEl.textContent = "Verificando código...";
   errorEl.style.color = "#555";
 
-  fetch("/Pizzería Padua/api/v1/Accounts/phone-login", {
+  fetch("/PizzeriaPadua/api/v1/Accounts/phone-login", {
     method: "POST", headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ phoneNumber: phone, code: code })
   }).then(function(r) { return r.json(); }).then(function(d) {
@@ -403,7 +403,7 @@ function sendCode() {
   document.getElementById("codeSentMsg").style.color = "#27ae60";
   var btn = document.querySelector("#registerStep1 .auth-submit");
   btn.disabled = true; btn.textContent = "Enviando...";
-  fetch("/Pizzería Padua/api/v1/Accounts/send-code", {
+  fetch("/PizzeriaPadua/api/v1/Accounts/send-code", {
     method: "POST", headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email: email })
   }).then(function(r) { return r.json(); }).then(function(d) {
@@ -431,7 +431,7 @@ function register(e) {
     return;
   }
   btn.disabled = true; btn.textContent = "Creando...";
-  fetch("/Pizzería Padua/api/v1/Accounts/register", {
+  fetch("/PizzeriaPadua/api/v1/Accounts/register", {
     method: "POST", headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       username: document.getElementById("regUser").value.trim(),
@@ -449,7 +449,7 @@ function register(e) {
 function logout(notifyServer) {
   var userToLogout = currentUser;
   if (notifyServer !== false && userToLogout && userToLogout.sessionToken) {
-    fetch("/Pizzería Padua/api/v1/Accounts/session/logout", {
+    fetch("/PizzeriaPadua/api/v1/Accounts/session/logout", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ userId: userToLogout.id, sessionToken: userToLogout.sessionToken }),
@@ -467,7 +467,7 @@ function openMyAccount() {
   document.getElementById("myAccountModal").classList.add("open");
   document.getElementById("myAccountMsg").textContent = "";
   document.getElementById("myAccountMsg").style.color = "#27ae60";
-  fetch("/Pizzería Padua/api/v1/Accounts/profile/" + currentUser.id).then(function(r) { return r.json(); }).then(function(d) {
+  fetch("/PizzeriaPadua/api/v1/Accounts/profile/" + currentUser.id).then(function(r) { return r.json(); }).then(function(d) {
     if (d.success) {
       document.getElementById("myAccountUsername").value = d.user.username;
       document.getElementById("myAccountPhone").value = d.user.phoneNumber || "No registrado";
@@ -490,7 +490,7 @@ function updateUsername() {
   }
   var btn = document.querySelector("#myAccountInfo .auth-submit");
   btn.disabled = true; btn.textContent = "Actualizando...";
-  fetch("/Pizzería Padua/api/v1/Accounts/update-username", {
+  fetch("/PizzeriaPadua/api/v1/Accounts/update-username", {
     method: "PUT", headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ userId: currentUser.id, newUsername: newUsername })
   }).then(function(r) { return r.json(); }).then(function(d) {
@@ -517,7 +517,7 @@ function confirmDeleteAccount() {
 }
 
 function deleteAccount() {
-  fetch("/Pizzería Padua/api/v1/Accounts/" + currentUser.id, {
+  fetch("/PizzeriaPadua/api/v1/Accounts/" + currentUser.id, {
     method: "DELETE"
   }).then(function(r) { return r.json(); }).then(function(d) {
     if (d.success) {
@@ -632,7 +632,7 @@ async function loadMyOrders() {
   container.innerHTML = "<p style='text-align:center;color:#999;'>Cargando pedidos...</p>";
   
   try {
-    const res = await fetch(`/Pizzería Padua/api/v1/Orders/user/${currentUser.id}`, {
+    const res = await fetch(`/PizzeriaPadua/api/v1/Orders/user/${currentUser.id}`, {
       headers: { "X-Session-Token": currentUser.sessionToken }
     });
     if (!res.ok) throw new Error("Error al cargar pedidos");
@@ -673,7 +673,7 @@ async function loadUserActiveOrders() {
   if (!currentUser) return;
   
   try {
-    const res = await fetch(`/Pizzería Padua/api/v1/Orders/user/${currentUser.id}`, {
+    const res = await fetch(`/PizzeriaPadua/api/v1/Orders/user/${currentUser.id}`, {
       headers: { "X-Session-Token": currentUser.sessionToken }
     });
     if (!res.ok) return;
@@ -840,7 +840,7 @@ var storeOpen = true;
 var storeHours = null;
 async function checkStoreHours() {
   try {
-    var res = await fetch("/Pizzería Padua/api/v1/Settings?_=" + Date.now());
+    var res = await fetch("/PizzeriaPadua/api/v1/Settings?_=" + Date.now());
     if (!res.ok) return;
     storeHours = await res.json();
     var parts = (storeHours.address || "").split("|");
@@ -880,7 +880,7 @@ async function placeOrder() {
   msgEl.style.color = "#666";
 
   try {
-    const checkRes = await fetch(`/Pizzería Padua/api/v1/Orders/user/${currentUser.id}`, {
+    const checkRes = await fetch(`/PizzeriaPadua/api/v1/Orders/user/${currentUser.id}`, {
       headers: { "X-Session-Token": currentUser.sessionToken }
     });
     if (checkRes.ok) {
@@ -905,7 +905,7 @@ async function placeOrder() {
 }
 
 async function submitLegacyOrder(name) {
-  const orderRes = await fetch("/Pizzería Padua/api/v1/Orders/add", {
+  const orderRes = await fetch("/PizzeriaPadua/api/v1/Orders/add", {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ userId: currentUser.id, tableId: null, employeeId: null, customerName: name })
@@ -914,7 +914,7 @@ async function submitLegacyOrder(name) {
   const newOrder = await orderRes.json();
 
   for (const item of order) {
-    const itemRes = await fetch("/Pizzería Padua/api/v1/Orders/add-item", {
+    const itemRes = await fetch("/PizzeriaPadua/api/v1/Orders/add-item", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ orderId: newOrder.orderId, productId: item.productId, quantity: 1, customizations: item.customizations || "" })
@@ -981,7 +981,7 @@ async function startMercadoPagoCheckout() {
   });
 
   try {
-    const response = await fetch("/Pizzería Padua/api/v1/Payments/mercadopago/checkout", {
+    const response = await fetch("/PizzeriaPadua/api/v1/Payments/mercadopago/checkout", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -1025,7 +1025,7 @@ async function handleMercadoPagoReturn() {
   }
 
   try {
-    const response = await fetch(`/Pizzería Padua/api/v1/Payments/mercadopago/confirm?paymentId=${encodeURIComponent(paymentId)}`);
+    const response = await fetch(`/PizzeriaPadua/api/v1/Payments/mercadopago/confirm?paymentId=${encodeURIComponent(paymentId)}`);
     const data = await response.json();
     if (response.ok && data.approved) {
       myLastOrderId = data.orderId;
@@ -1058,7 +1058,7 @@ async function loadActiveOrders() {
 
   const cacheKey = `activeOrders:${currentUser.id}`;
   try {
-    const res = await fetch(`/Pizzería Padua/api/v1/Orders/active/${currentUser.id}`, {
+    const res = await fetch(`/PizzeriaPadua/api/v1/Orders/active/${currentUser.id}`, {
       headers: { "X-Session-Token": currentUser.sessionToken }
     });
     if (!res.ok) throw new Error("HTTP " + res.status);
@@ -1098,7 +1098,7 @@ function renderActiveOrders(orders) {
 
 async function loadCompletedOrders() {
   try {
-    const res = await fetch("/Pizzería Padua/api/v1/Orders/recent-completed");
+    const res = await fetch("/PizzeriaPadua/api/v1/Orders/recent-completed");
     if (!res.ok) throw new Error("HTTP " + res.status);
     const orders = await res.json();
     renderCompletedOrders(orders);
@@ -1201,8 +1201,8 @@ function closeNotification() {
 async function loadProducts(categoryId) {
   try {
     const url = categoryId
-      ? `/Pizzería Padua/api/v1/Products/by-category/${categoryId}`
-      : `/Pizzería Padua/api/v1/Products`;
+      ? `/PizzeriaPadua/api/v1/Products/by-category/${categoryId}`
+      : `/PizzeriaPadua/api/v1/Products`;
     const response = await fetch(url);
     if (!response.ok) throw new Error("HTTP " + response.status);
     const products = await response.json();
@@ -1234,7 +1234,7 @@ function getCategoryIcon(name) {
 
 async function loadCategories() {
   try {
-    const response = await fetch("/Pizzería Padua/api/v1/Categories");
+    const response = await fetch("/PizzeriaPadua/api/v1/Categories");
     if (!response.ok) throw new Error("HTTP " + response.status);
     const categories = await response.json();
     renderCategoryNav(categories || []);
@@ -1415,7 +1415,7 @@ function renderPromotions(promos) {
 }
 
 function loadContactInfo() {
-  fetch("/Pizzería Padua/api/v1/Settings?_=" + Date.now()).then(function(r) { return r.json(); }).then(function(s) {
+  fetch("/PizzeriaPadua/api/v1/Settings?_=" + Date.now()).then(function(r) { return r.json(); }).then(function(s) {
     var parts = (s.address || "").split("|");
     var addr = parts[0] || "";
     var phone = parts[1] || "";
@@ -1443,7 +1443,7 @@ document.addEventListener("click", function(e) {
 
 async function loadReviews() {
   try {
-    const res = await fetch("/Pizzería Padua/api/v1/Reviews");
+    const res = await fetch("/PizzeriaPadua/api/v1/Reviews");
     const reviews = await res.json();
     const list = document.getElementById("reviewsList");
     
@@ -1462,7 +1462,7 @@ async function loadReviews() {
       `).join("");
     }
     
-    const avgRes = await fetch("/Pizzería Padua/api/v1/Reviews/average");
+    const avgRes = await fetch("/PizzeriaPadua/api/v1/Reviews/average");
     const avg = await avgRes.json();
     document.getElementById("averageRating").textContent = avg.average;
     document.getElementById("averageStars").textContent = "★".repeat(Math.round(avg.average)) + "☆".repeat(5 - Math.round(avg.average));
@@ -1523,7 +1523,7 @@ async function submitReview(e) {
   }
   
   try {
-    const res = await fetch("/Pizzería Padua/api/v1/Reviews", {
+    const res = await fetch("/PizzeriaPadua/api/v1/Reviews", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -1576,7 +1576,7 @@ document.addEventListener("DOMContentLoaded", () => {
   setTimeout(loadActiveOrders, 100);
 
   if (window.EventSource) {
-    const evtSource = new EventSource("/Pizzería Padua/api/v1/Events/stream");
+    const evtSource = new EventSource("/PizzeriaPadua/api/v1/Events/stream");
     evtSource.addEventListener("product-changed", async () => {
       await loadCategories();
       loadProducts(currentCategoryId || null);
@@ -1598,7 +1598,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (window.ReactNativeWebView && window.ReactNativeWebView.postMessage) {
           window.ReactNativeWebView.postMessage(JSON.stringify({
             type: "order-updated",
-            store: "Pizzería Padua",
+            store: "PizzeriaPadua",
             orderId: data.orderId,
             customerName: data.customerName || "Cliente",
             status: data.status,
