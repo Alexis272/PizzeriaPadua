@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Pizzería Padua | Panel</title>
+  <title>Pizzería Padua | Panel POS</title>
   <link rel="stylesheet" href="css/apple-tokens.css" />
   <link rel="stylesheet" href="css/admin.css?v=20260715-customizations" />
   <link rel="stylesheet" href="css/admin-pizzeriapadua.css?v=20260717-gallery" />
@@ -11,30 +11,33 @@
 </head>
 <body>
 
-<div id="offlineBanner" class="offline-banner" style="position:fixed;top:0;left:0;right:0;z-index:999;background:#ff6b35;color:#fff;text-align:center;padding:8px 16px;font-size:14px;font-weight:700;display:none;">Sin conexi&oacute;n — el servidor no responde</div>
+<div id="offlineBanner" class="offline-banner" style="position:fixed;top:0;left:0;right:0;z-index:999;background:#c0392b;color:#fff;text-align:center;padding:8px 16px;font-size:14px;font-weight:700;display:none;">Sin conexión — el servidor no responde</div>
 <div class="background">
   <main class="dashboard">
 
-      <aside class="sidebar">
-        <h2>🍕 PIZZERÍA<br>PADUA</h2>
-        <nav>
-          <a class="active tab-link" data-tab="orders">📋 Pedidos</a>
-          <a class="tab-link" data-tab="history">📊 Historial de venta</a>
-          <a class="tab-link" data-tab="products">🍽 Productos</a>
-          <a class="tab-link" data-tab="page">🎨 P&aacute;gina</a>
-          <a class="tab-link" data-tab="users">👥 Usuarios</a>
-          <a class="tab-link" data-tab="license">🔐 Licencia</a>
-          <a class="tab-link" data-tab="settings">⚙ Configuraci&oacute;n</a>
-          <a href="/PizzeriaPadua/admin.html" onclick="sessionStorage.removeItem('adminAuthToken');document.cookie='auth=; path=/PizzeriaPadua; max-age=0';document.cookie='auth=; path=/PizzeriaPadua; max-age=0';">🚪 Salir</a>
-        </nav>
-      </aside>
+    <aside class="sidebar">
+      <h2>🍕 PIZZERÍA<br>PADUA</h2>
+      <nav>
+        <a class="active tab-link" data-tab="pos">🧾 Terminal POS</a>
+        <a class="tab-link" data-tab="openaccounts">📋 Cuentas Abiertas</a>
+        <a class="tab-link" data-tab="cash">💰 Caja y Cortes</a>
+        <a class="tab-link" data-tab="daily">📊 Acumulado del Día</a>
+        <a class="tab-link" data-tab="reports">📈 Reportes</a>
+        <a class="tab-link" data-tab="executive">🎯 Panel Ejecutivo</a>
+        <a class="tab-link" data-tab="controls">🛡 Cancelaciones y Devoluciones</a>
+        <a class="tab-link" data-tab="catalog">🍽 Catálogos</a>
+        <a class="tab-link" data-tab="config">⚙ Configuración</a>
+        <a class="tab-link" data-tab="license">🔐 Licencia</a>
+        <a href="/PizzeriaPadua/admin.html" onclick="sessionStorage.removeItem('adminAuthToken');document.cookie='auth=; path=/PizzeriaPadua; max-age=0';">🚪 Salir</a>
+      </nav>
+    </aside>
 
     <section class="content">
 
       <header class="topbar">
         <div>
           <span class="topbar-kicker">Administración</span>
-          <h1>Panel de gestión</h1>
+          <h1>Panel de Gestión POS</h1>
         </div>
         <div class="icons">🔔</div>
       </header>
@@ -49,80 +52,216 @@
 
       <div class="main-grid">
 
-        <div class="admin-section active" id="orders">
-
+        <!-- ==================== TERMINAL POS ==================== -->
+        <div class="admin-section active" id="pos">
           <div class="table-card">
             <div class="orders-toolbar">
-              <span>Pedidos recientes</span>
-              <button class="btn-license" onclick="openAdminOrderModal()" style="background:linear-gradient(135deg,#27ae60,#2ecc71);margin-left:auto;">➕ Hacer pedido</button>
-              <select id="orderFilter">
-                <option value="all">Todos</option>
-                <option value="0">Pendientes</option>
-                <option value="1">En preparación</option>
-                <option value="4">Pendientes de entrega</option>
-              </select>
-            </div>
-            <div class="orders-list" id="ordersList"></div>
-          </div>
-
-        </div>
-
-        <div class="admin-section" id="history">
-            <div class="table-card">
-              <div class="orders-toolbar">
-              <span>Historial de ventas</span>
+              <span>🧾 Terminal de Venta (POS)</span>
               <div style="display:flex;gap:10px;margin-left:auto;">
-                <button class="btn-license" onclick="selectHistoryFolder()" style="background:linear-gradient(135deg,#6c5ce7,#a29bfe);">📁 Cambiar ubicación</button>
-                <button class="btn-license" onclick="openDeleteHistoryModal()" style="background:linear-gradient(135deg,#e74c3c,#c0392b);">🗑 Eliminar historial</button>
+                <button class="btn-license" onclick="openAdminOrderModal()" style="background:linear-gradient(135deg,#27ae60,#2ecc71);">➕ Nueva Venta</button>
+                <select id="posFilter" onchange="loadOrders()">
+                  <option value="all">Todos los pedidos activos</option>
+                  <option value="0">Pendientes</option>
+                  <option value="1">En preparación</option>
+                  <option value="4">Pendientes de entrega</option>
+                </select>
               </div>
             </div>
-            <div class="history-filter-bar">
-              <div class="filter-box">
-                <div class="filter-title">Filtrar por fecha</div>
-                <div id="calendarWrap" style="position:relative;">
-                  <input type="text" id="dateInput" style="display:none;" />
+            <div class="pos-terminal-layout" style="display:grid;grid-template-columns:1fr 380px;gap:16px;">
+              <div>
+                <div style="display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap;">
+                  <input type="text" id="posSearch" placeholder="🔍 Buscar por nombre, SKU, código de barras..." style="flex:1;min-width:200px;" oninput="filterPosProducts()" />
+                  <select id="posCategoryFilter" onchange="filterPosProducts()" style="min-width:160px;">
+                    <option value="">Todas las categorías</option>
+                  </select>
+                </div>
+                <div id="posProductGrid" class="product-grid-admin" style="max-height:520px;overflow-y:auto;"></div>
+              </div>
+              <div class="table-card" style="padding:16px;">
+                <h3 style="margin-bottom:10px;">🛒 Carrito de Venta</h3>
+                <div id="posCartItems" style="min-height:200px;max-height:320px;overflow-y:auto;border:1px solid #e5ddeb;border-radius:12px;padding:8px;margin-bottom:10px;"></div>
+                <div style="display:flex;gap:8px;margin-bottom:8px;">
+                  <input type="text" id="posCustomerName" placeholder="Nombre del cliente" style="flex:1;" />
+                  <select id="posChannel" style="width:140px;">
+                    <option value="Mostrador">Mostrador</option>
+                    <option value="Local / Mesa">Local / Mesa</option>
+                    <option value="Para Llevar">Para Llevar</option>
+                    <option value="Entrega a Domicilio">Domicilio</option>
+                    <option value="Teléfono">Teléfono</option>
+                  </select>
+                </div>
+                <div style="display:flex;gap:8px;margin-bottom:8px;">
+                  <select id="posTable" style="flex:1;"><option value="">Sin mesa</option></select>
+                  <input type="number" id="posDiscount" placeholder="Descuento %" style="width:100px;" min="0" max="100" />
+                </div>
+                <div style="display:flex;gap:8px;margin-bottom:8px;">
+                  <input type="text" id="posPromoCode" placeholder="Cupón/Promo" style="flex:1;" />
+                  <input type="number" id="posTip" placeholder="Propina" style="width:100px;" min="0" step="0.01" />
+                </div>
+                <div style="background:#f5f0ff;padding:10px;border-radius:10px;margin-bottom:10px;">
+                  <div style="display:flex;justify-content:space-between;font-size:13px;"><span>Subtotal:</span><strong id="posSubtotal">$0.00</strong></div>
+                  <div style="display:flex;justify-content:space-between;font-size:13px;"><span>Descuento:</span><strong id="posDiscountAmt">-$0.00</strong></div>
+                  <div style="display:flex;justify-content:space-between;font-size:13px;"><span>IVA (16%):</span><strong id="posTax">$0.00</strong></div>
+                  <div style="display:flex;justify-content:space-between;font-size:13px;"><span>Propina:</span><strong id="posTipAmt">$0.00</strong></div>
+                  <div style="display:flex;justify-content:space-between;font-size:16px;font-weight:900;border-top:1px solid #ddd;padding-top:6px;margin-top:6px;"><span>TOTAL:</span><strong id="posTotal">$0.00</strong></div>
+                </div>
+                <div style="display:flex;gap:8px;">
+                  <button class="btn-license" style="flex:1;background:linear-gradient(135deg,#27ae60,#2ecc71);" onclick="posSaveOpenAccount()">📋 Cuenta Abierta</button>
+                  <button class="btn-license" style="flex:1;" onclick="posCheckout()">💳 Cobrar</button>
+                </div>
+                <div id="posMsg" style="font-size:12px;margin-top:8px;text-align:center;"></div>
+              </div>
+            </div>
+            <div class="orders-list" id="ordersList" style="margin-top:16px;"></div>
+          </div>
+        </div>
+
+        <!-- ==================== CUENTAS ABIERTAS ==================== -->
+        <div class="admin-section" id="openaccounts">
+          <div class="table-card">
+            <div class="orders-toolbar">
+              <span>📋 Cuentas Abiertas / Pendientes</span>
+            </div>
+            <div id="openAccountsList" class="orders-list"></div>
+          </div>
+        </div>
+
+        <!-- ==================== CAJA Y CORTES ==================== -->
+        <div class="admin-section" id="cash">
+          <div class="table-card">
+            <div class="orders-toolbar">
+              <span>💰 Caja — Arranque, Movimientos y Cortes</span>
+            </div>
+            <div id="cashPanel">
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
+                <div>
+                  <h3 style="margin-bottom:8px;">Arranque de Caja</h3>
+                  <div style="display:flex;gap:8px;margin-bottom:8px;">
+                    <select id="cashBranch" style="flex:1;"><option value="1">Sucursal Matriz</option><option value="2">Sucursal Plaza Norte</option></select>
+                    <select id="cashRegister" style="flex:1;"><option value="1">Caja 1 - Mostrador</option><option value="2">Caja 2 - Terraza</option><option value="3">Caja 1 - Plaza Norte</option></select>
+                  </div>
+                  <div style="display:flex;gap:8px;margin-bottom:8px;">
+                    <select id="cashShift" style="flex:1;"><option value="Matutino">Matutino</option><option value="Vespertino">Vespertino</option><option value="Completo">Completo</option></select>
+                    <input type="number" id="cashInitialFund" placeholder="Fondo inicial" style="flex:1;" min="0" step="0.01" />
+                  </div>
+                  <textarea id="cashOpenNotes" placeholder="Observaciones del arranque" style="width:100%;min-height:60px;margin-bottom:8px;"></textarea>
+                  <button class="btn-license" onclick="openCashRegister()" style="width:100%;">🔓 Abrir Caja</button>
+                </div>
+                <div>
+                  <h3 style="margin-bottom:8px;">Estado de Caja Actual</h3>
+                  <div id="cashStatus" style="background:#f5f0ff;padding:12px;border-radius:10px;min-height:120px;"></div>
                 </div>
               </div>
-              <div class="filter-quick-btns">
-                <button class="filter-btn" data-period="today">Hoy</button>
-                <button class="filter-btn" data-period="month">Este mes</button>
-                <button class="filter-btn" data-period="year">Este año</button>
-                <button class="filter-btn active" data-period="all">Todo</button>
+              <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;">
+                <button class="btn-license" onclick="showCashMovementModal()" style="background:linear-gradient(135deg,#f39c12,#e67e22);">💸 Movimiento de Caja</button>
+                <button class="btn-license" onclick="showCashCutModal('Parcial')" style="background:linear-gradient(135deg,#3498db,#2980b9);">🔍 Corte Parcial (Arqueo)</button>
+                <button class="btn-license" onclick="showCashCutModal('Final')" style="background:linear-gradient(135deg,#c0392b,#96281b);">🔒 Corte Final (Cierre)</button>
               </div>
+              <h3 style="margin-bottom:8px;">Movimientos Recientes</h3>
+              <div id="cashMovementsList" class="orders-list"></div>
             </div>
-            <div class="history-stats" id="historyStats">
-              <div class="stat-box">
-                <span class="stat-label">Total ventas</span>
-                <span class="stat-value" id="totalSales">$0.00</span>
-              </div>
-              <div class="stat-box">
-                <span class="stat-label">Órdenes completadas</span>
-                <span class="stat-value" id="completedCount">0</span>
-              </div>
-            </div>
-            <div class="orders-list" id="historyList"></div>
           </div>
         </div>
 
-        <div class="admin-section" id="products">
+        <!-- ==================== ACUMULADO DEL DÍA ==================== -->
+        <div class="admin-section" id="daily">
+          <div class="table-card">
+            <div class="orders-toolbar">
+              <span>📊 Acumulado del Día</span>
+              <div style="display:flex;gap:10px;margin-left:auto;flex-wrap:wrap;">
+                <select id="dailyPeriod" onchange="loadSummary()" style="min-width:100px;">
+                  <option value="today">Hoy</option>
+                  <option value="week">Semana</option>
+                  <option value="month">Mes</option>
+                </select>
+                <select id="dailyShift" onchange="loadSummary()" style="min-width:100px;"><option value="all">Todos los turnos</option><option value="Matutino">Matutino</option><option value="Vespertino">Vespertino</option></select>
+                <select id="dailyChannel" onchange="loadSummary()" style="min-width:120px;"><option value="all">Todos los canales</option></select>
+                <button class="btn-license" onclick="loadSummary()" style="background:linear-gradient(135deg,#3498db,#2980b9);">🔄 Actualizar</button>
+              </div>
+            </div>
+            <div id="dailyKpis" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:16px;"></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+              <div><h3 style="margin-bottom:8px;">Ventas por Hora</h3><div id="dailyByHour" style="min-height:200px;"></div></div>
+              <div><h3 style="margin-bottom:8px;">Ventas por Canal</h3><div id="dailyByChannel" style="min-height:200px;"></div></div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px;">
+              <div><h3 style="margin-bottom:8px;">Ventas por Método de Pago</h3><div id="dailyByPayment" style="min-height:200px;"></div></div>
+              <div><h3 style="margin-bottom:8px;">Ventas por Producto</h3><div id="dailyByProduct" style="min-height:200px;"></div></div>
+            </div>
+            <div style="margin-top:16px;"><h3 style="margin-bottom:8px;">Ventas por Categoría</h3><div id="dailyByCategory" style="min-height:150px;"></div></div>
+            <div style="margin-top:16px;"><h3 style="margin-bottom:8px;">Ventas por Cajero</h3><div id="dailyByCashier" style="min-height:150px;"></div></div>
+          </div>
+        </div>
+
+        <!-- ==================== REPORTES ==================== -->
+        <div class="admin-section" id="reports">
+          <div class="table-card">
+            <div class="orders-toolbar">
+              <span>📈 Reportes Operativos y Gerenciales</span>
+              <div style="display:flex;gap:10px;margin-left:auto;flex-wrap:wrap;">
+                <select id="reportPeriod" onchange="loadSummary()" style="min-width:100px;">
+                  <option value="today">Hoy</option>
+                  <option value="week">Semana</option>
+                  <option value="month">Mes</option>
+                  <option value="all">Todo</option>
+                </select>
+                <button class="btn-license" onclick="exportReportCSV()" style="background:linear-gradient(135deg,#27ae60,#2ecc71);">📥 Exportar CSV</button>
+                <button class="btn-license" onclick="window.print()" style="background:linear-gradient(135deg,#3498db,#2980b9);">🖨 Imprimir</button>
+              </div>
+            </div>
+            <div id="reportsContent">
+              <p style="text-align:center;color:#999;padding:40px;">Selecciona un periodo y presiona Actualizar para ver los reportes.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==================== PANEL EJECUTIVO ==================== -->
+        <div class="admin-section" id="executive">
+          <div class="table-card">
+            <div class="orders-toolbar">
+              <span>🎯 Panel Ejecutivo — KPIs y Alertas</span>
+              <button class="btn-license" onclick="loadSummary()" style="background:linear-gradient(135deg,#3498db,#2980b9);margin-left:auto;">🔄 Actualizar</button>
+            </div>
+            <div id="executiveAlerts" style="margin-bottom:16px;"></div>
+            <div id="executiveKpis" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-bottom:16px;"></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+              <div><h3 style="margin-bottom:8px;">Ventas por Hora (Hora Pico)</h3><div id="execHourly" style="min-height:200px;"></div></div>
+              <div><h3 style="margin-bottom:8px;">Top Productos</h3><div id="execTopProducts" style="min-height:200px;"></div></div>
+            </div>
+            <div style="margin-top:16px;"><h3 style="margin-bottom:8px;">Cortes de Caja Recientes</h3><div id="execCuts" style="min-height:150px;"></div></div>
+            <div style="margin-top:16px;"><h3 style="margin-bottom:8px;">Bitácora de Auditoría</h3><div id="execAudit" style="min-height:150px;max-height:300px;overflow-y:auto;"></div></div>
+          </div>
+        </div>
+
+        <!-- ==================== CANCELACIONES Y DEVOLUCIONES ==================== -->
+        <div class="admin-section" id="controls">
+          <div class="table-card">
+            <div class="orders-toolbar">
+              <span>🛡 Cancelaciones y Devoluciones</span>
+            </div>
+            <div id="controlsList" class="orders-list"></div>
+          </div>
+        </div>
+
+        <!-- ==================== CATÁLOGOS ==================== -->
+        <div class="admin-section" id="catalog">
           <div class="product-subtabs">
             <button type="button" class="product-subtab active" data-product-subtab="products" onclick="setProductSubtab('products')">Productos</button>
             <button type="button" class="product-subtab" data-product-subtab="promos" onclick="setProductSubtab('promos')">Promociones</button>
+            <button type="button" class="product-subtab" data-product-subtab="categories" onclick="setProductSubtab('categories')">Categorías</button>
           </div>
-
           <div class="product-subpanel active" id="productsSubpanel">
             <details class="add-form category-manager" open>
-              <summary>Administrar categor&iacute;as</summary>
+              <summary>Administrar categorías</summary>
               <form id="categoryForm" onsubmit="addCategory(event)">
                 <div class="form-row">
-                  <input type="text" id="catName" placeholder="Nombre de categor&iacute;a" required />
-                  <input type="text" id="catDesc" placeholder="Descripci&oacute;n opcional" />
-                  <button type="submit">Agregar categor&iacute;a</button>
+                  <input type="text" id="catName" placeholder="Nombre de categoría" required />
+                  <input type="text" id="catDesc" placeholder="Descripción opcional" />
+                  <button type="submit">Agregar categoría</button>
                 </div>
               </form>
               <div class="category-admin-list" id="categoryAdminList"></div>
             </details>
-
             <details class="add-form">
               <summary>+ Agregar producto</summary>
               <form id="productForm" onsubmit="addProduct(event)">
@@ -137,7 +276,7 @@
                   <input type="text" id="prodBadge" placeholder="Etiqueta (ej. Nuevo)" />
                 </div>
                 <div class="form-row">
-                  <textarea id="prodCustomizations" class="product-customization-input" placeholder="Personalizaciones, una por línea. Ej: Grafito, 256 GB, correa negra"></textarea>
+                  <textarea id="prodCustomizations" class="product-customization-input" placeholder="Personalizaciones, una por línea."></textarea>
                 </div>
                 <div class="form-row">
                   <label><input type="checkbox" id="prodFeatured" /> Destacado</label>
@@ -145,17 +284,12 @@
                 </div>
               </form>
             </details>
-
             <div class="product-grid-admin" id="adminProductGrid"></div>
           </div>
-
           <div class="product-subpanel" id="promosSubpanel">
             <div class="settings-promos-box">
               <div class="settings-promos-head">
-                <div>
-                  <h3>Promociones de la tienda</h3>
-                  <p>Edita las tarjetas que se mueven en la página principal. Puedes usar imagen o video.</p>
-                </div>
+                <div><h3>Promociones de la tienda</h3><p>Edita las tarjetas que se mueven en la página principal.</p></div>
                 <button type="button" class="btn-license" onclick="addPromoEditor()">➕ Agregar promo</button>
               </div>
               <div id="promoEditors" class="promo-editors"></div>
@@ -163,133 +297,50 @@
             <div id="promoSettingsMsg" class="promo-settings-msg"></div>
             <button class="btn-license" onclick="saveSettings('promos')">💾 Guardar promociones</button>
           </div>
+          <div class="product-subpanel" id="categoriesSubpanel">
+            <div class="table-card" style="margin-top:16px;">
+              <div class="orders-toolbar"><span>Categorías</span></div>
+              <div id="categoriesList" class="orders-list"></div>
+            </div>
+          </div>
         </div>
 
-        <div class="admin-section" id="settings">
+        <!-- ==================== CONFIGURACIÓN ==================== -->
+        <div class="admin-section" id="config">
           <div class="table-card">
-            <div class="orders-toolbar">
-              <span>Configuraci&oacute;n del negocio</span>
-            </div>
-              <div style="padding:4px 0;">
+            <div class="orders-toolbar"><span>⚙ Configuración del Negocio</span></div>
+            <div style="padding:4px 0;">
               <div style="margin-bottom:14px;">
                 <label style="font-size:13px;font-weight:700;color:#555;">Dirección del local</label>
-                <input type="text" id="setAddress" style="width:100%;margin-top:4px;padding:10px 14px;border:1px solid #e5ddeb;border-radius:12px;font-size:14px;box-sizing:border-box;" placeholder="Calle y n\u00famero, Colonia, Ciudad" />
+                <input type="text" id="setAddress" style="width:100%;margin-top:4px;padding:10px 14px;border:1px solid #e5ddeb;border-radius:12px;font-size:14px;box-sizing:border-box;" placeholder="Calle y número, Colonia, Ciudad" />
               </div>
               <div style="margin-bottom:14px;">
                 <label style="font-size:13px;font-weight:700;color:#555;">Teléfono</label>
-                <input type="tel" id="setPhone" style="width:100%;margin-top:4px;padding:10px 14px;border:1px solid #e5ddeb;border-radius:12px;font-size:14px;box-sizing:border-box;" placeholder="55 1234 5678" />
+                <input type="tel" id="setPhone" style="width:100%;margin-top:4px;padding:10px 14px;border:1px solid #e5ddeb;border-radius:12px;font-size:14px;box-sizing:border-box;" placeholder="777 123 4567" />
               </div>
               <div style="margin-bottom:14px;">
-                <label style="font-size:13px;font-weight:700;color:#555;">Link de Google Maps</label>
-                <input type="url" id="setMapsUrl" style="width:100%;margin-top:4px;padding:10px 14px;border:1px solid #e5ddeb;border-radius:12px;font-size:14px;box-sizing:border-box;" placeholder="https://maps.app.goo.gl/..." />
-              </div>
-              <div style="display:flex;gap:14px;margin-bottom:14px;">
-                <div style="flex:1;">
-                  <label style="font-size:13px;font-weight:700;color:#555;">Hora de apertura</label>
-                  <input type="time" id="setOpening" style="width:100%;margin-top:4px;padding:10px 14px;border:1px solid #e5ddeb;border-radius:12px;font-size:14px;box-sizing:border-box;" />
-                </div>
-                <div style="flex:1;">
-                  <label style="font-size:13px;font-weight:700;color:#555;">Hora de cierre</label>
-                  <input type="time" id="setClosing" style="width:100%;margin-top:4px;padding:10px 14px;border:1px solid #e5ddeb;border-radius:12px;font-size:14px;box-sizing:border-box;" />
-                </div>
+                <label style="font-size:13px;font-weight:700;color:#555;">Hora de apertura</label>
+                <input type="time" id="setOpening" style="width:100%;margin-top:4px;padding:10px 14px;border:1px solid #e5ddeb;border-radius:12px;font-size:14px;box-sizing:border-box;" />
               </div>
               <div style="margin-bottom:14px;">
-                <label style="font-size:13px;font-weight:700;color:#555;display:block;margin-bottom:6px;">Días de operación</label>
-                <div style="display:flex;gap:6px;flex-wrap:wrap;" id="daysToggle">
-                  <button class="day-btn active" data-day="1">Lun</button>
-                  <button class="day-btn active" data-day="2">Mar</button>
-                  <button class="day-btn active" data-day="3">Mié</button>
-                  <button class="day-btn active" data-day="4">Jue</button>
-                  <button class="day-btn active" data-day="5">Vie</button>
-                  <button class="day-btn active" data-day="6">Sáb</button>
-                  <button class="day-btn active" data-day="0">Dom</button>
-                </div>
+                <label style="font-size:13px;font-weight:700;color:#555;">Hora de cierre</label>
+                <input type="time" id="setClosing" style="width:100%;margin-top:4px;padding:10px 14px;border:1px solid #e5ddeb;border-radius:12px;font-size:14px;box-sizing:border-box;" />
               </div>
               <div id="settingsMsg" style="font-size:13px;font-weight:800;margin-bottom:10px;"></div>
-              <button class="btn-license" onclick="saveSettings()">💾 Guardar configuraci&oacute;n</button>
-              
-              <div style="margin-top:30px;padding-top:20px;border-top:2px solid #e5ddeb;">
-                <h3 style="margin-bottom:15px;color:#4a3c3a;">📁 Ubicación de guardado automático</h3>
-                <p style="font-size:13px;color:#766d86;margin-bottom:10px;">Solo en este panel de gesti&oacute;n se configura el guardado. En computadora se selecciona una vez la carpeta y se reemplazan los archivos del d&iacute;a; en celular se descargan a Descargas desde este bot&oacute;n:</p>
-                <p style="font-size:12px;color:#766d86;margin:-4px 0 10px;">historico_compras_AAAA-MM-DD.csv &middot; historico_usuarios_AAAA-MM-DD.csv</p>
-                <div id="currentHistoryPath" style="padding:10px;background:#f5f0ff;border-radius:8px;margin-bottom:10px;font-size:13px;color:#6c5ce7;font-weight:600;">
-                  No configurado
-                </div>
-                <button class="btn-license" onclick="changeHistoryFolder()" style="background:linear-gradient(135deg,#6c5ce7,#a29bfe);">🔄 Configurar / Descargar</button>
-              </div>
+              <button class="btn-license" onclick="saveSettings()" style="width:100%;">💾 Guardar configuración</button>
+            </div>
+            <div style="margin-top:30px;padding-top:20px;border-top:2px solid #e5ddeb;">
+              <h3 style="margin-bottom:15px;color:#4a3c3a;">📁 Ubicación de guardado automático</h3>
+              <div id="currentHistoryPath" style="padding:10px;background:#f5f0ff;border-radius:8px;margin-bottom:10px;font-size:13px;color:#6c5ce7;font-weight:600;">No configurado</div>
+              <button class="btn-license" onclick="changeHistoryFolder()" style="background:linear-gradient(135deg,#6c5ce7,#a29bfe);">🔄 Configurar / Descargar</button>
             </div>
           </div>
         </div>
 
-        <div class="admin-section" id="page">
-          <div class="table-card">
-            <div class="orders-toolbar">
-              <span>Colores de la p&aacute;gina de usuario</span>
-            </div>
-            <div class="page-theme-layout">
-              <div class="page-theme-form">
-                <label>Color de fondo principal <input type="color" id="themeBackgroundColor" value="#fff9f1" oninput="readPageThemeForm()" /></label>
-                <label>Color de fondo secundario <input type="color" id="themeBackgroundSoftColor" value="#fff2f7" oninput="readPageThemeForm()" /></label>
-                <label>Panel de arriba <input type="color" id="themeHeaderColor" value="#ffffff" oninput="readPageThemeForm()" /></label>
-                <label>Bot&oacute;n inicio <input type="color" id="themeButtonStartColor" value="#ff4f93" oninput="readPageThemeForm()" /></label>
-                <label>Bot&oacute;n final <input type="color" id="themeButtonEndColor" value="#ff8157" oninput="readPageThemeForm()" /></label>
-                <label>Color de acento <input type="color" id="themeAccentColor" value="#ff4f93" oninput="readPageThemeForm()" /></label>
-                <label>Texto principal <input type="color" id="themeTextColor" value="#2a1714" oninput="readPageThemeForm()" /></label>
-                <label>Tarjetas / paneles <input type="color" id="themeCardColor" value="#ffffff" oninput="readPageThemeForm()" /></label>
-                <label>Iconos flotantes <input type="color" id="themeIconColor" value="#fff2f7" oninput="readPageThemeForm()" /></label>
-              </div>
-              <div class="page-theme-preview" id="pageThemePreview">
-                <div class="preview-topbar">
-                  <strong>Padua<span>Tech</span></strong>
-                  <small>Inicio &middot; Men&uacute; &middot; Contacto</small>
-                </div>
-                <div class="preview-card">
-                  <span>Vista previa</span>
-                  <h3>Tus productos favoritos</h3>
-                  <p>As&iacute; se ver&aacute;n fondo, paneles, texto y botones.</p>
-                  <button type="button">Agregar al carrito</button>
-                </div>
-                <div class="preview-floating">🛒</div>
-              </div>
-            </div>
-            <div id="pageSettingsMsg" class="page-settings-msg"></div>
-            <div class="page-theme-actions">
-              <button class="btn-license" onclick="saveSettings('page')">💾 Guardar colores</button>
-              <button class="btn-license btn-license-cancel" type="button" onclick="resetPageTheme()">Restaurar colores originales</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="admin-section" id="users">
-          <div class="table-card">
-            <div class="orders-toolbar">
-              <span>Usuarios registrados</span>
-            </div>
-            <div id="usersTableContainer">
-              <table class="orders-table" id="usersTable">
-                <thead>
-                  <tr>
-                    <th>ID</th>
-                    <th>Usuario</th>
-                    <th>Correo</th>
-                    <th>Estado</th>
-                    <th>Plataforma</th>
-                    <th>&Uacute;ltima actividad</th>
-                    <th>Fecha de registro</th>
-                    <th>Acciones</th>
-                  </tr>
-                </thead>
-                <tbody id="usersTableBody"></tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-
+        <!-- ==================== LICENCIA ==================== -->
         <div class="admin-section" id="license">
           <div class="table-card">
-            <div class="orders-toolbar">
-              <span>Gestión de licencia</span>
-            </div>
+            <div class="orders-toolbar"><span>🔐 Gestión de Licencia</span></div>
             <div id="licenseStatus" style="margin-bottom:16px;">
               <p style="color:#766d86;">Presiona "Administrar licencia" para iniciar sesión con credenciales de licencia.</p>
             </div>
@@ -301,192 +352,101 @@
         </div>
 
       </div>
-
     </section>
-
   </main>
 </div>
 
-<div class="modal-overlay" id="authModal">
-  <div class="modal-box">
-    <h2>Autenticación requerida</h2>
-    <p style="margin-bottom:14px;color:#555;">Ingresa credenciales de administrador para eliminar producto.</p>
-    <label>Usuario</label>
-    <input type="text" id="authUser" placeholder="admin" style="margin-bottom:10px;" />
-    <label>Contraseña</label>
-    <input type="password" id="authPass" placeholder="contraseña" />
-    <p id="authError" style="color:#e74c3c;font-size:13px;margin-top:8px;display:none;">Credenciales incorrectas</p>
+<div class="modal-overlay" id="cashMovementModal" style="display:none;">
+  <div class="modal-box" style="width:460px;">
+    <h2>💸 Movimiento de Caja</h2>
+    <label>Tipo de movimiento</label>
+    <select id="cmType" style="width:100%;margin-bottom:10px;">
+      <option value="EntradaExtraordinaria">Entrada Extraordinaria</option>
+      <option value="RetiroParcial">Retiro Parcial</option>
+      <option value="Deposito">Depósito</option>
+      <option value="PagoAutorizado">Pago Autorizado</option>
+      <option value="SalidaCambio">Salida por Cambio</option>
+      <option value="AjusteAutorizado">Ajuste Autorizado</option>
+      <option value="ReembolsoEfectivo">Reembolso en Efectivo</option>
+    </select>
+    <label>Método de pago</label>
+    <select id="cmMethod" style="width:100%;margin-bottom:10px;">
+      <option value="Efectivo">Efectivo</option>
+      <option value="Tarjeta de Débito">Tarjeta de Débito</option>
+      <option value="Tarjeta de Crédito">Tarjeta de Crédito</option>
+      <option value="Transferencia SPEI">Transferencia SPEI</option>
+    </select>
+    <label>Importe</label>
+    <input type="number" id="cmAmount" step="0.01" min="0" placeholder="0.00" style="width:100%;margin-bottom:10px;" />
+    <label>Motivo (obligatorio)</label>
+    <input type="text" id="cmReason" placeholder="Motivo del movimiento" style="width:100%;margin-bottom:10px;" />
+    <label>Observaciones</label>
+    <textarea id="cmNotes" style="width:100%;margin-bottom:10px;min-height:60px;" placeholder="Observaciones opcionales"></textarea>
+    <label>PIN de autorización (Supervisor/Gerente)</label>
+    <input type="password" id="cmPin" placeholder="PIN" style="width:100%;margin-bottom:10px;" />
     <div class="modal-actions">
-      <button class="btn-modal-cancel" onclick="closeAuthModal()">Cancelar</button>
-      <button class="btn-modal-confirm" onclick="confirmDeleteProduct()">Eliminar</button>
+      <button class="btn-modal-cancel" onclick="closeCashMovementModal()">Cancelar</button>
+      <button class="btn-modal-confirm" onclick="submitCashMovement()">Registrar</button>
     </div>
   </div>
 </div>
 
-<div class="modal-overlay" id="cashModal">
-  <div class="modal-box">
-    <h2>Completar pedido <span id="modalOrderId"></span></h2>
-    <p>Total: <strong id="modalTotal"></strong></p>
-    <label>Efectivo recibido:</label>
-    <input type="number" id="cashInput" step="0.01" min="0" placeholder="0.00" autofocus />
-    <p class="change-display" id="changeDisplay"></p>
-    <div class="modal-actions">
-      <button class="btn-modal-cancel" onclick="closeCashModal()">Cancelar</button>
-      <button class="btn-modal-confirm" id="confirmCashBtn" onclick="confirmCash()">Confirmar pago</button>
-    </div>
-  </div>
-</div>
-
-<div class="modal-overlay" id="adminOrderModal">
-  <div class="modal-box admin-order-modal-box">
-    <h2>Hacer pedido</h2>
-    <p style="margin-bottom:14px;color:#555;">Crea un pedido desde gestión con el nombre que quieras. No se permite repetir un cliente con pedido activo.</p>
-    <label>Nombre del cliente</label>
-    <input type="text" id="adminOrderCustomer" placeholder="Ej. Juan, entrega local, cliente mostrador" style="margin-bottom:12px;" />
-    <div id="adminOrderProducts" class="admin-order-products"></div>
-    <div class="admin-order-total-card">
-      <strong>Total: <span id="adminOrderTotal">$0.00</span></strong>
-      <div id="adminOrderSummary" style="font-size:13px;color:#766d86;margin-top:6px;">Sin productos</div>
-    </div>
-    <p id="adminOrderMsg" style="font-size:13px;margin-top:10px;"></p>
-    <div class="modal-actions">
-      <button class="btn-modal-cancel" onclick="closeAdminOrderModal()">Cancelar</button>
-      <button class="btn-modal-confirm" id="adminOrderCreateBtn" onclick="createAdminOrder()">Crear pedido</button>
-    </div>
-  </div>
-</div>
-
-<div class="modal-overlay" id="licenseAuthModal">
-  <div class="modal-box" style="width:400px;">
-    <h2>🔐 Autenticación de licencia</h2>
-    <p style="margin-bottom:14px;color:#555;">Ingresa las credenciales de licencia para administrar.</p>
-    <label>Usuario</label>
-    <input type="text" id="licenseUser" placeholder="usuario" style="margin-bottom:10px;" />
-    <label>Contraseña</label>
-    <input type="password" id="licensePass" placeholder="contraseña" />
-    <p id="licenseAuthError" style="color:#e74c3c;font-size:13px;margin-top:8px;display:none;">Credenciales incorrectas</p>
-    <div class="modal-actions">
-      <button class="btn-modal-cancel" onclick="closeLicenseAuthModal()">Cancelar</button>
-      <button class="btn-modal-confirm" onclick="confirmLicenseAuth()">Ingresar</button>
-    </div>
-  </div>
-</div>
-
-<div class="modal-overlay" id="licenseUploadModal">
-  <div class="modal-box" style="width:480px;">
-    <h2>📄 Cargar licencia</h2>
-    <p style="margin-bottom:14px;color:#555;">Selecciona el archivo .lic o pega el contenido manualmente.</p>
-    <div style="margin-bottom:12px;">
-      <label style="display:inline-block;padding:10px 18px;background:#6c5ce7;color:#fff;border-radius:10px;cursor:pointer;font-size:14px;">
-        📁 Seleccionar archivo .lic
-        <input type="file" id="licenseFileInput" accept=".lic" style="display:none;" onchange="handleLicenseFile(event)" />
-      </label>
-      <span id="fileNameDisplay" style="margin-left:10px;font-size:13px;color:#766d86;"></span>
-    </div>
-    <textarea id="licenseContent" rows="8" style="width:100%;padding:12px;border:1px solid #e5ddeb;border-radius:14px;font-family:monospace;font-size:12px;resize:vertical;" placeholder='{"ExpiryDate":"...","IssuedAt":"...","Signature":"..."}'></textarea>
-    <div id="licenseUploadResult" style="margin-top:10px;font-size:13px;font-weight:800;"></div>
-    <div class="modal-actions">
-      <button class="btn-modal-cancel" onclick="closeLicenseUploadModal()">Cancelar</button>
-      <button class="btn-modal-confirm" onclick="uploadLicense()">Cargar</button>
-    </div>
-  </div>
-</div>
-
-<div class="modal-overlay" id="revokeConfirmModal">
-  <div class="modal-box" style="width:400px;">
-    <h2>🗑 Cancelar licencia</h2>
-    <p style="margin-bottom:14px;color:#555;">Ingresa las credenciales de licencia para confirmar la cancelación.</p>
-    <label>Usuario</label>
-    <input type="text" id="revokeUser" placeholder="usuario" style="margin-bottom:10px;" />
-    <label>Contraseña</label>
-    <input type="password" id="revokePass" placeholder="contraseña" />
-    <p id="revokeError" style="color:#e74c3c;font-size:13px;margin-top:8px;display:none;">Credenciales incorrectas</p>
-    <div class="modal-actions">
-      <button class="btn-modal-cancel" onclick="closeRevokeConfirm()">Cancelar</button>
-      <button class="btn-modal-confirm" style="background:linear-gradient(135deg,#e74c3c,#c0392b);" onclick="confirmRevoke()">Cancelar licencia</button>
-    </div>
-  </div>
-</div>
-
-<div class="modal-overlay" id="imageUploadModal">
-  <div class="modal-box" style="width:420px;">
-    <h2>📷 Cambiar imagen</h2>
-    <p id="imageUploadProductName" style="margin-bottom:14px;color:#555;">Producto</p>
-    <div style="margin-bottom:14px;">
-      <label style="display:inline-block;padding:12px 20px;background:#6c5ce7;color:#fff;border-radius:10px;cursor:pointer;font-size:14px;">
-        📁 Seleccionar imagen
-        <input type="file" id="imageFileInput" accept="image/*" style="display:none;" />
-      </label>
-      <span id="imageFileName" style="margin-left:10px;font-size:13px;color:#766d86;"></span>
-    </div>
-    <img id="imagePreview" style="width:100%;max-height:200px;object-fit:contain;border-radius:12px;background:#f5f0ff;display:none;margin-bottom:12px;" />
-    <div id="imageUploadResult" style="margin-top:10px;font-size:13px;font-weight:800;"></div>
-    <div class="modal-actions">
-      <button class="btn-modal-cancel" onclick="closeImageUpload()">Cancelar</button>
-      <button class="btn-modal-confirm" id="btnUploadImage" onclick="uploadImage()">Subir</button>
-    </div>
-  </div>
-</div>
-
-<div class="modal-overlay" id="editModal">
+<div class="modal-overlay" id="cashCutModal" style="display:none;">
   <div class="modal-box" style="width:500px;">
-    <h2>✏️ Editar producto</h2>
-    <p id="editProductTitle" style="margin-bottom:14px;color:#555;"></p>
-    <form id="editForm" onsubmit="saveEditProduct(event)">
-      <div class="form-row">
-        <input type="text" id="editName" placeholder="Nombre" required />
-        <input type="number" id="editPrice" placeholder="Precio" step="0.01" required />
-        <select id="editCategory"></select>
-      </div>
-      <div class="form-row">
-        <input type="text" id="editDesc" placeholder="Descripción" />
-        <input type="text" id="editBadge" placeholder="Etiqueta (ej. Nuevo)" />
-      </div>
-      <div class="form-row">
-        <textarea id="editCustomizations" class="product-customization-input" placeholder="Personalizaciones, una por línea. Ej: Grafito, 256 GB, correa negra"></textarea>
-      </div>
-      <div class="form-row" style="align-items:center;gap:12px;">
-        <img id="editImagePreview" style="width:80px;height:80px;object-fit:cover;border-radius:10px;background:#f5f0ff;display:none;" />
-        <div>
-          <label style="display:inline-block;padding:8px 16px;background:#e8e0ff;color:#6c5ce7;border-radius:10px;cursor:pointer;font-size:13px;font-weight:600;">
-            📷 Cambiar imagen
-            <input type="file" id="editImageFile" accept="image/*" style="display:none;" />
-          </label>
-          <span id="editImageName" style="margin-left:8px;font-size:12px;color:#766d86;"></span>
-        </div>
-      </div>
-      <div class="form-row">
-        <label><input type="checkbox" id="editFeatured" /> Destacado</label>
-        <label><input type="checkbox" id="editAvailable" checked /> Disponible</label>
-        <input type="number" id="editStock" placeholder="Stock" step="1" min="0" style="width:100px;" />
-      </div>
-      <div id="editError" style="color:#e74c3c;font-size:13px;margin-top:8px;display:none;"></div>
-      <div class="modal-actions" style="margin-top:14px;">
-        <button type="button" class="btn-modal-cancel" onclick="closeEditModal()">Cancelar</button>
-        <button type="submit" class="btn-modal-confirm">Guardar</button>
-      </div>
-    </form>
-  </div>
-</div>
-
-<div class="modal-overlay" id="deleteHistoryModal">
-  <div class="modal-box" style="width:420px;">
-    <h2>🗑 Eliminar historial</h2>
-    <p style="margin-bottom:14px;color:#555;">Esta acción eliminará todos los pedidos completados del historial. Se recomienda descargar el historial antes de eliminarlo.</p>
-    <p style="margin-bottom:14px;color:#e74c3c;font-weight:700;">⚠ Esta acción no se puede deshacer.</p>
+    <h2 id="cashCutTitle">Corte de Caja</h2>
+    <input type="hidden" id="cashCutType" value="Parcial" />
+    <label>Efectivo contado</label>
+    <input type="number" id="cutCountedCash" step="0.01" min="0" placeholder="0.00" style="width:100%;margin-bottom:10px;" />
+    <label>Tarjetas contadas</label>
+    <input type="number" id="cutCardCounted" step="0.01" min="0" placeholder="0.00" style="width:100%;margin-bottom:10px;" />
+    <label>Transferencias contadas</label>
+    <input type="number" id="cutTransferCounted" step="0.01" min="0" placeholder="0.00" style="width:100%;margin-bottom:10px;" />
+    <label>Otros medios contados</label>
+    <input type="number" id="cutOtherCounted" step="0.01" min="0" placeholder="0.00" style="width:100%;margin-bottom:10px;" />
+    <label>Motivo de diferencia (si aplica)</label>
+    <textarea id="cutDiffExplanation" style="width:100%;margin-bottom:10px;min-height:60px;" placeholder="Explicación obligatoria si hay diferencia"></textarea>
+    <label>Observaciones</label>
+    <textarea id="cutNotes" style="width:100%;margin-bottom:10px;min-height:60px;" placeholder="Observaciones opcionales"></textarea>
+    <label>PIN de supervisor (obligatorio para corte)</label>
+    <input type="password" id="cutSupervisorPin" placeholder="PIN" style="width:100%;margin-bottom:10px;" />
     <div class="modal-actions">
-      <button class="btn-modal-cancel" onclick="closeDeleteHistoryModal()">Cancelar</button>
-      <button class="btn-modal-confirm" style="background:linear-gradient(135deg,#e74c3c,#c0392b);" onclick="confirmDeleteHistory()">Eliminar todo</button>
+      <button class="btn-modal-cancel" onclick="closeCashCutModal()">Cancelar</button>
+      <button class="btn-modal-confirm" onclick="submitCashCut()">Ejecutar Corte</button>
     </div>
   </div>
 </div>
 
-<!-- Notificación toast para selección de carpeta -->
-<div id="historyPathToast" style="position:fixed;top:20px;right:20px;z-index:10000;background:white;padding:20px;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,0.15);max-width:350px;display:none;">
-  <h3 style="margin:0 0 10px 0;color:#4a3c3a;font-size:16px;">💾 Guardado automático</h3>
-  <p style="margin:0 0 15px 0;color:#766d86;font-size:13px;">En computadora selecciona una sola vez la carpeta. En celular usa este bot&oacute;n para descargar los hist&oacute;ricos a Descargas.</p>
-  <button class="btn-license" onclick="selectHistoryFolder()" style="width:100%;padding:12px;">📁 Configurar / Descargar</button>
-  <p id="historyPathMsg" style="font-size:12px;color:#766d86;text-align:center;margin-top:10px;"></p>
+<div class="modal-overlay" id="checkoutModal" style="display:none;">
+  <div class="modal-box" style="width:480px;">
+    <h2>💳 Cobrar Venta</h2>
+    <div style="background:#f5f0ff;padding:12px;border-radius:10px;margin-bottom:12px;">
+      <div style="font-size:18px;font-weight:900;text-align:center;">Total a cobrar: <span id="checkoutTotal">$0.00</span></div>
+    </div>
+    <label>Método de pago</label>
+    <select id="checkoutMethod" style="width:100%;margin-bottom:10px;" onchange="toggleCheckoutFields()">
+      <option value="Efectivo">Efectivo</option>
+      <option value="Tarjeta de Débito">Tarjeta de Débito</option>
+      <option value="Tarjeta de Crédito">Tarjeta de Crédito</option>
+      <option value="Transferencia SPEI">Transferencia SPEI</option>
+      <option value="Pago QR / CoDi">Pago QR / CoDi</option>
+      <option value="Vales / Monedero">Vales / Monedero</option>
+    </select>
+    <div id="cashFields">
+      <label>Efectivo recibido</label>
+      <input type="number" id="checkoutReceived" step="0.01" min="0" placeholder="0.00" style="width:100%;margin-bottom:10px;" oninput="calcChange()" />
+      <div style="font-size:14px;font-weight:700;margin-bottom:10px;">Cambio: <span id="checkoutChange">$0.00</span></div>
+    </div>
+    <div id="refFields" style="display:none;">
+      <label>Referencia / Autorización / Últimos 4 dígitos</label>
+      <input type="text" id="checkoutRef" placeholder="Ej. AUTH-1234 / *4921" style="width:100%;margin-bottom:10px;" />
+    </div>
+    <label>Propina (opcional)</label>
+    <input type="number" id="checkoutTip" step="0.01" min="0" placeholder="0.00" style="width:100%;margin-bottom:10px;" />
+    <div class="modal-actions">
+      <button class="btn-modal-cancel" onclick="closeCheckoutModal()">Cancelar</button>
+      <button class="btn-modal-confirm" onclick="submitCheckout()">Confirmar Cobro</button>
+    </div>
+  </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
@@ -495,7 +455,7 @@
 <script>
 function checkServer() {
   var b = document.getElementById("offlineBanner");
-  fetch("/api/v1/Products?_=" + Date.now()).
+  fetch("/PizzeriaPadua/api/v1/Products?_=" + Date.now()).
     then(function(r) { if (r.ok) b.style.display="none"; else b.style.display="block"; }).
     catch(function() { b.style.display="block"; });
 }
