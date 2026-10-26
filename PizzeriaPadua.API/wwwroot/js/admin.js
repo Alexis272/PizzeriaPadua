@@ -1904,3 +1904,597 @@ async function confirmDeleteHistory() {
     alert("Error de conexión al eliminar el historial");
   }
 }
+
+// ==================== POS MODULE FUNCTIONS ====================
+
+// Load POS Summary
+async function loadSummary() {
+  try {
+    var period = document.getElementById("dailyPeriod") ? document.getElementById("dailyPeriod").value : "today";
+    var shift = document.getElementById("dailyShift") ? document.getElementById("dailyShift").value : "all";
+    var channel = document.getElementById("dailyChannel") ? document.getElementById("dailyChannel").value : "all";
+    var reportPeriod = document.getElementById("reportPeriod");
+    if (reportPeriod) period = reportPeriod.value;
+
+    var res = await fetch("/PizzeriaPadua/api/v1/Pos/summary?period=" + period + "&shift=" + shift + "&channel=" + channel);
+    var data = await res.json();
+
+    // Daily KPIs
+    var kpiContainer = document.getElementById("dailyKpis");
+    if (kpiContainer && data.dayTotals) {
+      var dt = data.dayTotals;
+      kpiContainer.innerHTML = [
+        kpiCard("Ventas Netas", "$" + dt.netSales.toFixed(2), "Ventas cobradas - descuentos - devoluciones"),
+        kpiCard("Ventas Brutas", "$" + dt.grossSales.toFixed(2), dt.registeredCount + " registradas"),
+        kpiCard("Tickets", dt.ticketsCount, "Ventas cobradas"),
+        kpiCard("Ticket Promedio", "$" + dt.avgTicket.toFixed(2), "Por transacción"),
+        kpiCard("Unidades/Ticket", dt.unitsPerTicket.toFixed(2), dt.totalUnitsSold + " unidades"),
+        kpiCard("Descuentos", "$" + dt.totalDiscounts.toFixed(2), "Total descontado"),
+        kpiCard("Impuestos", "$" + dt.totalTaxes.toFixed(2), "IVA 16%"),
+        kpiCard("Propinas", "$" + dt.totalTips.toFixed(2), "Total propinas"),
+        kpiCard("Devoluciones", "$" + dt.totalRefunds.toFixed(2), "Total devuelto"),
+        kpiCard("Cancelaciones", "$" + dt.totalCancellations.toFixed(2), dt.cancelledCount + " canceladas"),
+        kpiCard("Efectivo Teórico", "$" + dt.theoreticalCashTotal.toFixed(2), "En cajas abiertas"),
+        kpiCard("Cuentas Abiertas", dt.openAccountsCount, "$" + dt.openAccountsAmount.toFixed(2)),
+        kpiCard("Cumplimiento Meta", dt.goalCompletionPercent.toFixed(1) + "%", "Meta: $" + dt.goalAmount.toFixed(2)),
+        kpiCard("Crecimiento", (dt.growthPercent >= 0 ? "+" : "") + dt.growthPercent.toFixed(1) + "%", "vs periodo anterior")
+      ].join("");
+    }
+
+    // Alerts
+    var alertsContainer = document.getElementById("executiveAlerts");
+    if (alertsContainer && data.alerts) {
+      alertsContainer.innerHTML = data.alerts.map(function(a) {
+        var color = a.level === "danger" ? "#e74c3c" : a.level === "warning" ? "#f39c12" : "#27ae60";
+        return '<div style="padding:10px 14px;border-radius:8px;margin-bottom:8px;background:' + color + '15;border-left:4px solid ' + color + ';"><strong style="color:' + color + ';">' + a.title + '</strong><br><span style="font-size:12px;color:#555;">' + a.detail + '</span></div>';
+      }).join("");
+    }
+
+    // KPIs
+    var kpiExec = document.getElementById("executiveKpis");
+    if (kpiExec && data.kpis) {
+      kpiExec.innerHTML = data.kpis.map(function(k) {
+        return '<div class="stat-box"><span class="stat-label">' + k.name + '</span><span class="stat-value" style="font-size:20px;">' + k.value + '</span><span style="font-size:11px;color:#766d86;display:block;margin-top:4px;">' + (k.sub || '') + '</span></div>';
+      }).join("");
+    }
+
+    // Sales by hour
+    renderSimpleList("dailyByHour", data.salesByHour, function(x) { return x.hour + " — " + x.tickets + " tickets — $" + x.netSales.toFixed(2); });
+    renderSimpleList("execHourly", data.salesByHour, function(x) { return x.hour + " — " + x.tickets + " tickets — $" + x.netSales.toFixed(2); });
+
+    // Sales by channel
+    renderSimpleList("dailyByChannel", data.salesByChannel, function(x) { return x.channel + " — " + x.tickets + " tickets — $" + x.amount.toFixed(2) + " (" + x.sharePercent + "%)"; });
+
+    // Sales by payment method
+    renderSimpleList("dailyByPayment", data.salesByPaymentMethod, function(x) { return x.paymentMethod + " — " + x.transactions + " trans. — $" + x.amount.toFixed(2) + " (" + x.sharePercent + "%)"; });
+
+    // Sales by product
+    renderSimpleList("dailyByProduct", data.salesByProduct, function(x) { return x.name + " — " + x.units + " uds — $" + x.amount.toFixed(2); });
+    renderSimpleList("execTopProducts", data.salesByProduct ? data.salesByProduct.slice(0, 8) : [], function(x) { return x.name + " — " + x.units + " uds — $" + x.amount.toFixed(2); });
+
+    // Sales by category
+    renderSimpleList("dailyByCategory", data.salesByCategory, function(x) { return x.category + " — " + x.units + " uds — $" + x.amount.toFixed(2); });
+
+    // Sales by cashier
+    renderSimpleList("dailyByCashier", data.salesByCashier, function(x) { return x.cashier + " — " + x.tickets + " tickets — $" + x.netSales.toFixed(2) + " (Ticket prom: $" + x.avgTicket.toFixed(2) + ")"; });
+
+    // Cuts
+    renderSimpleList("execCuts", data.cuts, function(x) { return x.folio + " — " + x.cutType + " — $" + x.cashDifference.toFixed(2) + " dif — " + new Date(x.createdAt).toLocaleString("es-MX"); });
+
+    // Audit logs
+    renderSimpleList("execAudit", data.auditLogs, function(x) { return x.operation + " — " + (x.folio || "") + " — " + x.username + " — " + new Date(x.createdAt).toLocaleString("es-MX"); });
+
+    // Reports content
+    var reportsContent = document.getElementById("reportsContent");
+    if (reportsContent) {
+      reportsContent.innerHTML = "<p style='text-align:center;color:#27ae60;padding:20px;'>Reporte actualizado. Ventas netas: $" + data.dayTotals.netSales.toFixed(2) + " | Tickets: " + data.dayTotals.ticketsCount + " | Ticket promedio: $" + data.dayTotals.avgTicket.toFixed(2) + "</p>";
+    }
+  } catch (err) {
+    console.error("Error loading summary:", err);
+  }
+}
+
+function kpiCard(label, value, sub) {
+  return '<div class="stat-box"><span class="stat-label">' + label + '</span><span class="stat-value" style="font-size:20px;">' + value + '</span><span style="font-size:11px;color:#766d86;display:block;margin-top:4px;">' + (sub || '') + '</span></div>';
+}
+
+function renderSimpleList(containerId, items, formatter) {
+  var container = document.getElementById(containerId);
+  if (!container) return;
+  if (!items || items.length === 0) {
+    container.innerHTML = "<p style='text-align:center;color:#999;padding:10px;'>Sin datos</p>";
+    return;
+  }
+  container.innerHTML = items.map(function(x) {
+    return '<div style="padding:8px 12px;border-bottom:1px solid #f0f0f0;font-size:13px;">' + formatter(x) + '</div>';
+  }).join("");
+}
+
+// Load open accounts
+async function loadOpenAccounts() {
+  try {
+    var res = await fetch("/PizzeriaPadua/api/v1/Orders");
+    var orders = await res.json();
+    var open = orders.filter(function(o) { return o.isOpenAccount || o.status === 6; });
+    var container = document.getElementById("openAccountsList");
+    if (!container) return;
+    if (open.length === 0) {
+      container.innerHTML = "<p style='text-align:center;color:#999;padding:20px;'>No hay cuentas abiertas</p>";
+      return;
+    }
+    container.innerHTML = open.map(function(o) {
+      return '<div class="order-card"><div class="order-info"><h3>Pedido #' + o.orderId + ' - ' + (o.customerName || "Sin nombre") + '</h3><p>' + new Date(o.orderDate).toLocaleString("es-MX") + ' | ' + (o.orderItems ? o.orderItems.length : 0) + ' artículo(s)</p><p><strong>Total: $' + o.totalAmount.toFixed(2) + '</strong></p></div><span class="order-status status-pending">Cuenta Abierta</span><div class="order-actions"><button class="btn-complete" onclick="payOpenAccount(' + o.orderId + ')">💳 Cobrar</button></div></div>';
+    }).join("");
+  } catch (err) {
+    console.error("Error loading open accounts:", err);
+  }
+}
+
+// Load cash status
+async function loadCashStatus() {
+  try {
+    var res = await fetch("/PizzeriaPadua/api/v1/Pos/cash/expected?cashRegisterId=1");
+    var data = await res.json();
+    var container = document.getElementById("cashStatus");
+    if (!container) return;
+    if (!data.hasOpenSession) {
+      container.innerHTML = "<p style='color:#999;'>No hay caja abierta. Realiza el arranque de caja.</p>";
+      return;
+    }
+    container.innerHTML = '<div style="font-size:13px;"><div><strong>Sesión:</strong> ' + data.session.folio + '</div><div><strong>Turno:</strong> ' + data.session.shiftName + '</div><div><strong>Cajero:</strong> ' + data.session.openedByUsername + '</div><div><strong>Fondo inicial:</strong> $' + data.initialFund.toFixed(2) + '</div><div><strong>Ventas en efectivo:</strong> $' + data.cashSales.toFixed(2) + '</div><div><strong>Entradas:</strong> $' + data.cashInflows.toFixed(2) + '</div><div><strong>Retiros:</strong> $' + data.cashOutflows.toFixed(2) + '</div><div style="font-size:16px;font-weight:900;margin-top:8px;color:#27ae60;"><strong>Efectivo esperado: $' + data.expectedCash.toFixed(2) + '</strong></div><div style="margin-top:4px;color:#999;">Cuentas abiertas: ' + data.openAccountsCount + '</div></div>';
+  } catch (err) {
+    console.error("Error loading cash status:", err);
+  }
+}
+
+// Open cash register
+async function openCashRegister() {
+  try {
+    var branchId = parseInt(document.getElementById("cashBranch").value) || 1;
+    var cashRegisterId = parseInt(document.getElementById("cashRegister").value) || 1;
+    var shift = document.getElementById("cashShift").value;
+    var initialFund = parseFloat(document.getElementById("cashInitialFund").value) || 0;
+    var notes = document.getElementById("cashOpenNotes").value;
+
+    var res = await fetch("/PizzeriaPadua/api/v1/Pos/cash/open", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        branchId: branchId,
+        cashRegisterId: cashRegisterId,
+        shiftName: shift,
+        cashierUsername: "cajero1",
+        initialFund: initialFund,
+        openingNotes: notes
+      })
+    });
+    var data = await res.json();
+    if (data.success) {
+      alert("Caja abierta exitosamente. Folio: " + data.session.folio);
+      loadCashStatus();
+    } else {
+      alert(data.message || "Error al abrir caja");
+    }
+  } catch (err) {
+    console.error("Error opening cash:", err);
+    alert("Error al abrir caja");
+  }
+}
+
+// Cash movement modal
+function showCashMovementModal() {
+  document.getElementById("cashMovementModal").style.display = "flex";
+}
+function closeCashMovementModal() {
+  document.getElementById("cashMovementModal").style.display = "none";
+}
+async function submitCashMovement() {
+  try {
+    var type = document.getElementById("cmType").value;
+    var method = document.getElementById("cmMethod").value;
+    var amount = parseFloat(document.getElementById("cmAmount").value) || 0;
+    var reason = document.getElementById("cmReason").value;
+    var notes = document.getElementById("cmNotes").value;
+    var pin = document.getElementById("cmPin").value;
+
+    if (amount <= 0 || !reason) {
+      alert("Importe y motivo son obligatorios");
+      return;
+    }
+
+    var res = await fetch("/PizzeriaPadua/api/v1/Pos/cash/movement", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        cashRegisterId: 1,
+        movementType: type,
+        paymentMethod: method,
+        amount: amount,
+        reason: reason,
+        notes: notes,
+        username: "cajero1",
+        authorizerPin: pin
+      })
+    });
+    var data = await res.json();
+    if (data.success) {
+      alert("Movimiento registrado: " + data.movement.folio);
+      closeCashMovementModal();
+      loadCashStatus();
+    } else {
+      alert(data.message || "Error al registrar movimiento");
+    }
+  } catch (err) {
+    console.error("Error:", err);
+    alert("Error al registrar movimiento");
+  }
+}
+
+// Cash cut modal
+function showCashCutModal(type) {
+  document.getElementById("cashCutType").value = type;
+  document.getElementById("cashCutTitle").textContent = type === "Final" ? "Corte Final (Cierre)" : "Corte Parcial (Arqueo)";
+  document.getElementById("cashCutModal").style.display = "flex";
+}
+function closeCashCutModal() {
+  document.getElementById("cashCutModal").style.display = "none";
+}
+async function submitCashCut() {
+  try {
+    var type = document.getElementById("cashCutType").value;
+    var countedCash = parseFloat(document.getElementById("cutCountedCash").value) || 0;
+    var cardCounted = parseFloat(document.getElementById("cutCardCounted").value) || 0;
+    var transferCounted = parseFloat(document.getElementById("cutTransferCounted").value) || 0;
+    var otherCounted = parseFloat(document.getElementById("cutOtherCounted").value) || 0;
+    var diffExp = document.getElementById("cutDiffExplanation").value;
+    var notes = document.getElementById("cutNotes").value;
+    var pin = document.getElementById("cutSupervisorPin").value;
+
+    var res = await fetch("/PizzeriaPadua/api/v1/Pos/cash/cut", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        cutType: type,
+        cashRegisterId: 1,
+        countedCash: countedCash,
+        cardCounted: cardCounted,
+        transferCounted: transferCounted,
+        otherCounted: otherCounted,
+        differenceExplanation: diffExp,
+        notes: notes,
+        responsibleUsername: "cajero1",
+        supervisorPin: pin
+      })
+    });
+    var data = await res.json();
+    if (data.success) {
+      alert("Corte ejecutado: " + data.cut.folio + " | Diferencia: $" + data.cut.cashDifference.toFixed(2));
+      closeCashCutModal();
+      loadCashStatus();
+      loadSummary();
+    } else {
+      alert(data.message || "Error al ejecutar corte");
+    }
+  } catch (err) {
+    console.error("Error:", err);
+    alert("Error al ejecutar corte");
+  }
+}
+
+// POS cart functions
+var posCart = [];
+function filterPosProducts() {
+  // Basic filter - reload products
+  loadAdminProducts();
+}
+
+function posAddToCart(productId, name, price) {
+  var existing = posCart.find(function(i) { return i.productId === productId; });
+  if (existing) {
+    existing.quantity += 1;
+  } else {
+    posCart.push({ productId: productId, name: name, price: price, quantity: 1, customizations: "" });
+  }
+  renderPosCart();
+}
+
+function renderPosCart() {
+  var container = document.getElementById("posCartItems");
+  if (!container) return;
+  if (posCart.length === 0) {
+    container.innerHTML = "<p style='text-align:center;color:#999;padding:20px;'>Carrito vacío</p>";
+    updatePosTotals();
+    return;
+  }
+  container.innerHTML = posCart.map(function(item, idx) {
+    return '<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid #f0f0f0;">' +
+      '<div style="flex:1;"><strong style="font-size:13px;">' + item.name + '</strong><br><span style="font-size:11px;color:#766d86;">$' + item.price.toFixed(2) + ' x ' + item.quantity + '</span></div>' +
+      '<div style="display:flex;gap:4px;align-items:center;">' +
+      '<button onclick="posCart[' + idx + '].quantity=Math.max(1,posCart[' + idx + '].quantity-1);renderPosCart();" style="width:24px;height:24px;border-radius:4px;border:1px solid #ddd;background:#fff;cursor:pointer;">-</button>' +
+      '<span style="font-size:13px;font-weight:700;width:20px;text-align:center;">' + item.quantity + '</span>' +
+      '<button onclick="posCart[' + idx + '].quantity+=1;renderPosCart();" style="width:24px;height:24px;border-radius:4px;border:1px solid #ddd;background:#fff;cursor:pointer;">+</button>' +
+      '<button onclick="posCart.splice(' + idx + ',1);renderPosCart();" style="width:24px;height:24px;border-radius:4px;border:1px solid #e74c3c;background:#fef3f2;color:#e74c3c;cursor:pointer;margin-left:4px;">×</button>' +
+      '</div></div>';
+  }).join("");
+  updatePosTotals();
+}
+
+function updatePosTotals() {
+  var subtotal = posCart.reduce(function(s, i) { return s + i.price * i.quantity; }, 0);
+  var discountPct = parseFloat(document.getElementById("posDiscount").value) || 0;
+  var discountAmt = subtotal * (discountPct / 100);
+  var net = subtotal - discountAmt;
+  var tax = net - (net / 1.16);
+  var tip = parseFloat(document.getElementById("posTip").value) || 0;
+  var total = net + tip;
+
+  document.getElementById("posSubtotal").textContent = "$" + subtotal.toFixed(2);
+  document.getElementById("posDiscountAmt").textContent = "-$" + discountAmt.toFixed(2);
+  document.getElementById("posTax").textContent = "$" + tax.toFixed(2);
+  document.getElementById("posTipAmt").textContent = "$" + tip.toFixed(2);
+  document.getElementById("posTotal").textContent = "$" + total.toFixed(2);
+}
+
+async function posSaveOpenAccount() {
+  if (posCart.length === 0) { alert("Agrega al menos un producto"); return; }
+  try {
+    var customerName = document.getElementById("posCustomerName").value || "Cliente Mostrador";
+    var channel = document.getElementById("posChannel").value;
+    var tableId = document.getElementById("posTable").value;
+    var discountPct = parseFloat(document.getElementById("posDiscount").value) || 0;
+    var tip = parseFloat(document.getElementById("posTip").value) || 0;
+    var promoCode = document.getElementById("posPromoCode").value;
+
+    var items = posCart.map(function(i) { return { productId: i.productId, quantity: i.quantity, customizations: i.customizations }; });
+    var subtotal = posCart.reduce(function(s, i) { return s + i.price * i.quantity; }, 0);
+
+    var res = await fetch("/PizzeriaPadua/api/v1/Pos/sale", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        cashRegisterId: 1,
+        cashierUsername: "cajero1",
+        channel: channel,
+        customerName: customerName,
+        tableId: tableId ? parseInt(tableId) : null,
+        saveAsOpenAccount: true,
+        discountPercent: discountPct,
+        tipAmount: tip,
+        promoCode: promoCode || null,
+        items: items
+      })
+    });
+    var data = await res.json();
+    if (data.success) {
+      document.getElementById("posMsg").textContent = "Cuenta abierta: " + data.order.folio;
+      document.getElementById("posMsg").style.color = "#27ae60";
+      posCart = [];
+      renderPosCart();
+      loadOpenAccounts();
+    } else {
+      document.getElementById("posMsg").textContent = data.message || "Error";
+      document.getElementById("posMsg").style.color = "#e74c3c";
+    }
+  } catch (err) {
+    console.error("Error:", err);
+    document.getElementById("posMsg").textContent = "Error de conexión";
+    document.getElementById("posMsg").style.color = "#e74c3c";
+  }
+}
+
+function posCheckout() {
+  if (posCart.length === 0) { alert("Agrega al menos un producto"); return; }
+  var total = parseFloat(document.getElementById("posTotal").textContent.replace("$", "")) || 0;
+  document.getElementById("checkoutTotal").textContent = "$" + total.toFixed(2);
+  document.getElementById("checkoutModal").style.display = "flex";
+}
+
+function closeCheckoutModal() {
+  document.getElementById("checkoutModal").style.display = "none";
+}
+
+function toggleCheckoutFields() {
+  var method = document.getElementById("checkoutMethod").value;
+  var isCash = method === "Efectivo";
+  document.getElementById("cashFields").style.display = isCash ? "block" : "none";
+  document.getElementById("refFields").style.display = isCash ? "none" : "block";
+}
+
+function calcChange() {
+  var received = parseFloat(document.getElementById("checkoutReceived").value) || 0;
+  var total = parseFloat(document.getElementById("checkoutTotal").textContent.replace("$", "")) || 0;
+  var change = Math.max(0, received - total);
+  document.getElementById("checkoutChange").textContent = "$" + change.toFixed(2);
+}
+
+async function submitCheckout() {
+  try {
+    var customerName = document.getElementById("posCustomerName").value || "Cliente Mostrador";
+    var channel = document.getElementById("posChannel").value;
+    var tableId = document.getElementById("posTable").value;
+    var discountPct = parseFloat(document.getElementById("posDiscount").value) || 0;
+    var tip = parseFloat(document.getElementById("checkoutTip").value) || parseFloat(document.getElementById("posTip").value) || 0;
+    var promoCode = document.getElementById("posPromoCode").value;
+    var method = document.getElementById("checkoutMethod").value;
+    var received = parseFloat(document.getElementById("checkoutReceived").value) || 0;
+    var ref = document.getElementById("checkoutRef").value;
+
+    var items = posCart.map(function(i) { return { productId: i.productId, quantity: i.quantity, customizations: i.customizations }; });
+    var total = parseFloat(document.getElementById("posTotal").textContent.replace("$", "")) || 0;
+
+    var payment = { paymentMethod: method, amount: total, amountReceived: received > 0 ? received : total };
+    if (ref) payment.reference = ref;
+    if (tip > 0) payment.tipAmount = tip;
+
+    var res = await fetch("/PizzeriaPadua/api/v1/Pos/sale", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        cashRegisterId: 1,
+        cashierUsername: "cajero1",
+        channel: channel,
+        customerName: customerName,
+        tableId: tableId ? parseInt(tableId) : null,
+        saveAsOpenAccount: false,
+        discountPercent: discountPct,
+        tipAmount: tip,
+        promoCode: promoCode || null,
+        items: items,
+        payments: [payment]
+      })
+    });
+    var data = await res.json();
+    if (data.success) {
+      document.getElementById("posMsg").textContent = "Venta cobrada: " + data.order.folio + " | Cambio: $" + data.order.changeGiven.toFixed(2);
+      document.getElementById("posMsg").style.color = "#27ae60";
+      posCart = [];
+      renderPosCart();
+      closeCheckoutModal();
+      loadOrders();
+      loadSummary();
+    } else {
+      document.getElementById("posMsg").textContent = data.message || "Error";
+      document.getElementById("posMsg").style.color = "#e74c3c";
+    }
+  } catch (err) {
+    console.error("Error:", err);
+    document.getElementById("posMsg").textContent = "Error de conexión";
+    document.getElementById("posMsg").style.color = "#e74c3c";
+  }
+}
+
+async function payOpenAccount(orderId) {
+  var method = prompt("Método de pago:", "Efectivo");
+  if (!method) return;
+  var amount = parseFloat(prompt("Importe a cobrar:", "0"));
+  if (!amount || amount <= 0) return;
+
+  try {
+    var res = await fetch("/PizzeriaPadua/api/v1/Pos/account/" + orderId + "/pay", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        cashierUsername: "cajero1",
+        payments: [{ paymentMethod: method, amount: amount, amountReceived: amount }]
+      })
+    });
+    var data = await res.json();
+    if (data.success) {
+      alert("Cuenta cobrada: " + data.order.folio);
+      loadOpenAccounts();
+      loadSummary();
+    } else {
+      alert(data.message || "Error al cobrar");
+    }
+  } catch (err) {
+    console.error("Error:", err);
+    alert("Error al cobrar cuenta");
+  }
+}
+
+async function loadControls() {
+  try {
+    var res = await fetch("/PizzeriaPadua/api/v1/Pos/summary?period=today");
+    var data = await res.json();
+    var container = document.getElementById("controlsList");
+    if (!container) return;
+    var items = [];
+    if (data.cancellations) {
+      items = items.concat(data.cancellations.map(function(c) {
+        return '<div class="order-card"><div class="order-info"><h3>Cancelación - ' + c.folio + '</h3><p>' + c.customerName + ' | $' + c.totalAmount.toFixed(2) + '</p><p>Motivo: ' + (c.cancellationReason || "N/A") + '</p></div><span class="order-status status-cancelled">Cancelada</span></div>';
+      }));
+    }
+    if (data.refunds) {
+      items = items.concat(data.refunds.map(function(r) {
+        return '<div class="order-card"><div class="order-info"><h3>Devolución - ' + r.folio + '</h3><p>Ticket: ' + r.originalOrderFolio + ' | $' + r.refundAmount.toFixed(2) + '</p><p>Motivo: ' + r.reason + ' | Inventario: ' + r.inventoryDisposition + '</p></div><span class="order-status status-cancelled">Devuelta</span></div>';
+      }));
+    }
+    container.innerHTML = items.length > 0 ? items.join("") : "<p style='text-align:center;color:#999;padding:20px;'>Sin cancelaciones ni devoluciones</p>";
+  } catch (err) {
+    console.error("Error loading controls:", err);
+  }
+}
+
+async function loadCategories() {
+  try {
+    var res = await fetch("/PizzeriaPadua/api/v1/Categories");
+    var cats = await res.json();
+    var list = document.getElementById("categoriesList");
+    var select = document.getElementById("prodCategory");
+    var editSelect = document.getElementById("editCategory");
+    if (list) {
+      list.innerHTML = cats.map(function(c) {
+        return '<div class="category-admin-item"><span>' + c.name + ' - ' + (c.description || '') + '</span></div>';
+      }).join("");
+    }
+    if (select) {
+      select.innerHTML = '<option value="">Sin categoría</option>' + cats.map(function(c) {
+        return '<option value="' + c.categoryId + '">' + c.name + '</option>';
+      }).join("");
+    }
+    if (editSelect) {
+      editSelect.innerHTML = '<option value="">Sin categoría</option>' + cats.map(function(c) {
+        return '<option value="' + c.categoryId + '">' + c.name + '</option>';
+      }).join("");
+    }
+  } catch (err) {
+    console.error("Error loading categories:", err);
+  }
+}
+
+function exportReportCSV() {
+  alert("Exportando reporte a CSV... (funcionalidad en desarrollo)");
+}
+
+// Override loadAdminProducts to also populate pos product grid
+var _originalLoadAdminProducts = loadAdminProducts;
+loadAdminProducts = async function() {
+  await _originalLoadAdminProducts();
+  // Also populate POS product grid
+  try {
+    var res = await fetch("/PizzeriaPadua/api/v1/Products");
+    var products = await res.json();
+    var grid = document.getElementById("posProductGrid");
+    if (grid) {
+      grid.innerHTML = products.map(function(p) {
+        return '<div class="admin-product-card" style="cursor:pointer;" onclick="posAddToCart(' + p.productId + ',\'' + p.name.replace(/'/g, "\\'") + '\',' + p.price + ')">' +
+          '<img src="' + (p.imageUrl || "img/pizza-padua.svg") + '" alt="' + p.name + '" style="width:100%;height:120px;object-fit:cover;border-radius:8px;" />' +
+          '<div style="padding:8px 0;"><strong style="font-size:13px;">' + p.name + '</strong><br><span style="font-size:12px;color:#27ae60;font-weight:700;">$' + p.price.toFixed(2) + '</span> <span style="font-size:11px;color:#999;">' + (p.category ? p.category.name : '') + '</span></div>' +
+          '</div>';
+      }).join("");
+    }
+    // Populate category filter
+    var catFilter = document.getElementById("posCategoryFilter");
+    if (catFilter && catFilter.options.length <= 1) {
+      var cats = [...new Set(products.map(function(p) { return p.category ? p.category.name : ""; }).filter(Boolean))];
+      cats.forEach(function(c) {
+        var opt = document.createElement("option");
+        opt.value = c;
+        opt.textContent = c;
+        catFilter.appendChild(opt);
+      });
+    }
+    // Populate table select
+    var tableSelect = document.getElementById("posTable");
+    if (tableSelect && tableSelect.options.length <= 1) {
+      try {
+        var tRes = await fetch("/PizzeriaPadua/api/v1/Tables");
+        var tables = await tRes.json();
+        tables.forEach(function(t) {
+          var opt = document.createElement("option");
+          opt.value = t.tableId;
+          opt.textContent = t.tableNumber;
+          tableSelect.appendChild(opt);
+        });
+      } catch (e) {}
+    }
+  } catch (err) {
+    console.error("Error loading pos products:", err);
+  }
+};
+
+// Initialize on load
+document.addEventListener("DOMContentLoaded", function() {
+  renderPosCart();
+  updatePosTotals();
+});

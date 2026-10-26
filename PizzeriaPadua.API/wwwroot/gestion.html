@@ -8,6 +8,85 @@
   <link rel="stylesheet" href="css/admin.css?v=20260715-customizations" />
   <link rel="stylesheet" href="css/admin-pizzeriapadua.css?v=20260717-gallery" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
+  <style>
+    .module-dashboard {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+      padding: 20px 0;
+    }
+    .module-card {
+      background: var(--color-paper-white);
+      border: 1px solid var(--color-fog);
+      border-radius: var(--radius-cards);
+      padding: 32px 24px;
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+    }
+    .module-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 28px rgba(0,0,0,0.1);
+      border-color: var(--color-signal-blue);
+    }
+    .module-card .module-icon {
+      font-size: 48px;
+      margin-bottom: 12px;
+      display: block;
+    }
+    .module-card .module-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--color-obsidian);
+      margin-bottom: 4px;
+    }
+    .module-card .module-desc {
+      font-size: 12px;
+      color: var(--color-slate);
+    }
+    .module-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--color-fog);
+    }
+    .module-header .back-btn {
+      background: var(--color-mist);
+      border: none;
+      border-radius: var(--radius-buttons);
+      padding: 8px 16px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--color-charcoal);
+    }
+    .module-header .back-btn:hover {
+      background: var(--color-fog);
+    }
+    .module-header h2 {
+      font-size: 24px;
+      font-weight: 600;
+      color: var(--color-obsidian);
+      margin: 0;
+    }
+    .dashboard-welcome {
+      text-align: center;
+      padding: 20px 0 10px;
+    }
+    .dashboard-welcome h2 {
+      font-size: 28px;
+      font-weight: 600;
+      color: var(--color-obsidian);
+      margin-bottom: 4px;
+    }
+    .dashboard-welcome p {
+      color: var(--color-slate);
+      font-size: 14px;
+    }
+  </style>
 </head>
 <body>
 
@@ -18,16 +97,17 @@
     <aside class="sidebar">
       <h2>🍕 PIZZERÍA<br>PADUA</h2>
       <nav>
-        <a class="active tab-link" data-tab="pos">🧾 Terminal POS</a>
-        <a class="tab-link" data-tab="openaccounts">📋 Cuentas Abiertas</a>
-        <a class="tab-link" data-tab="cash">💰 Caja y Cortes</a>
-        <a class="tab-link" data-tab="daily">📊 Acumulado del Día</a>
-        <a class="tab-link" data-tab="reports">📈 Reportes</a>
-        <a class="tab-link" data-tab="executive">🎯 Panel Ejecutivo</a>
-        <a class="tab-link" data-tab="controls">🛡 Cancelaciones y Devoluciones</a>
-        <a class="tab-link" data-tab="catalog">🍽 Catálogos</a>
-        <a class="tab-link" data-tab="config">⚙ Configuración</a>
-        <a class="tab-link" data-tab="license">🔐 Licencia</a>
+        <a class="active tab-link" data-tab="dashboard" onclick="showModule('dashboard')">🏠 Inicio</a>
+        <a class="tab-link" data-tab="pos" onclick="showModule('pos')">🧾 Terminal POS</a>
+        <a class="tab-link" data-tab="openaccounts" onclick="showModule('openaccounts')">📋 Cuentas Abiertas</a>
+        <a class="tab-link" data-tab="cash" onclick="showModule('cash')">💰 Caja y Cortes</a>
+        <a class="tab-link" data-tab="daily" onclick="showModule('daily')">📊 Acumulado del Día</a>
+        <a class="tab-link" data-tab="reports" onclick="showModule('reports')">📈 Reportes</a>
+        <a class="tab-link" data-tab="executive" onclick="showModule('executive')">🎯 Panel Ejecutivo</a>
+        <a class="tab-link" data-tab="controls" onclick="showModule('controls')">🛡 Cancelaciones y Devoluciones</a>
+        <a class="tab-link" data-tab="catalog" onclick="showModule('catalog')">🍽 Catálogos</a>
+        <a class="tab-link" data-tab="config" onclick="showModule('config')">⚙ Configuración</a>
+        <a class="tab-link" data-tab="license" onclick="showModule('license')">🔐 Licencia</a>
         <a href="/PizzeriaPadua/admin.html" onclick="sessionStorage.removeItem('adminAuthToken');document.cookie='auth=; path=/PizzeriaPadua; max-age=0';">🚪 Salir</a>
       </nav>
     </aside>
@@ -37,7 +117,7 @@
       <header class="topbar">
         <div>
           <span class="topbar-kicker">Administración</span>
-          <h1>Panel de Gestión POS</h1>
+          <h1 id="topbarTitle">Panel de Gestión POS</h1>
         </div>
         <div class="icons">🔔</div>
       </header>
@@ -52,11 +132,75 @@
 
       <div class="main-grid">
 
+        <!-- ==================== DASHBOARD (PÁGINA PRINCIPAL) ==================== -->
+        <div class="admin-section active" id="dashboard">
+          <div class="dashboard-welcome">
+            <h2>🏠 Panel de Gestión POS</h2>
+            <p>Selecciona un módulo para comenzar a trabajar</p>
+          </div>
+          <div class="module-dashboard">
+            <div class="module-card" onclick="showModule('pos')">
+              <span class="module-icon">🧾</span>
+              <div class="module-title">Terminal POS</div>
+              <div class="module-desc">Registrar ventas, cobrar, aplicar descuentos y promociones</div>
+            </div>
+            <div class="module-card" onclick="showModule('openaccounts')">
+              <span class="module-icon">📋</span>
+              <div class="module-title">Cuentas Abiertas</div>
+              <div class="module-desc">Gestionar cuentas pendientes por mesa o cliente</div>
+            </div>
+            <div class="module-card" onclick="showModule('cash')">
+              <span class="module-icon">💰</span>
+              <div class="module-title">Caja y Cortes</div>
+              <div class="module-desc">Arranque, movimientos, arqueo y cierre de caja</div>
+            </div>
+            <div class="module-card" onclick="showModule('daily')">
+              <span class="module-icon">📊</span>
+              <div class="module-title">Acumulado del Día</div>
+              <div class="module-desc">Ventas en tiempo real, KPIs y análisis por hora/canal</div>
+            </div>
+            <div class="module-card" onclick="showModule('reports')">
+              <span class="module-icon">📈</span>
+              <div class="module-title">Reportes</div>
+              <div class="module-desc">Reportes operativos, gerenciales y exportación</div>
+            </div>
+            <div class="module-card" onclick="showModule('executive')">
+              <span class="module-icon">🎯</span>
+              <div class="module-title">Panel Ejecutivo</div>
+              <div class="module-desc">KPIs, alertas, top productos y bitácora</div>
+            </div>
+            <div class="module-card" onclick="showModule('controls')">
+              <span class="module-icon">🛡</span>
+              <div class="module-title">Cancelaciones y Devoluciones</div>
+              <div class="module-desc">Control de cancelaciones, devoluciones y reembolsos</div>
+            </div>
+            <div class="module-card" onclick="showModule('catalog')">
+              <span class="module-icon">🍽</span>
+              <div class="module-title">Catálogos</div>
+              <div class="module-desc">Productos, categorías y promociones</div>
+            </div>
+            <div class="module-card" onclick="showModule('config')">
+              <span class="module-icon">⚙</span>
+              <div class="module-title">Configuración</div>
+              <div class="module-desc">Datos del negocio, horarios y parámetros</div>
+            </div>
+            <div class="module-card" onclick="showModule('license')">
+              <span class="module-icon">🔐</span>
+              <div class="module-title">Licencia</div>
+              <div class="module-desc">Gestión de licencia del sistema</div>
+            </div>
+          </div>
+        </div>
+
         <!-- ==================== TERMINAL POS ==================== -->
-        <div class="admin-section active" id="pos">
+        <div class="admin-section" id="pos">
+          <div class="module-header">
+            <button class="back-btn" onclick="showModule('dashboard')">← Inicio</button>
+            <h2>🧾 Terminal de Venta (POS)</h2>
+          </div>
           <div class="table-card">
             <div class="orders-toolbar">
-              <span>🧾 Terminal de Venta (POS)</span>
+              <span>Pedidos activos</span>
               <div style="display:flex;gap:10px;margin-left:auto;">
                 <button class="btn-license" onclick="openAdminOrderModal()" style="background:linear-gradient(135deg,#27ae60,#2ecc71);">➕ Nueva Venta</button>
                 <select id="posFilter" onchange="loadOrders()">
@@ -118,20 +262,23 @@
 
         <!-- ==================== CUENTAS ABIERTAS ==================== -->
         <div class="admin-section" id="openaccounts">
+          <div class="module-header">
+            <button class="back-btn" onclick="showModule('dashboard')">← Inicio</button>
+            <h2>📋 Cuentas Abiertas / Pendientes</h2>
+          </div>
           <div class="table-card">
-            <div class="orders-toolbar">
-              <span>📋 Cuentas Abiertas / Pendientes</span>
-            </div>
+            <div class="orders-toolbar"><span>Cuentas abiertas por mesa y cliente</span></div>
             <div id="openAccountsList" class="orders-list"></div>
           </div>
         </div>
 
         <!-- ==================== CAJA Y CORTES ==================== -->
         <div class="admin-section" id="cash">
+          <div class="module-header">
+            <button class="back-btn" onclick="showModule('dashboard')">← Inicio</button>
+            <h2>💰 Caja — Arranque, Movimientos y Cortes</h2>
+          </div>
           <div class="table-card">
-            <div class="orders-toolbar">
-              <span>💰 Caja — Arranque, Movimientos y Cortes</span>
-            </div>
             <div id="cashPanel">
               <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
                 <div>
@@ -165,9 +312,13 @@
 
         <!-- ==================== ACUMULADO DEL DÍA ==================== -->
         <div class="admin-section" id="daily">
+          <div class="module-header">
+            <button class="back-btn" onclick="showModule('dashboard')">← Inicio</button>
+            <h2>📊 Acumulado del Día</h2>
+          </div>
           <div class="table-card">
             <div class="orders-toolbar">
-              <span>📊 Acumulado del Día</span>
+              <span>Ventas en tiempo real</span>
               <div style="display:flex;gap:10px;margin-left:auto;flex-wrap:wrap;">
                 <select id="dailyPeriod" onchange="loadSummary()" style="min-width:100px;">
                   <option value="today">Hoy</option>
@@ -195,9 +346,13 @@
 
         <!-- ==================== REPORTES ==================== -->
         <div class="admin-section" id="reports">
+          <div class="module-header">
+            <button class="back-btn" onclick="showModule('dashboard')">← Inicio</button>
+            <h2>📈 Reportes Operativos y Gerenciales</h2>
+          </div>
           <div class="table-card">
             <div class="orders-toolbar">
-              <span>📈 Reportes Operativos y Gerenciales</span>
+              <span>Filtrar y exportar reportes</span>
               <div style="display:flex;gap:10px;margin-left:auto;flex-wrap:wrap;">
                 <select id="reportPeriod" onchange="loadSummary()" style="min-width:100px;">
                   <option value="today">Hoy</option>
@@ -217,9 +372,13 @@
 
         <!-- ==================== PANEL EJECUTIVO ==================== -->
         <div class="admin-section" id="executive">
+          <div class="module-header">
+            <button class="back-btn" onclick="showModule('dashboard')">← Inicio</button>
+            <h2>🎯 Panel Ejecutivo — KPIs y Alertas</h2>
+          </div>
           <div class="table-card">
             <div class="orders-toolbar">
-              <span>🎯 Panel Ejecutivo — KPIs y Alertas</span>
+              <span>KPIs y alertas operativas</span>
               <button class="btn-license" onclick="loadSummary()" style="background:linear-gradient(135deg,#3498db,#2980b9);margin-left:auto;">🔄 Actualizar</button>
             </div>
             <div id="executiveAlerts" style="margin-bottom:16px;"></div>
@@ -235,16 +394,22 @@
 
         <!-- ==================== CANCELACIONES Y DEVOLUCIONES ==================== -->
         <div class="admin-section" id="controls">
+          <div class="module-header">
+            <button class="back-btn" onclick="showModule('dashboard')">← Inicio</button>
+            <h2>🛡 Cancelaciones y Devoluciones</h2>
+          </div>
           <div class="table-card">
-            <div class="orders-toolbar">
-              <span>🛡 Cancelaciones y Devoluciones</span>
-            </div>
+            <div class="orders-toolbar"><span>Control de cancelaciones y devoluciones</span></div>
             <div id="controlsList" class="orders-list"></div>
           </div>
         </div>
 
         <!-- ==================== CATÁLOGOS ==================== -->
         <div class="admin-section" id="catalog">
+          <div class="module-header">
+            <button class="back-btn" onclick="showModule('dashboard')">← Inicio</button>
+            <h2>🍽 Catálogos</h2>
+          </div>
           <div class="product-subtabs">
             <button type="button" class="product-subtab active" data-product-subtab="products" onclick="setProductSubtab('products')">Productos</button>
             <button type="button" class="product-subtab" data-product-subtab="promos" onclick="setProductSubtab('promos')">Promociones</button>
@@ -307,8 +472,11 @@
 
         <!-- ==================== CONFIGURACIÓN ==================== -->
         <div class="admin-section" id="config">
+          <div class="module-header">
+            <button class="back-btn" onclick="showModule('dashboard')">← Inicio</button>
+            <h2>⚙ Configuración del Negocio</h2>
+          </div>
           <div class="table-card">
-            <div class="orders-toolbar"><span>⚙ Configuración del Negocio</span></div>
             <div style="padding:4px 0;">
               <div style="margin-bottom:14px;">
                 <label style="font-size:13px;font-weight:700;color:#555;">Dirección del local</label>
@@ -339,8 +507,12 @@
 
         <!-- ==================== LICENCIA ==================== -->
         <div class="admin-section" id="license">
+          <div class="module-header">
+            <button class="back-btn" onclick="showModule('dashboard')">← Inicio</button>
+            <h2>🔐 Gestión de Licencia</h2>
+          </div>
           <div class="table-card">
-            <div class="orders-toolbar"><span>🔐 Gestión de Licencia</span></div>
+            <div class="orders-toolbar"><span>Gestión de licencia</span></div>
             <div id="licenseStatus" style="margin-bottom:16px;">
               <p style="color:#766d86;">Presiona "Administrar licencia" para iniciar sesión con credenciales de licencia.</p>
             </div>
@@ -356,6 +528,7 @@
   </main>
 </div>
 
+<!-- Modals -->
 <div class="modal-overlay" id="cashMovementModal" style="display:none;">
   <div class="modal-box" style="width:460px;">
     <h2>💸 Movimiento de Caja</h2>
@@ -453,6 +626,56 @@
 <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
 <script src="js/admin.js?v=20260715-customizations"></script>
 <script>
+// Función para mostrar módulos (página principal con iconos)
+function showModule(moduleId) {
+  document.querySelectorAll(".admin-section").forEach(s => s.classList.remove("active"));
+  var section = document.getElementById(moduleId);
+  if (section) section.classList.add("active");
+
+  // Update sidebar active state
+  document.querySelectorAll(".tab-link").forEach(l => l.classList.remove("active"));
+  var link = document.querySelector('[data-tab="' + moduleId + '"]');
+  if (link) link.classList.add("active");
+
+  // Update topbar title
+  var titles = {
+    dashboard: "Panel de Gestión POS",
+    pos: "Terminal de Venta (POS)",
+    openaccounts: "Cuentas Abiertas",
+    cash: "Caja y Cortes",
+    daily: "Acumulado del Día",
+    reports: "Reportes",
+    executive: "Panel Ejecutivo",
+    controls: "Cancelaciones y Devoluciones",
+    catalog: "Catálogos",
+    config: "Configuración",
+    license: "Licencia"
+  };
+  document.getElementById("topbarTitle").textContent = titles[moduleId] || "Panel POS";
+
+  // Load module data
+  if (moduleId === "pos") { if (typeof loadOrders === "function") loadOrders(); if (typeof loadAdminProducts === "function") loadAdminProducts(); }
+  if (moduleId === "openaccounts") { if (typeof loadOpenAccounts === "function") loadOpenAccounts(); }
+  if (moduleId === "cash") { if (typeof loadCashStatus === "function") loadCashStatus(); }
+  if (moduleId === "daily" || moduleId === "reports" || moduleId === "executive") { if (typeof loadSummary === "function") loadSummary(); }
+  if (moduleId === "controls") { if (typeof loadControls === "function") loadControls(); }
+  if (moduleId === "catalog") { if (typeof loadAdminProducts === "function") loadAdminProducts(); if (typeof loadCategories === "function") loadCategories(); }
+  if (moduleId === "config") { if (typeof loadSettings === "function") loadSettings(); }
+  if (moduleId === "license") { if (typeof loadLicenseStatus === "function") loadLicenseStatus(); }
+}
+
+// Override tab-link clicks to use showModule
+document.addEventListener("DOMContentLoaded", function() {
+  document.querySelectorAll(".tab-link").forEach(link => {
+    link.addEventListener("click", function(e) {
+      e.preventDefault();
+      var tab = this.dataset.tab;
+      if (tab) showModule(tab);
+    });
+  });
+  showModule("dashboard");
+});
+
 function checkServer() {
   var b = document.getElementById("offlineBanner");
   fetch("/PizzeriaPadua/api/v1/Products?_=" + Date.now()).
