@@ -147,7 +147,7 @@
         }
 
         sessionStorage.setItem("adminAuthToken", btoa(u + ":" + p));
-        document.cookie = "auth=1; path=/Pizzería Padua; max-age=3600; SameSite=Strict";
+        document.cookie = "auth=1; path=/PizzeriaPadua; max-age=3600; SameSite=Strict";
         window.location.href = "/PizzeriaPadua/gestion.html";
       } catch {
         error.textContent = "No se pudo conectar con el servidor.";
