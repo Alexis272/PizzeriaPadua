@@ -1,0 +1,375 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pizzería Padua | La mejor pizza artesanal</title>
+  <meta name="description" content="Pizzas artesanales, combos familiares, entradas, bebidas y postres. Pide en línea o visita nuestro punto de venta." />
+  <link rel="stylesheet" href="css/apple-tokens.css" />
+  <link rel="stylesheet" href="css/styles.css?v=20260715-customizations" />
+  <link rel="stylesheet" href="css/pizzeriapadua.css?v=20260717-gallery" />
+</head>
+<body>
+
+<div class="utility-bar">Envíos y atención local en Padua. <a href="#menu">Explorar productos &rsaquo;</a></div>
+
+<header class="header">
+  <div class="logo" aria-label="Pizzería Padua"><span class="logo-mark">🍕</span><span class="logo-full">Pizzería<span>Padua</span></span><span class="logo-short">PP</span></div>
+
+  <nav>
+    <a href="#inicio">Inicio</a>
+    <a href="#menu">Productos</a>
+    <a href="#promos">Ofertas</a>
+    <a href="#contacto">Contacto</a>
+  </nav>
+
+  <div class="header-actions">
+    <button class="user-btn" id="userBtn" onclick="openAuth()" title="Iniciar sesión">Iniciar sesión</button>
+    <div class="user-profile" id="userProfile" style="display:none;">
+      <div class="user-icon-wrapper" onclick="toggleUserMenu()">
+        <img id="userProfilePic" src="" alt="" style="width:100%;height:100%;border-radius:50%;object-fit:cover;display:none;" />
+        <span id="userIconDefault" style="font-size:20px;">&#128100;</span>
+        <div class="user-menu" id="userMenu">
+          <span class="user-name" id="userDisplay"></span>
+          <button onclick="openMyAccount()">Mi cuenta</button>
+          <button onclick="openMyOrders()">Mis pedidos</button>
+          <button onclick="openReviewsModal()">Reseñas</button>
+          <button onclick="logout()">Salir</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section id="inicio" class="hero">
+  <div class="hero-text">
+    <span class="hero-kicker">Sabor artesanal que enamora</span>
+    <h1>La mejor <span>pizza</span><br />de la ciudad.</h1>
+    <p>Pizzas artesanales horneadas a la piedra, combos familiares, entradas y bebidas. Pide en línea o visita nuestro punto de venta.</p>
+
+    <div class="hero-buttons">
+      <a href="#menu" class="btn">Ver menú</a>
+      <a href="#promos" class="btn secondary">Promociones</a>
+    </div>
+
+    <p class="rating"><strong>4.9</strong> de 5 &middot; Ingredientes frescos &middot; Entrega rápida</p>
+  </div>
+
+  <div class="hero-img">
+    <img src="img/pizza-padua.svg" alt="Pizza especial de Pizzería Padua" />
+  </div>
+</section>
+
+<nav class="cat-float" id="catFloat" aria-label="Categorías de productos">
+  <div class="cat-active" data-category=""><span>✦</span><p>Todo</p></div>
+  <div data-category="1"><span>🍕</span><p>Pizzas Clásicas</p></div>
+  <div data-category="2"><span>🧀</span><p>Pizzas Especiales</p></div>
+  <div data-category="3"><span>👨‍👩‍👧‍👦</span><p>Combos</p></div>
+  <div data-category="4"><span>🍗</span><p>Entradas</p></div>
+  <div data-category="5"><span>🥤</span><p>Bebidas</p></div>
+  <div data-category="6"><span>🍰</span><p>Postres</p></div>
+</nav>
+
+<section id="promos" class="promos">
+  <div class="promo-track" id="promoTrack">
+    <div class="promo dark">
+      <h3>Estrena hoy</h3>
+      <h2>Hasta 12 MSI</h2>
+      <p>En celulares y relojes seleccionados.</p>
+    </div>
+    <div class="promo pink">
+      <h3>Kit esencial</h3>
+      <h2>15% menos</h2>
+      <p>Funda, cargador y cable para empezar bien.</p>
+    </div>
+    <div class="promo light">
+      <h3>Compra tranquila</h3>
+      <h2>1 a&ntilde;o</h2>
+      <p>Garant&iacute;a en productos participantes.</p>
+    </div>
+    <div class="promo dark" aria-hidden="true">
+      <h3>Estrena hoy</h3>
+      <h2>Hasta 12 MSI</h2>
+      <p>En celulares y relojes seleccionados.</p>
+    </div>
+    <div class="promo pink" aria-hidden="true">
+      <h3>Kit esencial</h3>
+      <h2>15% menos</h2>
+      <p>Funda, cargador y cable para empezar bien.</p>
+    </div>
+    <div class="promo light" aria-hidden="true">
+      <h3>Compra tranquila</h3>
+      <h2>1 a&ntilde;o</h2>
+      <p>Garant&iacute;a en productos participantes.</p>
+    </div>
+  </div>
+</section>
+
+<section id="menu" class="products">
+  <div class="section-heading">
+    <span>Catálogo</span>
+    <h2>Encuentra tu próximo favorito.</h2>
+    <p>Equipos y accesorios elegidos por desempeño, diseño y valor.</p>
+  </div>
+  <div class="menu-layout">
+    <div class="menu-products">
+      <div class="product-grid" id="productGrid"></div>
+    </div>
+    <aside class="cart-popover" id="cartSidebar">
+      <div class="cart-header">
+        <h2>Tu bolsa</h2>
+        <span class="cart-close" onclick="toggleCart()">&times;</span>
+      </div>
+      <div id="orderList"></div>
+      <div class="cart-footer">
+        <div class="cart-total-row">
+          <strong>Total:</strong>
+          <strong>$<span id="total">0</span></strong>
+        </div>
+        <button class="btn-clear" onclick="clearCart()" id="clearCartBtn" style="display:none;">Vaciar bolsa</button>
+        <div id="customerNameDisplay" style="padding:10px;background:#f0f0f0;border-radius:8px;margin-bottom:10px;font-weight:600;"></div>
+        <button class="btn" id="checkoutButton" onclick="placeOrder()" disabled>Preparando pago...</button>
+        <p class="payment-fee-note" id="paymentFeeNote" style="display:none;">Se agregar&aacute; una comisi&oacute;n de 3.19% m&aacute;s IVA antes de pagar.</p>
+        <p id="orderMsg" style="margin-top:8px;font-size:12px;"></p>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<div class="modal-overlay" id="paymentFeeModal" onclick="if(event.target===this)closeMercadoPagoSummary()">
+  <div class="payment-summary-box">
+    <button class="auth-close" type="button" onclick="closeMercadoPagoSummary()">&times;</button>
+    <div class="payment-brand">Mercado Pago</div>
+    <h2>Resumen antes de pagar</h2>
+    <p class="payment-warning">Por el procesamiento con Mercado Pago se cobrar&aacute; 3.19% m&aacute;s IVA.</p>
+    <div class="payment-breakdown">
+      <div><span>Subtotal del pedido</span><strong>$<span id="paymentSubtotal">0.00</span></strong></div>
+      <div><span>Comisi&oacute;n (3.19%)</span><strong>$<span id="paymentCommission">0.00</span></strong></div>
+      <div><span>IVA de la comisi&oacute;n (16%)</span><strong>$<span id="paymentVat">0.00</span></strong></div>
+      <div class="payment-increase"><span>Aumento total</span><strong>+$<span id="paymentIncrease">0.00</span></strong></div>
+      <div class="payment-grand-total"><span>Total a cobrar</span><strong>$<span id="paymentGrandTotal">0.00</span> MXN</strong></div>
+    </div>
+    <p id="paymentCheckoutError" class="payment-checkout-error"></p>
+    <button class="btn payment-confirm-btn" id="confirmMercadoPagoBtn" type="button" onclick="startMercadoPagoCheckout()">Pagar con Mercado Pago</button>
+    <button class="payment-cancel-btn" type="button" onclick="closeMercadoPagoSummary()">Cancelar</button>
+  </div>
+</div>
+
+<section class="my-orders-section">
+  <aside class="my-orders-sidebar" id="myOrdersSidebar">
+    <div class="tracker-header">
+      <h2>Mis pedidos</h2>
+      <span class="tracker-close" onclick="closeMyOrders()">&times;</span>
+    </div>
+    <p class="tracker-subtitle">Historial de tus pedidos</p>
+    <div id="myOrdersList">
+      <p style="text-align:center;color:#999;">Cargando pedidos...</p>
+    </div>
+  </aside>
+  <div class="my-orders-overlay" id="myOrdersOverlay" onclick="closeMyOrders()"></div>
+</section>
+
+<section class="order-tracker-section">
+  <aside class="order-tracker-sidebar" id="orderTrackerSidebar">
+    <div class="tracker-header">
+      <h2>Pedidos activos</h2>
+      <span class="tracker-close" onclick="toggleOrderTracker()">&times;</span>
+    </div>
+    <p class="tracker-subtitle">Pedidos pendientes y en proceso</p>
+    <div id="activeOrdersList">
+      <p style="text-align:center;color:#999;">Cargando pedidos...</p>
+    </div>
+  </aside>
+  <div class="tracker-overlay" id="trackerOverlay" onclick="toggleOrderTracker()"></div>
+</section>
+
+<div id="orderNotification" class="order-notification" style="display:none;">
+  <div class="notif-content">
+    <span class="notif-icon">&#127881;</span>
+    <div>
+      <strong>Pedido listo!</strong>
+      <p id="notifText"></p>
+    </div>
+    <button class="notif-close" onclick="closeNotification()">&times;</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="authModal">
+  <div class="auth-box">
+    <button class="auth-close" onclick="closeAuth()">&times;</button>
+    <div id="facebookLoginOnly" style="text-align:center;padding:20px 0;">
+      <h2 style="margin-bottom:24px;color:#4a3c3a;">Bienvenido a Pizzería Padua</h2>
+      <button type="button" class="auth-submit" style="background:#1877f2;font-size:16px;padding:14px 24px;margin-bottom:12px;" onclick="facebookLogin()">
+        <svg style="width:22px;height:22px;vertical-align:middle;margin-right:10px;" viewBox="0 0 24 24" fill="white">
+          <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+        </svg>
+        Iniciar sesión con Facebook
+      </button>
+      <div id="googleSignInButton" style="display:flex;justify-content:center;min-height:44px;margin-bottom:12px;"></div>
+      <button type="button" class="auth-submit" style="display:none;background:#25D366;font-size:16px;padding:14px 24px;" onclick="openPhoneLogin()">
+        <svg style="width:22px;height:22px;vertical-align:middle;margin-right:10px;" viewBox="0 0 24 24" fill="white">
+          <path d="M20 15.5c-1.25 0-2.45-.2-3.57-.57-.35-.11-.74-.03-1.02.24l-2.2 2.2c-2.83-1.44-5.15-3.75-6.59-6.58l2.2-2.21c.28-.27.36-.66.25-1.01C8.7 6.45 8.5 5.25 8.5 4c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1 0 9.39 7.61 17 17 17 .55 0 1-.45 1-1v-3.5c0-.55-.45-1-1-1zM19 12h2c0-4.97-4.03-9-9-9v2c3.87 0 7 3.13 7 7zm-4 0h2c0-2.76-2.24-5-5-5v2c1.66 0 3 1.34 3 3z"/>
+        </svg>
+        Iniciar sesión con número de celular
+      </button>
+      <p id="facebookError" class="auth-error" style="margin-top:12px;"></p>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="whatsappModal">
+  <div class="auth-box">
+    <button class="auth-close" onclick="closePhoneLogin()">&times;</button>
+    <h2 style="text-align:center;margin-bottom:20px;color:#4a3c3a;">Iniciar sesión con número de celular</h2>
+    <div id="whatsappStep1">
+      <div class="auth-field">
+        <label>Número de celular</label>
+        <input type="tel" id="whatsappPhone" placeholder="10 dígitos, ej. 5512345678" inputmode="numeric" maxlength="14" />
+      </div>
+      <button type="button" class="auth-submit" style="background:#25D366;" onclick="sendPhoneCode()">Enviar código</button>
+      <p id="whatsappError" class="auth-error" style="margin-top:12px;"></p>
+    </div>
+    <div id="whatsappStep2" style="display:none;">
+      <div class="auth-field">
+        <label>Código de verificación</label>
+        <input type="text" id="whatsappCode" placeholder="Ingresa el código" maxlength="6" />
+      </div>
+      <button type="button" class="auth-submit" style="background:#25D366;" onclick="verifyPhoneCode()">Verificar código</button>
+      <p id="whatsappVerifyError" class="auth-error" style="margin-top:12px;"></p>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="myAccountModal" onclick="if(event.target===this)closeMyAccount()">
+  <div class="auth-box">
+    <button class="auth-close" onclick="closeMyAccount()">&times;</button>
+    <h2 style="text-align:center;margin-bottom:20px;color:#4a3c3a;">Mi cuenta</h2>
+    <div id="myAccountInfo" style="margin-bottom:20px;">
+      <div class="auth-field">
+        <label>Nombre de usuario</label>
+        <input type="text" id="myAccountUsername" placeholder="Tu usuario" />
+      </div>
+      <div class="auth-field">
+        <label>Número de teléfono</label>
+        <input type="tel" id="myAccountPhone" disabled style="background:#f5f5f5;cursor:not-allowed;" />
+      </div>
+      <div class="auth-field">
+        <label>Correo electrónico</label>
+        <input type="email" id="myAccountEmail" disabled style="background:#f5f5f5;cursor:not-allowed;" />
+      </div>
+      <div class="auth-field">
+        <label>Fecha de registro</label>
+        <input type="text" id="myAccountCreatedAt" disabled style="background:#f5f5f5;cursor:not-allowed;" />
+      </div>
+      <button type="button" class="auth-submit" onclick="updateUsername()">Actualizar usuario</button>
+      <p id="myAccountMsg" class="auth-error"></p>
+    </div>
+    <hr style="margin:20px 0;border:none;border-top:1px solid #e5ddeb;" />
+    <div style="text-align:center;">
+      <button type="button" class="auth-submit" style="background:linear-gradient(135deg,#e74c3c,#c0392b);" onclick="confirmDeleteAccount()">Eliminar mi cuenta</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="reviewsModal" onclick="if(event.target===this)closeReviewsModal()">
+  <div class="auth-box" style="max-width:600px;max-height:80vh;overflow-y:auto;">
+    <button class="auth-close" onclick="closeReviewsModal()">&times;</button>
+    <h2 style="text-align:center;margin-bottom:20px;color:#4a3c3a;">Reseñas</h2>
+    <div class="reviews-summary" id="reviewsSummary">
+      <div class="reviews-average">
+        <span class="average-number" id="averageRating">0</span>
+        <div class="average-stars" id="averageStars"></div>
+        <span class="review-count" id="reviewCount">0 reseñas</span>
+      </div>
+    </div>
+    <div class="reviews-list" id="reviewsList" style="margin-bottom:20px;"></div>
+    <div class="review-form-container" id="reviewFormContainer" style="display:none;">
+      <h3>Deja tu reseña</h3>
+      <form id="reviewForm" onsubmit="submitReview(event)">
+        <div class="rating-input">
+          <label>Calificación:</label>
+          <div class="star-rating">
+            <span class="star" data-rating="1">&#9733;</span>
+            <span class="star" data-rating="2">&#9733;</span>
+            <span class="star" data-rating="3">&#9733;</span>
+            <span class="star" data-rating="4">&#9733;</span>
+            <span class="star" data-rating="5">&#9733;</span>
+          </div>
+          <input type="hidden" id="reviewRating" value="0" />
+        </div>
+        <div class="auth-field">
+          <label>Comentario:</label>
+          <textarea id="reviewComment" placeholder="Cuéntanos tu experiencia..." required maxlength="500" rows="3"></textarea>
+        </div>
+        <button type="submit" class="auth-submit">Enviar reseña</button>
+        <p id="reviewError" class="auth-error"></p>
+      </form>
+    </div>
+    <div id="loginToReview" style="display:none;text-align:center;padding:20px;">
+      <p>Inicia sesión para dejar tu reseña</p>
+      <button class="auth-submit" onclick="closeReviewsModal();openAuth()">Iniciar sesión</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="customizationModal" onclick="if(event.target===this)closeCustomizationModal()">
+  <div class="auth-box customization-box">
+    <button class="auth-close" onclick="closeCustomizationModal()">&times;</button>
+    <h2 id="customizationTitle">Personalizar producto</h2>
+    <p class="customization-help">Elige la configuraci&oacute;n de tu producto.</p>
+    <div id="customizationOptions" class="customization-options"></div>
+    <div class="auth-field">
+      <label>Notas extra</label>
+      <textarea id="customizationNotes" placeholder="Ej. color negro, incluir funda, entregar sellado..." rows="3"></textarea>
+    </div>
+    <button class="auth-submit" onclick="confirmCustomization()">Agregar al carrito</button>
+  </div>
+</div>
+
+<div class="cart-float" onclick="toggleCart()">
+  &#128722; <span id="cartCount">0</span>
+</div>
+
+<div class="floating-buttons-top">
+  <div class="float-btn-top" onclick="toggleOrderTracker()">
+    <span class="float-btn-label">Pedidos activos</span>
+    &#128203; <span id="activeOrderCount">0</span>
+  </div>
+</div>
+
+<footer id="contacto">
+  <div class="footer-inner">
+    <div class="footer-info">
+      <div class="logo"><span class="logo-mark">M</span> Padua<span>Tech</span></div>
+      <p>Tecnolog&iacute;a confiable, atenci&oacute;n local y una compra simple.</p>
+      <div id="contactDetails">
+        <p id="contactAddress">&#128205; Cargando direcci&oacute;n...</p>
+        <p id="contactPhone">&#128222; 55 1234 5678</p>
+        <p id="contactHours">&#9200; Cargando horario...</p>
+      </div>
+      <p style="margin-top:14px;display:flex;flex-wrap:wrap;gap:14px;">
+        <a href="/politica-de-privacidad.html" style="color:inherit;text-decoration:underline;">Pol&iacute;tica de privacidad</a>
+        <a href="mailto:contactSupport@morelosaunclick.com" style="color:inherit;text-decoration:underline;">Soporte y privacidad</a>
+      </p>
+    </div>
+    <a id="directionsBtn" href="#" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:8px;margin-top:4px;padding:10px 24px;border-radius:12px;background:#4285F4;color:#fff;text-decoration:none;font-weight:700;font-size:14px;">&#128204; C&oacute;mo llegar</a>
+  </div>
+</footer>
+
+<div id="fb-root"></div>
+<script async defer crossorigin="anonymous" src="https://connect.facebook.net/es_LA/sdk.js#xfbml=1&version=v18.0&appId=1803589950806250&autoLogAppEvents=1"></script>
+<script id="googleGsiScript" async defer src="https://accounts.google.com/gsi/client"></script>
+<script>
+  window.fbAsyncInit = function() {
+    FB.init({
+      appId      : '1803589950806250',
+      cookie     : true,
+      xfbml      : true,
+      version    : 'v18.0'
+    });
+  };
+</script>
+
+<script src="js/script.js?v=20260716-private-orders"></script>
+</body>
+</html>

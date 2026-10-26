@@ -1,0 +1,506 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pizzería Padua | Panel</title>
+  <link rel="stylesheet" href="css/apple-tokens.css" />
+  <link rel="stylesheet" href="css/admin.css?v=20260715-customizations" />
+  <link rel="stylesheet" href="css/admin-pizzeriapadua.css?v=20260717-gallery" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
+</head>
+<body>
+
+<div id="offlineBanner" class="offline-banner" style="position:fixed;top:0;left:0;right:0;z-index:999;background:#ff6b35;color:#fff;text-align:center;padding:8px 16px;font-size:14px;font-weight:700;display:none;">Sin conexi&oacute;n — el servidor no responde</div>
+<div class="background">
+  <main class="dashboard">
+
+      <aside class="sidebar">
+        <h2>🍕 PIZZERÍA<br>PADUA</h2>
+        <nav>
+          <a class="active tab-link" data-tab="orders">📋 Pedidos</a>
+          <a class="tab-link" data-tab="history">📊 Historial de venta</a>
+          <a class="tab-link" data-tab="products">🍽 Productos</a>
+          <a class="tab-link" data-tab="page">🎨 P&aacute;gina</a>
+          <a class="tab-link" data-tab="users">👥 Usuarios</a>
+          <a class="tab-link" data-tab="license">🔐 Licencia</a>
+          <a class="tab-link" data-tab="settings">⚙ Configuraci&oacute;n</a>
+          <a href="/Pizzería Padua/admin.html" onclick="sessionStorage.removeItem('adminAuthToken');document.cookie='auth=; path=/Pizzería Padua; max-age=0';document.cookie='auth=; path=/Pizzería Padua; max-age=0';">🚪 Salir</a>
+        </nav>
+      </aside>
+
+    <section class="content">
+
+      <header class="topbar">
+        <div>
+          <span class="topbar-kicker">Administración</span>
+          <h1>Panel de gestión</h1>
+        </div>
+        <div class="icons">🔔</div>
+      </header>
+
+      <div id="licenseGate" class="license-gate">
+        <div class="license-gate-box">
+          <h2>🔐 Licencia requerida</h2>
+          <p>No hay una licencia válida instalada. Ve a la sección <strong>Licencia</strong> para cargar una.</p>
+          <button class="btn-license" onclick="goToLicenseTab()">Ir a Licencia</button>
+        </div>
+      </div>
+
+      <div class="main-grid">
+
+        <div class="admin-section active" id="orders">
+
+          <div class="table-card">
+            <div class="orders-toolbar">
+              <span>Pedidos recientes</span>
+              <button class="btn-license" onclick="openAdminOrderModal()" style="background:linear-gradient(135deg,#27ae60,#2ecc71);margin-left:auto;">➕ Hacer pedido</button>
+              <select id="orderFilter">
+                <option value="all">Todos</option>
+                <option value="0">Pendientes</option>
+                <option value="1">En preparación</option>
+                <option value="4">Pendientes de entrega</option>
+              </select>
+            </div>
+            <div class="orders-list" id="ordersList"></div>
+          </div>
+
+        </div>
+
+        <div class="admin-section" id="history">
+            <div class="table-card">
+              <div class="orders-toolbar">
+              <span>Historial de ventas</span>
+              <div style="display:flex;gap:10px;margin-left:auto;">
+                <button class="btn-license" onclick="selectHistoryFolder()" style="background:linear-gradient(135deg,#6c5ce7,#a29bfe);">📁 Cambiar ubicación</button>
+                <button class="btn-license" onclick="openDeleteHistoryModal()" style="background:linear-gradient(135deg,#e74c3c,#c0392b);">🗑 Eliminar historial</button>
+              </div>
+            </div>
+            <div class="history-filter-bar">
+              <div class="filter-box">
+                <div class="filter-title">Filtrar por fecha</div>
+                <div id="calendarWrap" style="position:relative;">
+                  <input type="text" id="dateInput" style="display:none;" />
+                </div>
+              </div>
+              <div class="filter-quick-btns">
+                <button class="filter-btn" data-period="today">Hoy</button>
+                <button class="filter-btn" data-period="month">Este mes</button>
+                <button class="filter-btn" data-period="year">Este año</button>
+                <button class="filter-btn active" data-period="all">Todo</button>
+              </div>
+            </div>
+            <div class="history-stats" id="historyStats">
+              <div class="stat-box">
+                <span class="stat-label">Total ventas</span>
+                <span class="stat-value" id="totalSales">$0.00</span>
+              </div>
+              <div class="stat-box">
+                <span class="stat-label">Órdenes completadas</span>
+                <span class="stat-value" id="completedCount">0</span>
+              </div>
+            </div>
+            <div class="orders-list" id="historyList"></div>
+          </div>
+        </div>
+
+        <div class="admin-section" id="products">
+          <div class="product-subtabs">
+            <button type="button" class="product-subtab active" data-product-subtab="products" onclick="setProductSubtab('products')">Productos</button>
+            <button type="button" class="product-subtab" data-product-subtab="promos" onclick="setProductSubtab('promos')">Promociones</button>
+          </div>
+
+          <div class="product-subpanel active" id="productsSubpanel">
+            <details class="add-form category-manager" open>
+              <summary>Administrar categor&iacute;as</summary>
+              <form id="categoryForm" onsubmit="addCategory(event)">
+                <div class="form-row">
+                  <input type="text" id="catName" placeholder="Nombre de categor&iacute;a" required />
+                  <input type="text" id="catDesc" placeholder="Descripci&oacute;n opcional" />
+                  <button type="submit">Agregar categor&iacute;a</button>
+                </div>
+              </form>
+              <div class="category-admin-list" id="categoryAdminList"></div>
+            </details>
+
+            <details class="add-form">
+              <summary>+ Agregar producto</summary>
+              <form id="productForm" onsubmit="addProduct(event)">
+                <div class="form-row">
+                  <input type="text" id="prodName" placeholder="Nombre" required />
+                  <input type="number" id="prodPrice" placeholder="Precio" step="0.01" required />
+                  <select id="prodCategory"></select>
+                </div>
+                <div class="form-row">
+                  <input type="text" id="prodDesc" placeholder="Descripción" />
+                  <input type="text" id="prodImage" placeholder="URL imagen" />
+                  <input type="text" id="prodBadge" placeholder="Etiqueta (ej. Nuevo)" />
+                </div>
+                <div class="form-row">
+                  <textarea id="prodCustomizations" class="product-customization-input" placeholder="Personalizaciones, una por línea. Ej: Grafito, 256 GB, correa negra"></textarea>
+                </div>
+                <div class="form-row">
+                  <label><input type="checkbox" id="prodFeatured" /> Destacado</label>
+                  <button type="submit">Guardar</button>
+                </div>
+              </form>
+            </details>
+
+            <div class="product-grid-admin" id="adminProductGrid"></div>
+          </div>
+
+          <div class="product-subpanel" id="promosSubpanel">
+            <div class="settings-promos-box">
+              <div class="settings-promos-head">
+                <div>
+                  <h3>Promociones de la tienda</h3>
+                  <p>Edita las tarjetas que se mueven en la página principal. Puedes usar imagen o video.</p>
+                </div>
+                <button type="button" class="btn-license" onclick="addPromoEditor()">➕ Agregar promo</button>
+              </div>
+              <div id="promoEditors" class="promo-editors"></div>
+            </div>
+            <div id="promoSettingsMsg" class="promo-settings-msg"></div>
+            <button class="btn-license" onclick="saveSettings('promos')">💾 Guardar promociones</button>
+          </div>
+        </div>
+
+        <div class="admin-section" id="settings">
+          <div class="table-card">
+            <div class="orders-toolbar">
+              <span>Configuraci&oacute;n del negocio</span>
+            </div>
+              <div style="padding:4px 0;">
+              <div style="margin-bottom:14px;">
+                <label style="font-size:13px;font-weight:700;color:#555;">Dirección del local</label>
+                <input type="text" id="setAddress" style="width:100%;margin-top:4px;padding:10px 14px;border:1px solid #e5ddeb;border-radius:12px;font-size:14px;box-sizing:border-box;" placeholder="Calle y n\u00famero, Colonia, Ciudad" />
+              </div>
+              <div style="margin-bottom:14px;">
+                <label style="font-size:13px;font-weight:700;color:#555;">Teléfono</label>
+                <input type="tel" id="setPhone" style="width:100%;margin-top:4px;padding:10px 14px;border:1px solid #e5ddeb;border-radius:12px;font-size:14px;box-sizing:border-box;" placeholder="55 1234 5678" />
+              </div>
+              <div style="margin-bottom:14px;">
+                <label style="font-size:13px;font-weight:700;color:#555;">Link de Google Maps</label>
+                <input type="url" id="setMapsUrl" style="width:100%;margin-top:4px;padding:10px 14px;border:1px solid #e5ddeb;border-radius:12px;font-size:14px;box-sizing:border-box;" placeholder="https://maps.app.goo.gl/..." />
+              </div>
+              <div style="display:flex;gap:14px;margin-bottom:14px;">
+                <div style="flex:1;">
+                  <label style="font-size:13px;font-weight:700;color:#555;">Hora de apertura</label>
+                  <input type="time" id="setOpening" style="width:100%;margin-top:4px;padding:10px 14px;border:1px solid #e5ddeb;border-radius:12px;font-size:14px;box-sizing:border-box;" />
+                </div>
+                <div style="flex:1;">
+                  <label style="font-size:13px;font-weight:700;color:#555;">Hora de cierre</label>
+                  <input type="time" id="setClosing" style="width:100%;margin-top:4px;padding:10px 14px;border:1px solid #e5ddeb;border-radius:12px;font-size:14px;box-sizing:border-box;" />
+                </div>
+              </div>
+              <div style="margin-bottom:14px;">
+                <label style="font-size:13px;font-weight:700;color:#555;display:block;margin-bottom:6px;">Días de operación</label>
+                <div style="display:flex;gap:6px;flex-wrap:wrap;" id="daysToggle">
+                  <button class="day-btn active" data-day="1">Lun</button>
+                  <button class="day-btn active" data-day="2">Mar</button>
+                  <button class="day-btn active" data-day="3">Mié</button>
+                  <button class="day-btn active" data-day="4">Jue</button>
+                  <button class="day-btn active" data-day="5">Vie</button>
+                  <button class="day-btn active" data-day="6">Sáb</button>
+                  <button class="day-btn active" data-day="0">Dom</button>
+                </div>
+              </div>
+              <div id="settingsMsg" style="font-size:13px;font-weight:800;margin-bottom:10px;"></div>
+              <button class="btn-license" onclick="saveSettings()">💾 Guardar configuraci&oacute;n</button>
+              
+              <div style="margin-top:30px;padding-top:20px;border-top:2px solid #e5ddeb;">
+                <h3 style="margin-bottom:15px;color:#4a3c3a;">📁 Ubicación de guardado automático</h3>
+                <p style="font-size:13px;color:#766d86;margin-bottom:10px;">Solo en este panel de gesti&oacute;n se configura el guardado. En computadora se selecciona una vez la carpeta y se reemplazan los archivos del d&iacute;a; en celular se descargan a Descargas desde este bot&oacute;n:</p>
+                <p style="font-size:12px;color:#766d86;margin:-4px 0 10px;">historico_compras_AAAA-MM-DD.csv &middot; historico_usuarios_AAAA-MM-DD.csv</p>
+                <div id="currentHistoryPath" style="padding:10px;background:#f5f0ff;border-radius:8px;margin-bottom:10px;font-size:13px;color:#6c5ce7;font-weight:600;">
+                  No configurado
+                </div>
+                <button class="btn-license" onclick="changeHistoryFolder()" style="background:linear-gradient(135deg,#6c5ce7,#a29bfe);">🔄 Configurar / Descargar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="admin-section" id="page">
+          <div class="table-card">
+            <div class="orders-toolbar">
+              <span>Colores de la p&aacute;gina de usuario</span>
+            </div>
+            <div class="page-theme-layout">
+              <div class="page-theme-form">
+                <label>Color de fondo principal <input type="color" id="themeBackgroundColor" value="#fff9f1" oninput="readPageThemeForm()" /></label>
+                <label>Color de fondo secundario <input type="color" id="themeBackgroundSoftColor" value="#fff2f7" oninput="readPageThemeForm()" /></label>
+                <label>Panel de arriba <input type="color" id="themeHeaderColor" value="#ffffff" oninput="readPageThemeForm()" /></label>
+                <label>Bot&oacute;n inicio <input type="color" id="themeButtonStartColor" value="#ff4f93" oninput="readPageThemeForm()" /></label>
+                <label>Bot&oacute;n final <input type="color" id="themeButtonEndColor" value="#ff8157" oninput="readPageThemeForm()" /></label>
+                <label>Color de acento <input type="color" id="themeAccentColor" value="#ff4f93" oninput="readPageThemeForm()" /></label>
+                <label>Texto principal <input type="color" id="themeTextColor" value="#2a1714" oninput="readPageThemeForm()" /></label>
+                <label>Tarjetas / paneles <input type="color" id="themeCardColor" value="#ffffff" oninput="readPageThemeForm()" /></label>
+                <label>Iconos flotantes <input type="color" id="themeIconColor" value="#fff2f7" oninput="readPageThemeForm()" /></label>
+              </div>
+              <div class="page-theme-preview" id="pageThemePreview">
+                <div class="preview-topbar">
+                  <strong>Padua<span>Tech</span></strong>
+                  <small>Inicio &middot; Men&uacute; &middot; Contacto</small>
+                </div>
+                <div class="preview-card">
+                  <span>Vista previa</span>
+                  <h3>Tus productos favoritos</h3>
+                  <p>As&iacute; se ver&aacute;n fondo, paneles, texto y botones.</p>
+                  <button type="button">Agregar al carrito</button>
+                </div>
+                <div class="preview-floating">🛒</div>
+              </div>
+            </div>
+            <div id="pageSettingsMsg" class="page-settings-msg"></div>
+            <div class="page-theme-actions">
+              <button class="btn-license" onclick="saveSettings('page')">💾 Guardar colores</button>
+              <button class="btn-license btn-license-cancel" type="button" onclick="resetPageTheme()">Restaurar colores originales</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="admin-section" id="users">
+          <div class="table-card">
+            <div class="orders-toolbar">
+              <span>Usuarios registrados</span>
+            </div>
+            <div id="usersTableContainer">
+              <table class="orders-table" id="usersTable">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Usuario</th>
+                    <th>Correo</th>
+                    <th>Estado</th>
+                    <th>Plataforma</th>
+                    <th>&Uacute;ltima actividad</th>
+                    <th>Fecha de registro</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody id="usersTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="admin-section" id="license">
+          <div class="table-card">
+            <div class="orders-toolbar">
+              <span>Gestión de licencia</span>
+            </div>
+            <div id="licenseStatus" style="margin-bottom:16px;">
+              <p style="color:#766d86;">Presiona "Administrar licencia" para iniciar sesión con credenciales de licencia.</p>
+            </div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;">
+              <button class="btn-license" onclick="openLicenseAuth()">🔐 Administrar licencia</button>
+              <button class="btn-license btn-license-cancel" id="btnRevokeLicense" style="display:none;background:linear-gradient(135deg,#e74c3c,#c0392b);" onclick="openRevokeConfirm()">🗑 Cancelar licencia</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+</div>
+
+<div class="modal-overlay" id="authModal">
+  <div class="modal-box">
+    <h2>Autenticación requerida</h2>
+    <p style="margin-bottom:14px;color:#555;">Ingresa credenciales de administrador para eliminar producto.</p>
+    <label>Usuario</label>
+    <input type="text" id="authUser" placeholder="admin" style="margin-bottom:10px;" />
+    <label>Contraseña</label>
+    <input type="password" id="authPass" placeholder="contraseña" />
+    <p id="authError" style="color:#e74c3c;font-size:13px;margin-top:8px;display:none;">Credenciales incorrectas</p>
+    <div class="modal-actions">
+      <button class="btn-modal-cancel" onclick="closeAuthModal()">Cancelar</button>
+      <button class="btn-modal-confirm" onclick="confirmDeleteProduct()">Eliminar</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="cashModal">
+  <div class="modal-box">
+    <h2>Completar pedido <span id="modalOrderId"></span></h2>
+    <p>Total: <strong id="modalTotal"></strong></p>
+    <label>Efectivo recibido:</label>
+    <input type="number" id="cashInput" step="0.01" min="0" placeholder="0.00" autofocus />
+    <p class="change-display" id="changeDisplay"></p>
+    <div class="modal-actions">
+      <button class="btn-modal-cancel" onclick="closeCashModal()">Cancelar</button>
+      <button class="btn-modal-confirm" id="confirmCashBtn" onclick="confirmCash()">Confirmar pago</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="adminOrderModal">
+  <div class="modal-box admin-order-modal-box">
+    <h2>Hacer pedido</h2>
+    <p style="margin-bottom:14px;color:#555;">Crea un pedido desde gestión con el nombre que quieras. No se permite repetir un cliente con pedido activo.</p>
+    <label>Nombre del cliente</label>
+    <input type="text" id="adminOrderCustomer" placeholder="Ej. Juan, entrega local, cliente mostrador" style="margin-bottom:12px;" />
+    <div id="adminOrderProducts" class="admin-order-products"></div>
+    <div class="admin-order-total-card">
+      <strong>Total: <span id="adminOrderTotal">$0.00</span></strong>
+      <div id="adminOrderSummary" style="font-size:13px;color:#766d86;margin-top:6px;">Sin productos</div>
+    </div>
+    <p id="adminOrderMsg" style="font-size:13px;margin-top:10px;"></p>
+    <div class="modal-actions">
+      <button class="btn-modal-cancel" onclick="closeAdminOrderModal()">Cancelar</button>
+      <button class="btn-modal-confirm" id="adminOrderCreateBtn" onclick="createAdminOrder()">Crear pedido</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="licenseAuthModal">
+  <div class="modal-box" style="width:400px;">
+    <h2>🔐 Autenticación de licencia</h2>
+    <p style="margin-bottom:14px;color:#555;">Ingresa las credenciales de licencia para administrar.</p>
+    <label>Usuario</label>
+    <input type="text" id="licenseUser" placeholder="usuario" style="margin-bottom:10px;" />
+    <label>Contraseña</label>
+    <input type="password" id="licensePass" placeholder="contraseña" />
+    <p id="licenseAuthError" style="color:#e74c3c;font-size:13px;margin-top:8px;display:none;">Credenciales incorrectas</p>
+    <div class="modal-actions">
+      <button class="btn-modal-cancel" onclick="closeLicenseAuthModal()">Cancelar</button>
+      <button class="btn-modal-confirm" onclick="confirmLicenseAuth()">Ingresar</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="licenseUploadModal">
+  <div class="modal-box" style="width:480px;">
+    <h2>📄 Cargar licencia</h2>
+    <p style="margin-bottom:14px;color:#555;">Selecciona el archivo .lic o pega el contenido manualmente.</p>
+    <div style="margin-bottom:12px;">
+      <label style="display:inline-block;padding:10px 18px;background:#6c5ce7;color:#fff;border-radius:10px;cursor:pointer;font-size:14px;">
+        📁 Seleccionar archivo .lic
+        <input type="file" id="licenseFileInput" accept=".lic" style="display:none;" onchange="handleLicenseFile(event)" />
+      </label>
+      <span id="fileNameDisplay" style="margin-left:10px;font-size:13px;color:#766d86;"></span>
+    </div>
+    <textarea id="licenseContent" rows="8" style="width:100%;padding:12px;border:1px solid #e5ddeb;border-radius:14px;font-family:monospace;font-size:12px;resize:vertical;" placeholder='{"ExpiryDate":"...","IssuedAt":"...","Signature":"..."}'></textarea>
+    <div id="licenseUploadResult" style="margin-top:10px;font-size:13px;font-weight:800;"></div>
+    <div class="modal-actions">
+      <button class="btn-modal-cancel" onclick="closeLicenseUploadModal()">Cancelar</button>
+      <button class="btn-modal-confirm" onclick="uploadLicense()">Cargar</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="revokeConfirmModal">
+  <div class="modal-box" style="width:400px;">
+    <h2>🗑 Cancelar licencia</h2>
+    <p style="margin-bottom:14px;color:#555;">Ingresa las credenciales de licencia para confirmar la cancelación.</p>
+    <label>Usuario</label>
+    <input type="text" id="revokeUser" placeholder="usuario" style="margin-bottom:10px;" />
+    <label>Contraseña</label>
+    <input type="password" id="revokePass" placeholder="contraseña" />
+    <p id="revokeError" style="color:#e74c3c;font-size:13px;margin-top:8px;display:none;">Credenciales incorrectas</p>
+    <div class="modal-actions">
+      <button class="btn-modal-cancel" onclick="closeRevokeConfirm()">Cancelar</button>
+      <button class="btn-modal-confirm" style="background:linear-gradient(135deg,#e74c3c,#c0392b);" onclick="confirmRevoke()">Cancelar licencia</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="imageUploadModal">
+  <div class="modal-box" style="width:420px;">
+    <h2>📷 Cambiar imagen</h2>
+    <p id="imageUploadProductName" style="margin-bottom:14px;color:#555;">Producto</p>
+    <div style="margin-bottom:14px;">
+      <label style="display:inline-block;padding:12px 20px;background:#6c5ce7;color:#fff;border-radius:10px;cursor:pointer;font-size:14px;">
+        📁 Seleccionar imagen
+        <input type="file" id="imageFileInput" accept="image/*" style="display:none;" />
+      </label>
+      <span id="imageFileName" style="margin-left:10px;font-size:13px;color:#766d86;"></span>
+    </div>
+    <img id="imagePreview" style="width:100%;max-height:200px;object-fit:contain;border-radius:12px;background:#f5f0ff;display:none;margin-bottom:12px;" />
+    <div id="imageUploadResult" style="margin-top:10px;font-size:13px;font-weight:800;"></div>
+    <div class="modal-actions">
+      <button class="btn-modal-cancel" onclick="closeImageUpload()">Cancelar</button>
+      <button class="btn-modal-confirm" id="btnUploadImage" onclick="uploadImage()">Subir</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="editModal">
+  <div class="modal-box" style="width:500px;">
+    <h2>✏️ Editar producto</h2>
+    <p id="editProductTitle" style="margin-bottom:14px;color:#555;"></p>
+    <form id="editForm" onsubmit="saveEditProduct(event)">
+      <div class="form-row">
+        <input type="text" id="editName" placeholder="Nombre" required />
+        <input type="number" id="editPrice" placeholder="Precio" step="0.01" required />
+        <select id="editCategory"></select>
+      </div>
+      <div class="form-row">
+        <input type="text" id="editDesc" placeholder="Descripción" />
+        <input type="text" id="editBadge" placeholder="Etiqueta (ej. Nuevo)" />
+      </div>
+      <div class="form-row">
+        <textarea id="editCustomizations" class="product-customization-input" placeholder="Personalizaciones, una por línea. Ej: Grafito, 256 GB, correa negra"></textarea>
+      </div>
+      <div class="form-row" style="align-items:center;gap:12px;">
+        <img id="editImagePreview" style="width:80px;height:80px;object-fit:cover;border-radius:10px;background:#f5f0ff;display:none;" />
+        <div>
+          <label style="display:inline-block;padding:8px 16px;background:#e8e0ff;color:#6c5ce7;border-radius:10px;cursor:pointer;font-size:13px;font-weight:600;">
+            📷 Cambiar imagen
+            <input type="file" id="editImageFile" accept="image/*" style="display:none;" />
+          </label>
+          <span id="editImageName" style="margin-left:8px;font-size:12px;color:#766d86;"></span>
+        </div>
+      </div>
+      <div class="form-row">
+        <label><input type="checkbox" id="editFeatured" /> Destacado</label>
+        <label><input type="checkbox" id="editAvailable" checked /> Disponible</label>
+        <input type="number" id="editStock" placeholder="Stock" step="1" min="0" style="width:100px;" />
+      </div>
+      <div id="editError" style="color:#e74c3c;font-size:13px;margin-top:8px;display:none;"></div>
+      <div class="modal-actions" style="margin-top:14px;">
+        <button type="button" class="btn-modal-cancel" onclick="closeEditModal()">Cancelar</button>
+        <button type="submit" class="btn-modal-confirm">Guardar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="modal-overlay" id="deleteHistoryModal">
+  <div class="modal-box" style="width:420px;">
+    <h2>🗑 Eliminar historial</h2>
+    <p style="margin-bottom:14px;color:#555;">Esta acción eliminará todos los pedidos completados del historial. Se recomienda descargar el historial antes de eliminarlo.</p>
+    <p style="margin-bottom:14px;color:#e74c3c;font-weight:700;">⚠ Esta acción no se puede deshacer.</p>
+    <div class="modal-actions">
+      <button class="btn-modal-cancel" onclick="closeDeleteHistoryModal()">Cancelar</button>
+      <button class="btn-modal-confirm" style="background:linear-gradient(135deg,#e74c3c,#c0392b);" onclick="confirmDeleteHistory()">Eliminar todo</button>
+    </div>
+  </div>
+</div>
+
+<!-- Notificación toast para selección de carpeta -->
+<div id="historyPathToast" style="position:fixed;top:20px;right:20px;z-index:10000;background:white;padding:20px;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,0.15);max-width:350px;display:none;">
+  <h3 style="margin:0 0 10px 0;color:#4a3c3a;font-size:16px;">💾 Guardado automático</h3>
+  <p style="margin:0 0 15px 0;color:#766d86;font-size:13px;">En computadora selecciona una sola vez la carpeta. En celular usa este bot&oacute;n para descargar los hist&oacute;ricos a Descargas.</p>
+  <button class="btn-license" onclick="selectHistoryFolder()" style="width:100%;padding:12px;">📁 Configurar / Descargar</button>
+  <p id="historyPathMsg" style="font-size:12px;color:#766d86;text-align:center;margin-top:10px;"></p>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
+<script src="js/admin.js?v=20260715-customizations"></script>
+<script>
+function checkServer() {
+  var b = document.getElementById("offlineBanner");
+  fetch("/api/v1/Products?_=" + Date.now()).
+    then(function(r) { if (r.ok) b.style.display="none"; else b.style.display="block"; }).
+    catch(function() { b.style.display="block"; });
+}
+setInterval(checkServer, 10000);
+checkServer();
+</script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+.git
+.gitignore
+.railway
+**/bin
+**/obj
+**/*.db
+**/*.db-shm
+**/*.db-wal
+**/*.log
+**/*.lic
+.env

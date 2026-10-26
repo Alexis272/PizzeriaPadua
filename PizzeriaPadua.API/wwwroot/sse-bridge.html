@@ -1,0 +1,25 @@
+﻿<!DOCTYPE html>
+<html><body><script>
+var evtSource = new EventSource("/api/v1/Events/stream");
+evtSource.addEventListener("order-updated", function(e) {
+  try {
+    var data = JSON.parse(e.data);
+    if (window.ReactNativeWebView && window.ReactNativeWebView.postMessage) {
+      window.ReactNativeWebView.postMessage(JSON.stringify({
+        type: "order-updated",
+        store: "Pizzería Padua",
+        orderId: data.orderId,
+        customerName: data.customerName || "Cliente",
+        status: data.status,
+        statusLabel: data.status === 1 ? "preparando" : data.status === 4 ? "listo" : data.status === 2 ? "entregado" : "actualizado",
+        date: new Date().toISOString()
+      }));
+    }
+  } catch(err) {}
+});
+evtSource.addEventListener("connected", function() {
+  if (window.ReactNativeWebView && window.ReactNativeWebView.postMessage) {
+    window.ReactNativeWebView.postMessage(JSON.stringify({type: "sse-connected"}));
+  }
+});
+</script></body></html>

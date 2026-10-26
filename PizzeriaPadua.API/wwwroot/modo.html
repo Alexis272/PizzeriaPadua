@@ -1,0 +1,168 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pizzería Padua | Modo Dia/Noche</title>
+  <link rel="stylesheet" href="css/apple-tokens.css" />
+  <link rel="stylesheet" href="css/modo.css" />
+  <link rel="stylesheet" href="css/pizzeriapadua.css?v=20260717-gallery" />
+</head>
+<body data-theme="day">
+
+<header class="header">
+  <div class="logo">Padua<span>Tech</span></div>
+
+  <nav>
+    <a href="#inicio">Inicio</a>
+    <a href="#menu">Productos</a>
+    <a href="#promos">Ofertas</a>
+    <a href="#contacto">Contacto</a>
+  </nav>
+
+  <div class="header-actions">
+    <button class="theme-toggle" id="themeToggle" type="button" aria-label="Cambiar a modo noche">
+      <span class="theme-icon" id="themeIcon">&#9728;</span>
+    </button>
+    <div class="cart-icon" onclick="toggleCart()">
+      &#128722; <span id="cartCount">0</span>
+    </div>
+  </div>
+</header>
+
+<div class="cart-fab" onclick="toggleCart()">
+  &#128722; <span id="cartCountFab">0</span>
+</div>
+
+<section id="inicio" class="hero">
+  <div class="hero-text">
+    <span class="hero-kicker">Tecnolog&iacute;a para tu d&iacute;a</span>
+    <h1>M&aacute;s que gadgets, una <span>experiencia.</span></h1>
+    <p>Celulares, relojes, audio y accesorios para acompa&ntilde;ar todos tus d&iacute;as.</p>
+
+    <div class="hero-buttons">
+      <a href="#menu" class="btn">Ver productos <span>&rarr;</span></a>
+      <a href="#promos" class="btn secondary">Promociones</a>
+    </div>
+
+    <p class="rating">&#11088;&#11088;&#11088;&#11088;&#11088; 4.8 | +2,500 clientes felices</p>
+  </div>
+
+  <div class="hero-img">
+    <img src="img/hero-tech.jpg" alt="Selecci&oacute;n de tecnolog&iacute;a Pizzería Padua" />
+    <div class="hero-product-card">
+      <span class="card-icon">&#128241;</span>
+      <div>
+        <strong>Kit favorito</strong>
+        <p>Tecnolog&iacute;a esencial para conectar, crear y disfrutar.</p>
+      </div>
+      <span class="card-price">$1,499</span>
+    </div>
+  </div>
+</section>
+
+<nav class="cat-float" id="catFloat" aria-label="Categorias del menu">
+  <div class="cat-active" data-category=""><span>&#127775;</span><p>Todos</p></div>
+  <div data-category="1"><span>&#129380;</span><p>Celulares</p></div>
+  <div data-category="2"><span>&#129374;</span><p>Relojes</p></div>
+  <div data-category="3"><span>&#127790;</span><p>Audio</p></div>
+  <div data-category="4"><span>&#127849;</span><p>Carga</p></div>
+  <div data-category="5"><span>&#127839;</span><p>Accesorios</p></div>
+  <div data-category="6"><span>&#127848;</span><p>Ofertas</p></div>
+  <div data-category="7"><span>&#127873;</span><p>Combos</p></div>
+</nav>
+
+<section id="promos" class="promos">
+  <div class="promo-track">
+    <div class="promo dark">
+      <h3>Happy Hour</h3>
+      <h2>Hasta 12 MSI</h2>
+      <p>Lunes a viernes de 3:00 p.m. a 6:00 p.m.</p>
+    </div>
+    <div class="promo pink">
+      <h3>Combo del d&iacute;a</h3>
+      <h2>$149</h2>
+      <p>Celulares y relojes seleccionados</p>
+    </div>
+    <div class="promo light">
+      <h3>Cumplea&ntilde;eros</h3>
+      <h2>15% OFF</h2>
+      <p>Presentando tu INE.</p>
+    </div>
+    <div class="promo dark" aria-hidden="true">
+      <h3>Happy Hour</h3>
+      <h2>Hasta 12 MSI</h2>
+      <p>Lunes a viernes de 3:00 p.m. a 6:00 p.m.</p>
+    </div>
+    <div class="promo pink" aria-hidden="true">
+      <h3>Combo del d&iacute;a</h3>
+      <h2>$149</h2>
+      <p>Celulares y relojes seleccionados</p>
+    </div>
+    <div class="promo light" aria-hidden="true">
+      <h3>Cumplea&ntilde;eros</h3>
+      <h2>15% OFF</h2>
+      <p>Presentando tu INE.</p>
+    </div>
+  </div>
+</section>
+
+<section id="menu" class="products">
+  <h2>Productos destacados</h2>
+  <div class="menu-layout">
+    <div class="menu-products">
+      <div class="product-grid" id="productGrid"></div>
+    </div>
+    <aside class="cart-sidebar" id="cartSidebar">
+      <div class="cart-header">
+        <h2>Tu pedido</h2>
+        <span class="cart-close" onclick="toggleCart()">&times;</span>
+      </div>
+      <div id="orderList"></div>
+      <div class="cart-footer">
+        <h3>Total: $<span id="total">0</span></h3>
+        <div class="order-customer">
+          <input type="text" id="customerName" placeholder="Tu nombre" />
+        </div>
+        <button class="btn" onclick="placeOrder()">Enviar pedido</button>
+        <p id="orderMsg" style="margin-top:10px;font-size:14px;"></p>
+      </div>
+    </aside>
+    <div class="cart-overlay" id="cartOverlay" onclick="toggleCart()"></div>
+  </div>
+</section>
+
+<section class="reviews">
+  <h2>Lo que dicen nuestros clientes</h2>
+
+  <div class="review-grid">
+    <div class="review">
+      <p>&#11088;&#11088;&#11088;&#11088;&#11088;</p>
+      <p>"La compra fue clara y el equipo lleg&oacute; perfecto."</p>
+      <strong>Maria G.</strong>
+    </div>
+
+    <div class="review">
+      <p>&#11088;&#11088;&#11088;&#11088;&#11088;</p>
+      <p>"Me ayudaron a elegir justo lo que necesitaba."</p>
+      <strong>Carlos R.</strong>
+    </div>
+
+    <div class="review">
+      <p>&#11088;&#11088;&#11088;&#11088;&#11088;</p>
+      <p>"Muy r&aacute;pido el servicio."</p>
+      <strong>Daniela M.</strong>
+    </div>
+  </div>
+</section>
+
+<footer id="contacto">
+  <div class="logo">Padua<span>Tech</span></div>
+  <p>Tecnolog&iacute;a confiable con atenci&oacute;n cercana.</p>
+  <p>&#128205; Ubicaci&oacute;n | &#128222; 55 1234 5678 | &#9200; 12:00 p.m. - 10:00 p.m.</p>
+</footer>
+
+<script src="js/script.js?v=20260714-api-pathbase"></script>
+<script src="js/modo.js"></script>
+</body>
+</html>

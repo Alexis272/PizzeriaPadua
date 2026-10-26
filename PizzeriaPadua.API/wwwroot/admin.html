@@ -1,0 +1,159 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Acceso Administrativo | Pizzería Padua</title>
+  <link rel="stylesheet" href="css/styles.css" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 16% 18%, rgba(255, 129, 177, 0.34), transparent 28%),
+        radial-gradient(circle at 84% 12%, rgba(255, 211, 83, 0.28), transparent 26%),
+        linear-gradient(135deg, #fff8ef 0%, #fff0f6 52%, #f7f0ff 100%);
+      font-family: system-ui, sans-serif;
+    }
+    body::before,
+    body::after {
+      content: "";
+      position: fixed;
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      filter: blur(4px);
+      opacity: 0.65;
+      animation: floatBlob 8s ease-in-out infinite alternate;
+      pointer-events: none;
+    }
+    body::before {
+      left: -70px;
+      bottom: 10%;
+      background: rgba(255, 79, 147, 0.16);
+    }
+    body::after {
+      right: -80px;
+      top: 18%;
+      background: rgba(255, 190, 77, 0.18);
+      animation-delay: -2s;
+    }
+    .login-box {
+      position: relative;
+      z-index: 1;
+      width: 380px;
+      max-width: 100%;
+      padding: 42px;
+      text-align: center;
+      background: rgba(255, 255, 255, 0.86);
+      border: 1px solid rgba(255, 255, 255, 0.75);
+      border-radius: 28px;
+      box-shadow: 0 24px 70px rgba(93, 47, 32, 0.16);
+      backdrop-filter: blur(18px);
+      animation: riseIn 0.7s ease both;
+    }
+    .login-box .logo {
+      font-size: 30px;
+      font-weight: 900;
+      margin-bottom: 8px;
+    }
+    .login-box .logo span { color: #ff4f93; }
+    .login-box p { color: #856b69; margin-bottom: 25px; font-size: 14px; }
+    .login-box input {
+      width: 100%;
+      padding: 15px 18px;
+      border: 1px solid #f0d8d1;
+      border-radius: 16px;
+      font-size: 16px;
+      outline: none;
+      margin-bottom: 14px;
+      background: #fffaf7;
+      transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+    }
+    .login-box input:focus {
+      border-color: #ff4f93;
+      box-shadow: 0 0 0 4px rgba(255, 79, 147, 0.12);
+      transform: translateY(-1px);
+    }
+    .login-box button {
+      width: 100%;
+      padding: 15px;
+      border: none;
+      border-radius: 16px;
+      background: linear-gradient(135deg, #ff4f93, #ff8a4f);
+      color: #fff;
+      font-size: 16px;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 14px 30px rgba(255, 79, 147, 0.28);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .login-box button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 18px 36px rgba(255, 79, 147, 0.34);
+    }
+    .login-box .error { color: #e23c6b; font-size: 13px; margin-top: 10px; }
+    .login-box .back-link {
+      display: block;
+      margin-top: 18px;
+      font-size: 13px;
+      color: #8f7774;
+      text-decoration: none;
+      font-weight: 700;
+    }
+    .login-box .back-link:hover { color: #ff4f93; }
+    @keyframes riseIn {
+      from { opacity: 0; transform: translateY(18px) scale(0.98); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    @keyframes floatBlob {
+      to { transform: translate3d(20px, -18px, 0) scale(1.08); }
+    }
+  </style>
+  <link rel="stylesheet" href="css/apple-tokens.css" />
+  <link rel="stylesheet" href="css/admin-pizzeriapadua.css?v=20260717-gallery" />
+</head>
+<body>
+  <div class="login-box">
+    <div class="logo">Pizzería<span>Padua</span></div>
+    <p>Acceso administrativo</p>
+    <input type="text" id="user" placeholder="Usuario" autocomplete="off" />
+    <input type="password" id="pass" placeholder="Contraseña" />
+    <button class="admin-submit" type="button" onclick="login()">Entrar</button>
+    <p class="error" id="loginError"></p>
+    <a href="/Pizzería Padua/" class="back-link">← Volver a la tienda</a>
+  </div>
+  <script>
+    async function login() {
+      const u = document.getElementById("user").value.trim();
+      const p = document.getElementById("pass").value;
+      const error = document.getElementById("loginError");
+      error.textContent = "";
+
+      try {
+        const response = await fetch("/Pizzería Padua/api/v1/License/auth", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username: u, password: p })
+        });
+
+        if (!response.ok) {
+          error.textContent = "Usuario o contraseña incorrectos.";
+          return;
+        }
+
+        sessionStorage.setItem("adminAuthToken", btoa(u + ":" + p));
+        document.cookie = "auth=1; path=/Pizzería Padua; max-age=3600; SameSite=Strict";
+        window.location.href = "/Pizzería Padua/gestion.html";
+      } catch {
+        error.textContent = "No se pudo conectar con el servidor.";
+      }
+    }
+    document.addEventListener("keydown", e => { if (e.key === "Enter") login(); });
+  </script>
+</body>
+</html>
