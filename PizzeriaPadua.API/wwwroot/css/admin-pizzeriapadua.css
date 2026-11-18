@@ -627,6 +627,116 @@ body, html { background: var(--odoo-bg) !important; }
   .launcher-mode .module-card .module-title { font-size: 13px; }
 }
 
+/* Lenguaje visual compartido por todos los módulos. */
+.module-mode {
+  --module-accent: #7b2859;
+  --module-accent-dark: #5c1d43;
+  --module-purple: #6438a7;
+  --module-lavender: #f3effa;
+  --module-line: #d9d2df;
+  --module-ink: #211d25;
+  background: #f7f5f9 !important;
+}
+.module-mode .content,
+.module-mode .main-grid { background: #f7f5f9 !important; }
+.module-mode .main-grid { padding: 28px 34px !important; }
+.module-mode .module-header { border-bottom-color: var(--module-line) !important; }
+.module-mode .module-header h2,
+.module-mode .orders-toolbar > span,
+.module-mode h3,
+.module-mode h2 { color: var(--module-ink) !important; }
+.module-mode .module-header .back-btn {
+  border: 1px solid var(--module-line) !important;
+  color: var(--module-accent) !important;
+  background: #fff !important;
+  box-shadow: 0 2px 5px rgba(61,36,70,.06) !important;
+}
+.module-mode .module-header .back-btn:hover {
+  color: #fff !important;
+  background: var(--module-accent) !important;
+}
+.module-mode .table-card,
+.module-mode .form-card,
+.module-mode .stats-card,
+.module-mode .settings-card,
+.module-mode .add-form,
+.module-mode .settings-promos-box,
+.module-mode .page-theme-preview,
+.module-mode .modal-box {
+  border: 1px solid var(--module-line) !important;
+  border-radius: 12px !important;
+  background: #fff !important;
+  box-shadow: 0 5px 16px rgba(61,36,70,.07) !important;
+}
+.module-mode .orders-toolbar { border-bottom-color: var(--module-line) !important; }
+.module-mode input,
+.module-mode select,
+.module-mode textarea { border-color: var(--module-line) !important; background: #fff !important; }
+.module-mode input:focus,
+.module-mode select:focus,
+.module-mode textarea:focus {
+  border-color: var(--module-accent) !important;
+  outline-color: rgba(123,40,89,.16) !important;
+}
+.module-mode button,
+.module-mode .btn-license,
+.module-mode .btn-save,
+.module-mode .btn-primary,
+.module-mode button[type="submit"] {
+  border-color: var(--module-accent) !important;
+  color: #fff !important;
+  background: var(--module-accent) !important;
+}
+.module-mode button:hover,
+.module-mode .btn-license:hover,
+.module-mode .btn-save:hover,
+.module-mode .btn-primary:hover,
+.module-mode button[type="submit"]:hover {
+  color: #fff !important;
+  background: var(--module-accent-dark) !important;
+}
+.module-mode .btn-modal-cancel,
+.module-mode .btn-license-cancel {
+  color: var(--module-ink) !important;
+  background: #eeeaf2 !important;
+  border-color: var(--module-line) !important;
+}
+.module-mode .filter-btn.active,
+.module-mode .product-subtab.active,
+.module-mode .day-btn.active {
+  color: #fff !important;
+  background: var(--module-purple) !important;
+}
+.module-mode .order-card,
+.module-mode .history-order,
+.module-mode .category-admin-item,
+.module-mode .admin-product-card,
+.module-mode .promo-editor,
+.module-mode .stat-box {
+  border-color: var(--module-line) !important;
+  border-radius: 10px !important;
+  background: #fbfaff !important;
+  box-shadow: none !important;
+}
+.module-mode .order-card:hover,
+.module-mode .admin-product-card:hover {
+  border-color: var(--module-accent) !important;
+  box-shadow: 0 7px 16px rgba(61,36,70,.1) !important;
+}
+.module-mode .order-card::before {
+  background: linear-gradient(180deg, var(--module-accent), var(--module-purple)) !important;
+}
+.module-mode .admin-product-card img { background: #f5f0fa !important; }
+.module-mode .stat-value,
+.module-mode .admin-order-price { color: var(--module-accent) !important; }
+.module-mode table th { color: #5e5364 !important; background: var(--module-lavender) !important; }
+.module-mode table td { border-color: var(--module-line) !important; }
+.module-mode .add-form summary { color: var(--module-ink) !important; background: var(--module-lavender) !important; }
+.module-mode .modal-overlay { background: rgba(48,27,49,.34) !important; }
+@media (max-width: 800px) {
+  .module-mode .main-grid { padding: 20px 16px !important; }
+}
+
 /* Login */
 body:has(> .login-box) {
   min-height: 100vh;
