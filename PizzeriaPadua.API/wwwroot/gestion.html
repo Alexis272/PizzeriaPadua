@@ -187,13 +187,7 @@
             <div class="orders-toolbar">
               <span>Pedidos activos</span>
               <div style="display:flex;gap:10px;margin-left:auto;">
-                <button class="btn-license" onclick="openAdminOrderModal()" style="background:linear-gradient(135deg,#27ae60,#2ecc71);">➕ Nueva Venta</button>
-                <select id="posFilter" onchange="loadOrders()">
-                  <option value="all">Todos los pedidos activos</option>
-                  <option value="0">Pendientes</option>
-                  <option value="1">En preparación</option>
-                  <option value="4">Pendientes de entrega</option>
-                </select>
+                <button class="btn-license pos-active-orders-button" onclick="toggleActiveOrdersPanel()">▣ Pedidos activos</button>
               </div>
             </div>
             <div class="pos-terminal-layout" style="display:grid;grid-template-columns:1fr 380px;gap:16px;">
@@ -241,7 +235,13 @@
                 <div id="posMsg" style="font-size:12px;margin-top:8px;text-align:center;"></div>
               </div>
             </div>
-            <div class="orders-list" id="ordersList" style="margin-top:16px;"></div>
+            <div id="activeOrdersPanel" class="pos-active-panel" aria-hidden="true">
+              <div class="pos-active-panel-head">
+                <strong>Pedidos activos</strong>
+                <button type="button" onclick="toggleActiveOrdersPanel()">Cerrar</button>
+              </div>
+              <div class="orders-list" id="ordersList"></div>
+            </div>
           </div>
         </div>
 

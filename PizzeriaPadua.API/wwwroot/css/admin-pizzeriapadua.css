@@ -737,6 +737,54 @@ body, html { background: var(--odoo-bg) !important; }
   .module-mode .main-grid { padding: 20px 16px !important; }
 }
 
+/* El catálogo ocupa todo el lado izquierdo; solo cada producto es una tarjeta. */
+#pos .pos-terminal-layout > div:first-child {
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+#pos .pos-terminal-layout > div:first-child > div:first-child {
+  padding: 0 0 14px;
+}
+#pos .pos-active-orders-button {
+  min-height: 42px;
+  padding-inline: 20px !important;
+}
+#pos .pos-active-panel {
+  display: none;
+  margin-top: 18px;
+  padding: 18px;
+  border: 1px solid #d9d2df;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 8px 22px rgba(61,36,70,.1);
+}
+#pos .pos-active-panel.show { display: block; }
+#pos .pos-active-panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+  color: #211d25;
+  font-size: 20px;
+}
+#pos .pos-active-panel-head button {
+  min-height: 34px;
+  padding: 6px 14px !important;
+  color: #7b2859 !important;
+  background: #f3effa !important;
+  border: 1px solid #d9d2df !important;
+}
+#pos .pos-active-panel .orders-list {
+  max-height: 430px;
+  overflow-y: auto;
+}
+#pos .pos-active-panel .order-card {
+  background: #fbfaff !important;
+}
+
 /* Login */
 body:has(> .login-box) {
   min-height: 100vh;

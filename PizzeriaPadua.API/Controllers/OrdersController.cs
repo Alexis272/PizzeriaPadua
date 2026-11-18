@@ -34,6 +34,14 @@ namespace PizzeriaPadua.API.Controllers
             public AdminOrderItemRequest[] Items { get; set; } = Array.Empty<AdminOrderItemRequest>();
         }
 
+        public class EditAdminOrderRequest
+        {
+            public string CustomerName { get; set; } = "";
+            public string? Channel { get; set; }
+            public int? TableId { get; set; }
+            public AdminOrderItemRequest[] Items { get; set; } = Array.Empty<AdminOrderItemRequest>();
+        }
+
         public OrdersController(PizzeriaPaduaContext context, ILogger<OrdersController> logger, EventBroadcaster broadcaster, AdminAuthService adminAuth, UserSessionStore sessions)
         {
             _context = context;
@@ -301,6 +309,82 @@ namespace PizzeriaPadua.API.Controllers
             {
                 _logger.LogError("Error adding admin order: {Error}", ex);
                 return BadRequest(new { success = false, message = "No se pudo crear el pedido" });
+            }
+        }
+
+        [HttpPost("admin/edit/{id:int}")]
+        public async Task<IActionResult> EditAdminOrder(int id, [FromBody] EditAdminOrderRequest model)
+        {
+            try
+            {
+                var order = await _context.Orders
+                    .Include(o => o.OrderItems)
+                    .FirstOrDefaultAsync(o => o.OrderId == id);
+
+                if (order == null)
+                    return NotFound(new { success = false, message = "Pedido no encontrado" });
+
+                if (order.Status != OrderStatusEnum.Pending && order.Status != OrderStatusEnum.InProgress)
+                    return BadRequest(new { success = false, message = "Solo se pueden editar pedidos activos." });
+
+                var items = model.Items?
+                    .Where(i => i.ProductId > 0 && i.Quantity > 0)
+                    .ToList() ?? new List<AdminOrderItemRequest>();
+                if (items.Count == 0)
+                    return BadRequest(new { success = false, message = "El pedido debe tener al menos un producto." });
+
+                var productIds = items.Select(i => i.ProductId).Distinct().ToList();
+                var products = await _context.Products
+                    .Where(p => productIds.Contains(p.ProductId))
+                    .ToDictionaryAsync(p => p.ProductId);
+
+                foreach (var item in items)
+                {
+                    if (!products.TryGetValue(item.ProductId, out var product) || !product.IsAvailable)
+                        return BadRequest(new { success = false, message = "Uno de los productos no está disponible." });
+                }
+
+                _context.OrderItems.RemoveRange(order.OrderItems);
+                order.OrderItems.Clear();
+                order.CustomerName = string.IsNullOrWhiteSpace(model.CustomerName) ? "Cliente Mostrador" : model.CustomerName.Trim();
+                order.Channel = string.IsNullOrWhiteSpace(model.Channel) ? "Mostrador" : model.Channel;
+                order.TableId = model.TableId;
+                order.SubtotalAmount = 0;
+                order.TaxAmount = 0;
+                order.TotalAmount = 0;
+                order.ModifiedAt = DateTime.UtcNow;
+
+                foreach (var item in items)
+                {
+                    var product = products[item.ProductId];
+                    var customizations = (item.Customizations ?? "").Trim();
+                    var unitPrice = Math.Max(0m, product.Price + ParseCustomizationDelta(customizations));
+                    var subtotal = unitPrice * item.Quantity;
+                    var tax = decimal.Round(subtotal - (subtotal / (1m + product.TaxRate)), 2);
+                    order.OrderItems.Add(new OrderItem
+                    {
+                        ProductId = product.ProductId,
+                        Quantity = item.Quantity,
+                        DecimalQuantity = item.Quantity,
+                        OriginalUnitPrice = product.Price,
+                        UnitPrice = unitPrice,
+                        TaxAmount = tax,
+                        Subtotal = subtotal,
+                        Customizations = customizations
+                    });
+                    order.SubtotalAmount += subtotal;
+                    order.TaxAmount += tax;
+                    order.TotalAmount += subtotal;
+                }
+
+                await _context.SaveChangesAsync();
+                NotifyOrderChanged(order);
+                return Ok(new { success = true, orderId = order.OrderId });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error editing admin order: {Error}", ex);
+                return BadRequest(new { success = false, message = "No se pudo editar el pedido." });
             }
         }
 

@@ -121,7 +121,7 @@ async function loadOrders() {
   try {
     const orders = await apiFetch(API.orders);
     sessionStorage.setItem("adminOrders", JSON.stringify(orders));
-    const filter = document.getElementById("orderFilter").value;
+  const filter = document.getElementById("orderFilter")?.value || "all";
     let active = orders.filter(o => o.status === 0 || o.status === 1 || o.status === 4);
     let filtered = filter === "all" ? active : active.filter(o => o.status == filter);
     renderOrders(filtered);
@@ -153,7 +153,8 @@ function renderOrders(orders) {
         ${o.orderItems ? o.orderItems.map(oi => renderOrderItemLine(oi)).join("") : ""}
       </div>
       <span class="order-status ${classMap[o.status] || "status-pending"}">${statusMap[o.status] || "Desconocido"}</span>
-      <div class="order-actions">
+       <div class="order-actions">
+         ${o.status === 0 || o.status === 1 ? `<button class="btn-progress" onclick="editActiveOrder(${o.orderId})">✎ Editar</button>` : ""}
         ${o.status === 0 ? `<button class="btn-progress" onclick="updateOrderStatus(${o.orderId}, 1)">En preparación</button>` : ""}
         ${o.status === 0 || o.status === 1 ? (getOrderPaymentFee(o) > 0
           ? `<button class="btn-complete" onclick="updateOrderStatus(${o.orderId}, 4)">✔ Listo para entregar</button>`
@@ -288,6 +289,38 @@ function closeAdminOrderModal() {
   adminOrderProducts = [];
   adminOrderQuantities = {};
   adminOrderCustomizations = {};
+}
+
+function toggleActiveOrdersPanel() {
+  const panel = document.getElementById("activeOrdersPanel");
+  if (!panel) return;
+  const isOpen = panel.classList.toggle("show");
+  panel.setAttribute("aria-hidden", String(!isOpen));
+  if (isOpen) loadOrders();
+}
+
+let editingOrderId = null;
+
+function editActiveOrder(orderId) {
+  const orders = JSON.parse(sessionStorage.getItem("adminOrders") || "[]");
+  const order = orders.find(item => item.orderId === orderId);
+  if (!order) return;
+
+  editingOrderId = orderId;
+  posCart = (order.orderItems || []).map(item => ({
+    productId: item.productId,
+    name: item.product?.name || `Producto #${item.productId}`,
+    price: Number(item.unitPrice || item.subtotal || 0) / Math.max(1, Number(item.quantity || 1)),
+    quantity: Number(item.quantity || 1),
+    customizations: item.customizations || ""
+  }));
+  document.getElementById("posCustomerName").value = order.customerName || "";
+  document.getElementById("posChannel").value = order.channel || "Mostrador";
+  if (document.getElementById("posTable")) document.getElementById("posTable").value = order.table?.tableId || "";
+  renderPosCart();
+  document.getElementById("posMsg").textContent = `Editando pedido #${orderId}. Guarda la cuenta para aplicar los cambios.`;
+  document.getElementById("posMsg").style.color = "#7b2859";
+  document.getElementById("activeOrdersPanel")?.classList.remove("show");
 }
 
 function parseAdminCustomizationOptions(value) {
@@ -2032,6 +2065,10 @@ function updatePosTotals() {
 
 async function posSaveOpenAccount() {
   if (posCart.length === 0) { alert("Agrega al menos un producto"); return; }
+  if (editingOrderId) {
+    await saveEditedPosOrder();
+    return;
+  }
   try {
     var customerName = document.getElementById("posCustomerName").value || "Cliente Mostrador";
     var channel = document.getElementById("posChannel").value;
@@ -2074,6 +2111,38 @@ async function posSaveOpenAccount() {
     console.error("Error:", err);
     document.getElementById("posMsg").textContent = "Error de conexión";
     document.getElementById("posMsg").style.color = "#e74c3c";
+  }
+}
+
+async function saveEditedPosOrder() {
+  const orderId = editingOrderId;
+  const payload = {
+    customerName: document.getElementById("posCustomerName").value || "Cliente Mostrador",
+    channel: document.getElementById("posChannel").value,
+    tableId: document.getElementById("posTable").value ? parseInt(document.getElementById("posTable").value) : null,
+    items: posCart.map(item => ({
+      productId: item.productId,
+      quantity: item.quantity,
+      customizations: item.customizations || ""
+    }))
+  };
+  try {
+    const res = await fetch(`/PizzeriaPadua/api/v1/Orders/admin/edit/${orderId}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    if (!res.ok || !data.success) throw new Error(data.message || "No se pudo editar el pedido");
+    editingOrderId = null;
+    posCart = [];
+    renderPosCart();
+    document.getElementById("posMsg").textContent = "Pedido actualizado correctamente.";
+    document.getElementById("posMsg").style.color = "#27ae60";
+    loadOrders();
+  } catch (err) {
+    document.getElementById("posMsg").textContent = err.message;
+    document.getElementById("posMsg").style.color = "#c0392b";
   }
 }
 
