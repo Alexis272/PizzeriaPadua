@@ -1,5 +1,6 @@
 const path = require("node:path");
 const { app, BrowserWindow, shell, session } = require("electron");
+const { autoUpdater } = require("electron-updater");
 const { resolvePaduaUrl, isAllowedNavigation } = require("./security");
 
 const PADUA_URL = resolvePaduaUrl();
@@ -8,6 +9,8 @@ let mainWindow;
 
 app.setAppUserModelId(APP_ID);
 app.commandLine.appendSwitch("disable-pinch");
+autoUpdater.autoDownload = true;
+autoUpdater.autoInstallOnAppQuit = true;
 
 function openExternalSafely(url) {
   if (/^https:\/\//i.test(url)) void shell.openExternal(url);
@@ -90,6 +93,9 @@ if (!lock) {
       callback(permission === "media");
     });
     createMainWindow();
+    if (app.isPackaged) {
+      autoUpdater.checkForUpdatesAndNotify().catch(() => {});
+    }
   });
 
   app.on("activate", () => {

@@ -1,6 +1,6 @@
 {
   "name": "pizzeria-padua-desktop",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "private": true,
   "description": "Panel de gestión de Pizzería Padua para Windows",
   "main": "src/main.js",
@@ -48,6 +48,15 @@
       "shortcutName": "Pizzería Padua Gestión",
       "runAfterFinish": true,
       "deleteAppDataOnUninstall": false
+    },
+    "publish": {
+      "provider": "github",
+      "owner": "Alexis272",
+      "repo": "PizzeriaPadua",
+      "releaseType": "release"
     }
+  },
+  "dependencies": {
+    "electron-updater": "^6.8.11"
   }
 }
