@@ -793,6 +793,8 @@ body:has(.module-mode) { overflow: hidden; }
 }
 #pos .pos-terminal-layout > div:first-child {
   min-height: 0;
+  height: 100%;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
 }
@@ -802,23 +804,51 @@ body:has(.module-mode) { overflow: hidden; }
 #pos #posProductGrid {
   flex: 1;
   min-height: 0;
+  height: 0;
   max-height: none !important;
-  overflow-y: auto !important;
+  overflow-y: scroll !important;
+  scrollbar-gutter: stable;
   overscroll-behavior: contain;
 }
 #pos .pos-terminal-layout > .table-card {
-  height: 100%;
+  align-self: center;
+  height: calc(100% - 12px);
   min-height: 0;
-  overflow: visible;
+  max-height: 100%;
+  overflow: hidden;
+  padding: 12px !important;
 }
 #pos .pos-side-panel.active {
   min-height: 0;
-  height: auto;
+  height: calc(100% - 48px);
   overflow: visible;
 }
 #pos #posOrderPanel.active {
+  display: flex;
+  flex-direction: column;
   overflow: visible;
   padding-right: 2px;
+}
+#pos #posOrderPanel > h3 {
+  flex: 0 0 auto;
+}
+#pos #posOrderPanel #posCartItems {
+  flex: 0 1 92px;
+  min-height: 70px !important;
+  margin-bottom: 8px !important;
+}
+#pos #posOrderPanel > div[style*="margin-bottom:8px"] {
+  flex: 0 0 auto;
+}
+#pos #posOrderPanel > div[style*="background:#f5f0ff"] {
+  flex: 0 0 auto;
+}
+#pos #posOrderPanel > div:nth-last-child(2) {
+  flex: 0 0 auto;
+}
+#pos #posMsg {
+  min-height: 0 !important;
+  margin-top: 3px !important;
 }
 #pos #activeOrdersPanel.active {
   display: flex;
@@ -874,7 +904,8 @@ body:has(.module-mode) { overflow: hidden; }
   #pos .pos-terminal-layout { flex: none; }
   #pos .pos-terminal-layout { height: auto; }
   #pos .pos-terminal-layout > div:first-child { min-height: 0; }
-  #pos #posProductGrid { max-height: 560px !important; }
+  #pos .pos-terminal-layout > div:first-child { height: auto; overflow: visible; }
+  #pos #posProductGrid { height: auto; max-height: 560px !important; overflow-y: auto !important; }
   #pos .pos-header-filters { grid-template-columns: 1fr; }
   #pos .pos-terminal-layout > .table-card { height: auto; overflow: visible; }
   #pos .pos-side-panel.active { height: auto; overflow: visible; }
