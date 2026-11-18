@@ -95,40 +95,39 @@
   <main class="dashboard">
 
     <aside class="sidebar">
-      <h2>🍕 PIZZERÍA<br>PADUA</h2>
+      <div class="odoo-brand">
+        <span class="odoo-brand-mark">P</span>
+        <div><strong>Padua</strong><small>Gestión empresarial</small></div>
+      </div>
+      <div class="sidebar-caption">Aplicaciones</div>
       <nav>
-        <a class="active tab-link" data-tab="dashboard" onclick="showModule('dashboard')">🏠 Inicio</a>
-        <a class="tab-link" data-tab="pos" onclick="showModule('pos')">🧾 Terminal POS</a>
-        <a class="tab-link" data-tab="openaccounts" onclick="showModule('openaccounts')">📋 Cuentas Abiertas</a>
-        <a class="tab-link" data-tab="cash" onclick="showModule('cash')">💰 Caja y Cortes</a>
-        <a class="tab-link" data-tab="daily" onclick="showModule('daily')">📊 Acumulado del Día</a>
-        <a class="tab-link" data-tab="reports" onclick="showModule('reports')">📈 Reportes</a>
-        <a class="tab-link" data-tab="executive" onclick="showModule('executive')">🎯 Panel Ejecutivo</a>
-        <a class="tab-link" data-tab="controls" onclick="showModule('controls')">🛡 Cancelaciones y Devoluciones</a>
-        <a class="tab-link" data-tab="catalog" onclick="showModule('catalog')">🍽 Catálogos</a>
-        <a class="tab-link" data-tab="config" onclick="showModule('config')">⚙ Configuración</a>
-        <a class="tab-link" data-tab="license" onclick="showModule('license')">🔐 Licencia</a>
-        <a href="/PizzeriaPadua/admin.html" onclick="sessionStorage.removeItem('adminAuthToken');document.cookie='auth=; path=/PizzeriaPadua; max-age=0';">🚪 Salir</a>
+        <a class="active tab-link" data-tab="dashboard" onclick="showModule('dashboard')"><span>⌂</span> Inicio</a>
+        <div class="nav-group-label">Ventas</div>
+        <a class="tab-link" data-tab="pos" onclick="showModule('pos')"><span>▣</span> Punto de venta</a>
+        <a class="tab-link" data-tab="openaccounts" onclick="showModule('openaccounts')"><span>▤</span> Cuentas abiertas</a>
+        <a class="tab-link" data-tab="cash" onclick="showModule('cash')"><span>＄</span> Caja y cortes</a>
+        <div class="nav-group-label">Análisis</div>
+        <a class="tab-link" data-tab="daily" onclick="showModule('daily')"><span>▥</span> Acumulado del día</a>
+        <a class="tab-link" data-tab="reports" onclick="showModule('reports')"><span>◫</span> Reportes</a>
+        <a class="tab-link" data-tab="executive" onclick="showModule('executive')"><span>◈</span> Panel ejecutivo</a>
+        <div class="nav-group-label">Administración</div>
+        <a class="tab-link" data-tab="controls" onclick="showModule('controls')"><span>◇</span> Cancelaciones</a>
+        <a class="tab-link" data-tab="catalog" onclick="showModule('catalog')"><span>□</span> Catálogos</a>
+        <a class="tab-link" data-tab="config" onclick="showModule('config')"><span>⚙</span> Configuración</a>
+        <a class="logout-link" href="/PizzeriaPadua/admin.html" onclick="sessionStorage.removeItem('adminAuthToken');document.cookie='auth=; path=/PizzeriaPadua; max-age=0';"><span>↪</span> Cerrar sesión</a>
       </nav>
     </aside>
 
     <section class="content">
 
       <header class="topbar">
+        <button class="app-switcher" type="button" onclick="showModule('dashboard')" aria-label="Abrir aplicaciones">▦</button>
         <div>
-          <span class="topbar-kicker">Administración</span>
+          <span class="topbar-kicker">Pizzería Padua / Operaciones</span>
           <h1 id="topbarTitle">Panel de Gestión POS</h1>
         </div>
-        <div class="icons">🔔</div>
+        <div class="topbar-actions"><span class="topbar-company">Sucursal Matriz</span><div class="icons">♙</div></div>
       </header>
-
-      <div id="licenseGate" class="license-gate">
-        <div class="license-gate-box">
-          <h2>🔐 Licencia requerida</h2>
-          <p>No hay una licencia válida instalada. Ve a la sección <strong>Licencia</strong> para cargar una.</p>
-          <button class="btn-license" onclick="goToLicenseTab()">Ir a Licencia</button>
-        </div>
-      </div>
 
       <div class="main-grid">
 
@@ -139,55 +138,41 @@
             <p>Selecciona un módulo para comenzar a trabajar</p>
           </div>
           <div class="module-dashboard">
-            <div class="module-card" onclick="showModule('pos')">
-              <span class="module-icon">🧾</span>
+            <div class="module-card" role="link" tabindex="0" onclick="openModule('pos')" onkeydown="activateModule(event, 'pos')">
+              <span class="module-icon"><svg viewBox="0 0 64 64" aria-hidden="true"><path d="M18 10h28v41l-5-4-5 4-5-4-5 4-8-4z"/><path d="M25 23h14M25 31h14M25 39h10"/></svg></span>
               <div class="module-title">Terminal POS</div>
-              <div class="module-desc">Registrar ventas, cobrar, aplicar descuentos y promociones</div>
             </div>
-            <div class="module-card" onclick="showModule('openaccounts')">
-              <span class="module-icon">📋</span>
+            <div class="module-card" role="link" tabindex="0" onclick="openModule('openaccounts')" onkeydown="activateModule(event, 'openaccounts')">
+              <span class="module-icon"><svg viewBox="0 0 64 64" aria-hidden="true"><rect x="18" y="13" width="28" height="40" rx="2"/><path d="M26 13v-3h12v3M25 26h14M25 34h14M25 42h9"/></svg></span>
               <div class="module-title">Cuentas Abiertas</div>
-              <div class="module-desc">Gestionar cuentas pendientes por mesa o cliente</div>
             </div>
-            <div class="module-card" onclick="showModule('cash')">
-              <span class="module-icon">💰</span>
+            <div class="module-card" role="link" tabindex="0" onclick="openModule('cash')" onkeydown="activateModule(event, 'cash')">
+              <span class="module-icon"><svg viewBox="0 0 64 64" aria-hidden="true"><rect x="12" y="27" width="40" height="25" rx="3"/><path d="M20 27v-7h24v7M28 20v-7h9v7M20 36h2M29 36h2M38 36h2M20 44h2M29 44h2M38 44h2"/></svg></span>
               <div class="module-title">Caja y Cortes</div>
-              <div class="module-desc">Arranque, movimientos, arqueo y cierre de caja</div>
             </div>
-            <div class="module-card" onclick="showModule('daily')">
-              <span class="module-icon">📊</span>
+            <div class="module-card" role="link" tabindex="0" onclick="openModule('daily')" onkeydown="activateModule(event, 'daily')">
+              <span class="module-icon"><svg viewBox="0 0 64 64" aria-hidden="true"><path d="M14 50V35h10v15zM28 50V25h10v25zM42 50V14h10v36z"/></svg></span>
               <div class="module-title">Acumulado del Día</div>
-              <div class="module-desc">Ventas en tiempo real, KPIs y análisis por hora/canal</div>
             </div>
-            <div class="module-card" onclick="showModule('reports')">
-              <span class="module-icon">📈</span>
+            <div class="module-card" role="link" tabindex="0" onclick="openModule('reports')" onkeydown="activateModule(event, 'reports')">
+              <span class="module-icon"><svg viewBox="0 0 64 64" aria-hidden="true"><path d="M17 10h24l9 9v35H17zM41 10v10h9M23 43l8-8 6 5 8-10"/></svg></span>
               <div class="module-title">Reportes</div>
-              <div class="module-desc">Reportes operativos, gerenciales y exportación</div>
             </div>
-            <div class="module-card" onclick="showModule('executive')">
-              <span class="module-icon">🎯</span>
+            <div class="module-card" role="link" tabindex="0" onclick="openModule('executive')" onkeydown="activateModule(event, 'executive')">
+              <span class="module-icon"><svg viewBox="0 0 64 64" aria-hidden="true"><path d="M11 37a21 21 0 0 1 42 0"/><path d="M11 37v7h8v-5M53 37v7h-8v-5M32 37l10-13M28 37a4 4 0 1 0 8 0 4 4 0 0 0-8 0z"/></svg></span>
               <div class="module-title">Panel Ejecutivo</div>
-              <div class="module-desc">KPIs, alertas, top productos y bitácora</div>
             </div>
-            <div class="module-card" onclick="showModule('controls')">
-              <span class="module-icon">🛡</span>
+            <div class="module-card" role="link" tabindex="0" onclick="openModule('controls')" onkeydown="activateModule(event, 'controls')">
+              <span class="module-icon"><svg viewBox="0 0 64 64" aria-hidden="true"><path d="M43 20H18l13-11M18 20l13 11M18 20h28a9 9 0 0 1 9 9v3a9 9 0 0 1-9 9H31"/></svg></span>
               <div class="module-title">Cancelaciones y Devoluciones</div>
-              <div class="module-desc">Control de cancelaciones, devoluciones y reembolsos</div>
             </div>
-            <div class="module-card" onclick="showModule('catalog')">
-              <span class="module-icon">🍽</span>
+            <div class="module-card" role="link" tabindex="0" onclick="openModule('catalog')" onkeydown="activateModule(event, 'catalog')">
+              <span class="module-icon"><svg viewBox="0 0 64 64" aria-hidden="true"><rect x="10" y="31" width="17" height="20" rx="2"/><rect x="27" y="22" width="17" height="29" rx="2"/><rect x="44" y="31" width="10" height="20" rx="2"/><path d="M31 22v-7h9v7"/></svg></span>
               <div class="module-title">Catálogos</div>
-              <div class="module-desc">Productos, categorías y promociones</div>
             </div>
-            <div class="module-card" onclick="showModule('config')">
-              <span class="module-icon">⚙</span>
+            <div class="module-card" role="link" tabindex="0" onclick="openModule('config')" onkeydown="activateModule(event, 'config')">
+              <span class="module-icon"><svg viewBox="0 0 64 64" aria-hidden="true"><path d="M38 10l3 7 7 2-4 6 3 7-7 1-4 7-5-5-8 1 1-8-5-5 7-4 1-7 7 2z"/><circle cx="33" cy="27" r="6"/></svg></span>
               <div class="module-title">Configuración</div>
-              <div class="module-desc">Datos del negocio, horarios y parámetros</div>
-            </div>
-            <div class="module-card" onclick="showModule('license')">
-              <span class="module-icon">🔐</span>
-              <div class="module-title">Licencia</div>
-              <div class="module-desc">Gestión de licencia del sistema</div>
             </div>
           </div>
         </div>
@@ -505,24 +490,6 @@
           </div>
         </div>
 
-        <!-- ==================== LICENCIA ==================== -->
-        <div class="admin-section" id="license">
-          <div class="module-header">
-            <button class="back-btn" onclick="showModule('dashboard')">← Inicio</button>
-            <h2>🔐 Gestión de Licencia</h2>
-          </div>
-          <div class="table-card">
-            <div class="orders-toolbar"><span>Gestión de licencia</span></div>
-            <div id="licenseStatus" style="margin-bottom:16px;">
-              <p style="color:#766d86;">Presiona "Administrar licencia" para iniciar sesión con credenciales de licencia.</p>
-            </div>
-            <div style="display:flex;gap:10px;flex-wrap:wrap;">
-              <button class="btn-license" onclick="openLicenseAuth()">🔐 Administrar licencia</button>
-              <button class="btn-license btn-license-cancel" id="btnRevokeLicense" style="display:none;background:linear-gradient(135deg,#e74c3c,#c0392b);" onclick="openRevokeConfirm()">🗑 Cancelar licencia</button>
-            </div>
-          </div>
-        </div>
-
       </div>
     </section>
   </main>
@@ -624,10 +591,15 @@
 
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
-<script src="js/admin.js?v=20260715-customizations"></script>
+<script src="js/admin.js?v=20261118-module-cleanup"></script>
 <script>
 // Función para mostrar módulos (página principal con iconos)
 function showModule(moduleId) {
+  var shell = document.querySelector(".dashboard");
+  if (shell) {
+    shell.classList.toggle("launcher-mode", moduleId === "dashboard");
+    shell.classList.toggle("module-mode", moduleId !== "dashboard");
+  }
   document.querySelectorAll(".admin-section").forEach(s => s.classList.remove("active"));
   var section = document.getElementById(moduleId);
   if (section) section.classList.add("active");
@@ -649,7 +621,6 @@ function showModule(moduleId) {
     controls: "Cancelaciones y Devoluciones",
     catalog: "Catálogos",
     config: "Configuración",
-    license: "Licencia"
   };
   document.getElementById("topbarTitle").textContent = titles[moduleId] || "Panel POS";
 
@@ -661,7 +632,20 @@ function showModule(moduleId) {
   if (moduleId === "controls") { if (typeof loadControls === "function") loadControls(); }
   if (moduleId === "catalog") { if (typeof loadAdminProducts === "function") loadAdminProducts(); if (typeof loadCategories === "function") loadCategories(); }
   if (moduleId === "config") { if (typeof loadSettings === "function") loadSettings(); }
-  if (moduleId === "license") { if (typeof loadLicenseStatus === "function") loadLicenseStatus(); }
+}
+
+// Las tarjetas reutilizan el enlace del menú para conservar la validación
+// de licencia y cualquier regla de visibilidad que se agregue al menú.
+function openModule(moduleId) {
+  var link = document.querySelector('[data-tab="' + moduleId + '"]');
+  if (link) link.click();
+}
+
+function activateModule(event, moduleId) {
+  if (event.key === "Enter" || event.key === " ") {
+    event.preventDefault();
+    openModule(moduleId);
+  }
 }
 
 // Override tab-link clicks to use showModule

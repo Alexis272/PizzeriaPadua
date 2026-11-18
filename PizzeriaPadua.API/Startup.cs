@@ -50,13 +50,15 @@ namespace PizzeriaPadua.API
             {
                 var dbPath = Configuration.GetValue<string>("DatabasePath") ?? Path.Combine(Directory.GetCurrentDirectory(), "pizzeriapadua.db");
                 services.AddDbContext<PizzeriaPaduaContext>(options =>
-                    options.UseSqlite($"Data Source={dbPath}"));
+                    options.UseSqlite($"Data Source={dbPath}", sqlite =>
+                        sqlite.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)));
             }
             else
             {
                 var npgsqlConnectionString = ConvertToNpgsqlConnectionString(connectionString);
                 services.AddDbContext<PizzeriaPaduaContext>(options =>
-                    options.UseNpgsql(npgsqlConnectionString));
+                    options.UseNpgsql(npgsqlConnectionString, npgsql =>
+                        npgsql.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)));
             }
 
             services.AddCors(options =>

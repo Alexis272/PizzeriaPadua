@@ -24,7 +24,7 @@ namespace PizzeriaPadua.API.Controllers
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            var settings = await _db.StoreSettings.FirstOrDefaultAsync();
+            var settings = await _db.StoreSettings.OrderBy(s => s.Id).FirstOrDefaultAsync();
             if (settings == null)
             {
                 settings = new StoreSettings { OpeningTime = "11:00", ClosingTime = "23:00", Address = "" };
@@ -40,7 +40,7 @@ namespace PizzeriaPadua.API.Controllers
             if (!ValidateAuthHeader())
                 return Unauthorized(new { success = false, message = "Authentication required" });
 
-            var settings = await _db.StoreSettings.FirstOrDefaultAsync();
+            var settings = await _db.StoreSettings.OrderBy(s => s.Id).FirstOrDefaultAsync();
             if (settings == null)
             {
                 settings = new StoreSettings();

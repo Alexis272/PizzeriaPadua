@@ -302,7 +302,7 @@ namespace PizzeriaPadua.API.Controllers
             var promotions = await _db.Promotions.AsNoTracking().ToListAsync();
             var goals = await _db.SalesGoals.AsNoTracking().ToListAsync();
             var tables = await _db.Tables.AsNoTracking().ToListAsync();
-            var settings = await _db.StoreSettings.FirstOrDefaultAsync();
+            var settings = await _db.StoreSettings.OrderBy(s => s.Id).FirstOrDefaultAsync();
 
             return Ok(new
             {
@@ -568,7 +568,7 @@ namespace PizzeriaPadua.API.Controllers
                 return BadRequest(new { success = false, message = "No existe una caja abierta para ejecutar el corte." });
 
             var isFinal = string.Equals(request.CutType, "Final", StringComparison.OrdinalIgnoreCase);
-            var settings = await _db.StoreSettings.FirstOrDefaultAsync();
+            var settings = await _db.StoreSettings.OrderBy(s => s.Id).FirstOrDefaultAsync();
 
             // Regla 28: No se puede cerrar una caja con ventas o cuentas pendientes, salvo autorización y regla configurada.
             if (isFinal)
@@ -841,7 +841,7 @@ namespace PizzeriaPadua.API.Controllers
             }
 
             var totalDiscount = Math.Min(grossSubtotal, itemsDiscountTotal + ticketDiscount);
-            var settings = await _db.StoreSettings.FirstOrDefaultAsync();
+            var settings = await _db.StoreSettings.OrderBy(s => s.Id).FirstOrDefaultAsync();
             var maxCashierPct = settings?.MaxCashierDiscountPercent ?? 10m;
             var effectiveDiscountPct = grossSubtotal > 0 ? (totalDiscount / grossSubtotal) * 100m : 0m;
 
@@ -1096,7 +1096,7 @@ namespace PizzeriaPadua.API.Controllers
             if (request.DiscountPercent > 0)
                 discount = decimal.Round(gross * (request.DiscountPercent / 100m), 2);
 
-            var settings = await _db.StoreSettings.FirstOrDefaultAsync();
+            var settings = await _db.StoreSettings.OrderBy(s => s.Id).FirstOrDefaultAsync();
             var maxPct = settings?.MaxCashierDiscountPercent ?? 10m;
             if (gross > 0 && (discount / gross) * 100m > maxPct && authorizer == null)
                 return Unauthorized(new { success = false, requiresAuth = true, message = "El descuento supera el límite del cajero. Ingresa PIN de Supervisor." });

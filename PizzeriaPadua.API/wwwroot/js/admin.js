@@ -34,21 +34,6 @@ document.addEventListener("DOMContentLoaded", () => {
     link.addEventListener("click", async e => {
       e.preventDefault();
       const tab = link.dataset.tab;
-      if (tab !== "license") {
-        const gate = document.getElementById("licenseGate");
-        try {
-          const res = await fetch("/PizzeriaPadua/api/v1/License/status");
-          const data = await res.json();
-          if (!data.licensed) {
-            gate.classList.add("show");
-            return;
-          }
-        } catch {
-          gate.classList.add("show");
-          return;
-        }
-      }
-      document.getElementById("licenseGate").classList.remove("show");
       document.querySelectorAll(".tab-link").forEach(l => l.classList.remove("active"));
       link.classList.add("active");
       document.querySelectorAll(".admin-section").forEach(s => s.classList.remove("active"));
@@ -56,13 +41,11 @@ document.addEventListener("DOMContentLoaded", () => {
       if (tab === "orders") loadOrders();
       if (tab === "history") loadSalesHistory();
       if (tab === "products") setProductSubtab("products");
-      if (tab === "license") loadLicenseStatus();
       if (tab === "settings") loadSettings();
       if (tab === "page") loadSettings();
       if (tab === "users") loadUsers();
     });
   });
-  checkLicenseOnLoad();
   initCalendar();
   initializeAdminRealtime();
   setInterval(() => {
@@ -121,30 +104,6 @@ function initializeAdminRealtime() {
   eventSource.addEventListener("order-updated", () => scheduleRealtimeRefresh("orders", 250));
   eventSource.addEventListener("session-changed", () => scheduleRealtimeRefresh("users", 100));
   eventSource.onopen = refreshActiveAdminSection;
-}
-
-function goToLicenseTab() {
-  document.getElementById("licenseGate").classList.remove("show");
-  document.querySelectorAll(".tab-link").forEach(l => l.classList.remove("active"));
-  document.querySelector('[data-tab="license"]').classList.add("active");
-  document.querySelectorAll(".admin-section").forEach(s => s.classList.remove("active"));
-  document.getElementById("license").classList.add("active");
-  loadLicenseStatus();
-}
-
-async function checkLicenseOnLoad() {
-  const gate = document.getElementById("licenseGate");
-  try {
-    const res = await fetch("/PizzeriaPadua/api/v1/License/status");
-    const data = await res.json();
-    if (data.licensed) {
-      gate.classList.remove("show");
-    } else {
-      gate.classList.add("show");
-    }
-  } catch {
-    gate.classList.add("show");
-  }
 }
 
 async function apiFetch(url, options) {
@@ -798,173 +757,6 @@ async function confirmDeleteProduct() {
   pendingDeleteId = null;
 }
 
-// --- LICENSE ---
-let licenseAuthToken = null;
-
-function handleLicenseFile(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-  document.getElementById("fileNameDisplay").textContent = file.name;
-  const reader = new FileReader();
-  reader.onload = function (e) {
-    document.getElementById("licenseContent").value = e.target.result;
-    uploadLicense();
-  };
-  reader.readAsText(file);
-  event.target.value = "";
-}
-
-async function loadLicenseStatus() {
-  const container = document.getElementById("licenseStatus");
-  const revokeBtn = document.getElementById("btnRevokeLicense");
-  if (!container) return;
-  try {
-    const res = await fetch("/PizzeriaPadua/api/v1/License/status");
-    const data = await res.json();
-    if (data.licensed) {
-      container.innerHTML = `
-        <p style="color:#15724b;font-weight:900;font-size:16px;">✅ License active</p>
-        <p style="color:#766d86;font-size:13px;">Expires: ${data.expires || "N/A"}</p>
-      `;
-      if (revokeBtn) revokeBtn.style.display = "";
-    } else if (data.expired) {
-      container.innerHTML = `
-        <p style="color:#a62744;font-weight:900;font-size:16px;">❌ License expired</p>
-        <p style="color:#766d86;font-size:13px;">Expired: ${data.expires || "N/A"}</p>
-      `;
-      if (revokeBtn) revokeBtn.style.display = "none";
-    } else {
-      container.innerHTML = `
-        <p style="color:#8b6500;font-weight:900;font-size:16px;">⚠️ No license installed</p>
-        <p style="color:#766d86;font-size:13px;">Upload a license file to activate the system.</p>
-      `;
-      if (revokeBtn) revokeBtn.style.display = "none";
-    }
-  } catch (err) {
-    container.innerHTML = `<p style="color:#a62744;">Error loading license status</p>`;
-  }
-}
-
-function openRevokeConfirm() {
-  document.getElementById("revokeUser").value = "";
-  document.getElementById("revokePass").value = "";
-  document.getElementById("revokeError").style.display = "none";
-  document.getElementById("revokeConfirmModal").classList.add("show");
-  document.getElementById("revokeUser").focus();
-}
-
-function closeRevokeConfirm() {
-  document.getElementById("revokeConfirmModal").classList.remove("show");
-}
-
-async function confirmRevoke() {
-  const user = document.getElementById("revokeUser").value.trim();
-  const pass = document.getElementById("revokePass").value.trim();
-  const token = btoa(user + ":" + pass);
-  try {
-    const res = await fetch("/PizzeriaPadua/api/v1/License/revoke", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-License-Auth": token
-      }
-    });
-    const data = await res.json();
-    if (data.success) {
-      closeRevokeConfirm();
-      document.getElementById("licenseGate").classList.add("show");
-      document.querySelector("[data-tab='license']").click();
-    } else {
-      document.getElementById("revokeError").style.display = "block";
-    }
-  } catch {
-    document.getElementById("revokeError").textContent = "Connection error";
-    document.getElementById("revokeError").style.display = "block";
-  }
-}
-
-function openLicenseAuth() {
-  document.getElementById("licenseUser").value = "";
-  document.getElementById("licensePass").value = "";
-  document.getElementById("licenseAuthError").style.display = "none";
-  document.getElementById("licenseAuthModal").classList.add("show");
-  document.getElementById("licenseUser").focus();
-}
-
-function closeLicenseAuthModal() {
-  document.getElementById("licenseAuthModal").classList.remove("show");
-}
-
-function closeLicenseUploadModal() {
-  document.getElementById("licenseUploadModal").classList.remove("show");
-}
-
-async function confirmLicenseAuth() {
-  const user = document.getElementById("licenseUser").value.trim();
-  const pass = document.getElementById("licensePass").value.trim();
-  try {
-    const res = await fetch("/PizzeriaPadua/api/v1/License/auth", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username: user, password: pass })
-    });
-    const data = await res.json();
-    if (data.success) {
-      licenseAuthToken = btoa(user + ":" + pass);
-      closeLicenseAuthModal();
-      openLicenseUpload();
-    } else {
-      document.getElementById("licenseAuthError").style.display = "block";
-    }
-  } catch (err) {
-    document.getElementById("licenseAuthError").textContent = "Connection error";
-    document.getElementById("licenseAuthError").style.display = "block";
-  }
-}
-
-function openLicenseUpload() {
-  document.getElementById("licenseContent").value = "";
-  document.getElementById("licenseUploadResult").textContent = "";
-  document.getElementById("licenseUploadResult").style.color = "";
-  document.getElementById("licenseUploadModal").classList.add("show");
-}
-
-async function uploadLicense() {
-  const content = document.getElementById("licenseContent").value.trim();
-  if (!content) {
-    document.getElementById("licenseUploadResult").textContent = "Paste the license JSON content";
-    document.getElementById("licenseUploadResult").style.color = "#a62744";
-    return;
-  }
-  try {
-    const res = await fetch("/PizzeriaPadua/api/v1/License/upload", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-License-Auth": licenseAuthToken
-      },
-      body: JSON.stringify({ licenseContent: content })
-    });
-    const data = await res.json();
-    if (data.success) {
-      document.getElementById("licenseUploadResult").textContent = "✅ " + data.message + " (expires: " + data.expires + ")";
-      document.getElementById("licenseUploadResult").style.color = "#15724b";
-      setTimeout(() => {
-        closeLicenseUploadModal();
-        document.getElementById("licenseGate").classList.remove("show");
-        document.querySelector("[data-tab='orders']").click();
-      }, 1500);
-      loadLicenseStatus();
-    } else {
-      document.getElementById("licenseUploadResult").textContent = "❌ " + data.message;
-      document.getElementById("licenseUploadResult").style.color = "#a62744";
-    }
-  } catch (err) {
-    document.getElementById("licenseUploadResult").textContent = "❌ Connection error";
-    document.getElementById("licenseUploadResult").style.color = "#a62744";
-  }
-}
-
 async function addProduct(e) {
   e.preventDefault();
   const name = document.getElementById("prodName").value.trim();
@@ -1597,19 +1389,22 @@ async function loadHistoryFolderHandle() {
 async function restoreHistoryFolder() {
   const toast = document.getElementById("historyPathToast");
   const message = document.getElementById("historyPathMsg");
+  const showToast = (text) => {
+    if (toast) toast.style.display = "block";
+    if (message && text) message.textContent = text;
+  };
 
   if (!window.showDirectoryPicker || !window.indexedDB) {
     historyDownloadFallback = true;
     updateCurrentHistoryPath("📥 Celular: usa el botón para descargar a Descargas");
-    toast.style.display = "block";
-    message.textContent = "En celular el navegador no permite reemplazar archivos locales. Desde gestión puedes descargar los históricos a Descargas con el botón.";
+    showToast("En celular el navegador no permite reemplazar archivos locales. Desde gestión puedes descargar los históricos a Descargas con el botón.");
     return;
   }
 
   try {
     storedHistoryFolderHandle = await loadHistoryFolderHandle();
     if (!storedHistoryFolderHandle) {
-      toast.style.display = "block";
+      showToast();
       return;
     }
 
@@ -1627,7 +1422,7 @@ async function restoreHistoryFolder() {
     }
   } catch (err) {
     console.error("No se pudo restaurar la carpeta del historial:", err);
-    toast.style.display = "block";
+    showToast();
   }
 }
 
