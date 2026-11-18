@@ -737,6 +737,96 @@ body, html { background: var(--odoo-bg) !important; }
   .module-mode .main-grid { padding: 20px 16px !important; }
 }
 
+/* POS fijo en viewport: el scroll queda dentro de productos y pedidos. */
+body:has(.module-mode) { overflow: hidden; }
+.module-mode .content { height: 100vh; overflow: hidden; }
+.module-mode .main-grid {
+  height: calc(100vh - 76px);
+  min-height: 0 !important;
+  padding: 14px 24px !important;
+  overflow: hidden;
+}
+#pos {
+  height: 100%;
+  min-height: 0;
+}
+#pos .module-header {
+  height: 38px;
+  min-height: 38px;
+  margin-bottom: 8px !important;
+}
+#pos > .table-card {
+  height: calc(100% - 46px);
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+#pos > .table-card > .orders-toolbar {
+  min-height: 38px;
+  height: 38px;
+  margin-bottom: 10px !important;
+  flex: 0 0 38px;
+}
+#pos > .table-card > .orders-toolbar > span { font-size: 23px !important; }
+#pos .pos-terminal-layout {
+  flex: 1;
+  min-height: 0;
+}
+#pos .pos-terminal-layout > div:first-child {
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+#pos .pos-terminal-layout > div:first-child > div:first-child {
+  flex: 0 0 auto;
+}
+#pos #posProductGrid {
+  flex: 1;
+  min-height: 0;
+  max-height: none !important;
+}
+#pos .pos-terminal-layout > .table-card {
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+#pos .pos-side-panel.active {
+  min-height: 0;
+  height: calc(100% - 60px);
+  overflow: hidden;
+}
+#pos #posOrderPanel.active {
+  overflow-y: auto;
+  padding-right: 2px;
+}
+#pos #activeOrdersPanel.active {
+  display: flex;
+  flex-direction: column;
+}
+#pos #activeOrdersPanel #ordersList {
+  flex: 1;
+  min-height: 0;
+  max-height: none;
+  overflow-y: auto;
+}
+@media (max-width: 800px) {
+  body:has(.module-mode) { overflow: auto; }
+  .module-mode .content { height: auto; overflow: visible; }
+  .module-mode .main-grid {
+    height: auto;
+    min-height: calc(100vh - 76px) !important;
+    overflow: visible;
+  }
+  #pos { height: auto; }
+  #pos > .table-card { height: auto; }
+  #pos .pos-terminal-layout { flex: none; }
+  #pos .pos-terminal-layout > div:first-child { min-height: 0; }
+  #pos #posProductGrid { max-height: 560px !important; }
+  #pos .pos-terminal-layout > .table-card { height: auto; overflow: visible; }
+  #pos .pos-side-panel.active { height: auto; overflow: visible; }
+  #pos #activeOrdersPanel #ordersList { max-height: 500px; }
+}
+
 /* El catálogo ocupa todo el lado izquierdo; solo cada producto es una tarjeta. */
 #pos .pos-terminal-layout > div:first-child {
   padding: 0 !important;
