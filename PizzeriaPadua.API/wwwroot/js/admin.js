@@ -2140,11 +2140,15 @@ async function posSaveOpenAccount() {
     });
     var data = await res.json();
     if (data.success) {
-      document.getElementById("posMsg").textContent = "Cuenta abierta: " + data.order.folio;
+      document.getElementById("posMsg").textContent = "Pedido creado: " + (data.order?.folio || data.folio || "");
       document.getElementById("posMsg").style.color = "#27ae60";
       posCart = [];
       renderPosCart();
       loadOpenAccounts();
+      await loadOrders();
+      if (document.getElementById("activeOrdersPanel")?.classList.contains("active")) {
+        switchPosSidePanel("activeOrdersPanel");
+      }
     } else {
       document.getElementById("posMsg").textContent = data.message || "Error";
       document.getElementById("posMsg").style.color = "#e74c3c";
