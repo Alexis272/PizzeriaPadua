@@ -18,14 +18,14 @@
 <body>
   <main>
     <div class="logo">P</div>
-    <h1>Sin conexión</h1>
-    <p>No fue posible conectar con Pizzería Padua. Verifica tu conexión a internet e inténtalo nuevamente.</p>
+    <h1>Gestión sin conexión</h1>
+    <p>No fue posible conectar con el panel de gestión de Pizzería Padua. Verifica tu conexión a internet e inténtalo nuevamente.</p>
     <button id="retry">Reintentar</button>
   </main>
   <script>
     const params = new URLSearchParams(location.search);
     document.getElementById("retry").addEventListener("click", () => {
-      location.href = params.get("url") || "https://pizzeriapadua-production.up.railway.app/PizzeriaPadua/";
+      location.href = params.get("url") || "https://pizzeriapadua-production.up.railway.app/PizzeriaPadua/gestion.html";
     });
   </script>
 </body>

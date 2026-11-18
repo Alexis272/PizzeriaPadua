@@ -1,6 +1,6 @@
 const { URL } = require("node:url");
 
-const DEFAULT_WEB_URL = "https://pizzeriapadua-production.up.railway.app/PizzeriaPadua/";
+const DEFAULT_WEB_URL = "https://pizzeriapadua-production.up.railway.app/PizzeriaPadua/gestion.html";
 
 function resolvePaduaUrl() {
   const configured = process.env.PIZZERIA_PADUA_URL;

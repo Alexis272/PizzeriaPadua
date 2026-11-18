@@ -31,7 +31,7 @@ function createMainWindow() {
     autoHideMenuBar: true,
     backgroundColor: "#f1eff8",
     icon: path.join(__dirname, "..", "assets", "icon.png"),
-    title: "Pizzería Padua",
+    title: "Pizzería Padua Gestión",
     webPreferences: {
       contextIsolation: true,
       nodeIntegration: false,

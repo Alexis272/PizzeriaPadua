@@ -1,8 +1,8 @@
 {
   "name": "pizzeria-padua-desktop",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
-  "description": "Aplicación de escritorio de Pizzería Padua",
+  "description": "Panel de gestión de Pizzería Padua para Windows",
   "main": "src/main.js",
   "author": "Pizzería Padua",
   "license": "UNLICENSED",
@@ -17,7 +17,7 @@
   },
   "build": {
     "appId": "mx.pizzeriapadua.desktop",
-    "productName": "Pizzería Padua",
+    "productName": "Pizzería Padua Gestión",
     "forceCodeSigning": false,
     "asar": true,
     "directories": {
@@ -45,7 +45,7 @@
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": "always",
       "createStartMenuShortcut": true,
-      "shortcutName": "Pizzería Padua",
+      "shortcutName": "Pizzería Padua Gestión",
       "runAfterFinish": true,
       "deleteAppDataOnUninstall": false
     }
