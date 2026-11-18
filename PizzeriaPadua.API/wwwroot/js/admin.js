@@ -175,6 +175,35 @@ function renderOrderPaymentFee(order) {
     : "";
 }
 
+async function revokeInstalledLicense() {
+  const status = document.getElementById("licenseAdminStatus");
+  const username = prompt("Usuario administrador:");
+  if (!username) return;
+  const password = prompt("Contraseña o PIN:");
+  if (!password) return;
+
+  try {
+    const auth = await fetch("/PizzeriaPadua/api/v1/License/auth", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username, password })
+    });
+    if (!auth.ok) throw new Error("Credenciales incorrectas");
+
+    const response = await fetch("/PizzeriaPadua/api/v1/License/revoke", {
+      method: "POST",
+      headers: { "X-License-Auth": btoa(username + ":" + password) }
+    });
+    const data = await response.json();
+    if (!response.ok || !data.success) throw new Error(data.message || "No se pudo eliminar la licencia");
+    if (status) status.textContent = "Licencia eliminada correctamente.";
+    alert("La licencia instalada fue eliminada.");
+  } catch (error) {
+    if (status) status.textContent = error.message;
+    alert(error.message);
+  }
+}
+
 function renderOrderItemLine(oi, className) {
   const name = oi.product ? oi.product.name : "Producto #" + oi.productId;
   const custom = oi.customizations ? `<small class="order-item-customizations">${escapeHtml(oi.customizations)}</small>` : "";

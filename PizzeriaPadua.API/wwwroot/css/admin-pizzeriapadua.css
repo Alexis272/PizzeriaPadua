@@ -733,6 +733,24 @@ body, html { background: var(--odoo-bg) !important; }
 .module-mode table td { border-color: var(--module-line) !important; }
 .module-mode .add-form summary { color: var(--module-ink) !important; background: var(--module-lavender) !important; }
 .module-mode .modal-overlay { background: rgba(48,27,49,.34) !important; }
+.settings-license-tools {
+  margin-top: 26px;
+  padding-top: 20px;
+  border-top: 1px solid var(--module-line, #d9d2df);
+}
+.settings-license-tools h3 {
+  margin-bottom: 6px;
+  color: var(--module-ink, #211d25) !important;
+  font-size: 18px;
+}
+.settings-license-tools p {
+  margin: 0 0 12px;
+  color: #766d86;
+  font-size: 13px;
+}
+.settings-license-tools button {
+  background: #7b2859 !important;
+}
 @media (max-width: 800px) {
   .module-mode .main-grid { padding: 20px 16px !important; }
 }
