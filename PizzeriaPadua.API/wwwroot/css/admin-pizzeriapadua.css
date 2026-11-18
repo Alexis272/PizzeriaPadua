@@ -1092,6 +1092,13 @@ body > .login-box {
 /* Último ajuste POS: altura real para que el catálogo sí pueda desplazarse. */
 @media (min-width: 801px) {
   #pos .pos-terminal-layout {
+    height: calc(100vh - 150px) !important;
+  }
+  #pos > .table-card {
+    height: calc(100% - 46px) !important;
+  }
+}
+  #pos .pos-terminal-layout {
     display: grid !important;
     flex: none !important;
     height: calc(100vh - 184px) !important;
@@ -1265,6 +1272,12 @@ body > .login-box {
 }
 
 @media (min-width: 801px) {
+  #pos .pos-terminal-layout {
+    height: calc(100vh - 150px) !important;
+  }
+  #pos > .table-card {
+    height: calc(100% - 46px) !important;
+  }
   #pos #posProductGrid {
     grid-auto-rows: 300px !important;
     align-items: stretch !important;
