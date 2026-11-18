@@ -122,7 +122,7 @@ async function loadOrders() {
     const orders = await apiFetch(API.orders);
     sessionStorage.setItem("adminOrders", JSON.stringify(orders));
   const filter = document.getElementById("orderFilter")?.value || "all";
-    let active = orders.filter(o => o.status === 0 || o.status === 1 || o.status === 4);
+    let active = orders.filter(o => o.status === 0 || o.status === 1 || o.status === 4 || o.status === 6 || o.isOpenAccount);
     let filtered = filter === "all" ? active : active.filter(o => o.status == filter);
     renderOrders(filtered);
     container.dataset.loaded = "true";
@@ -140,8 +140,8 @@ function renderOrders(orders) {
     container.innerHTML = "<p style='text-align:center;color:#999;'>No hay pedidos</p>";
     return;
   }
-  const statusMap = { 0: "Pendiente", 1: "En preparación", 2: "Entregado", 3: "Cancelado", 4: "Pendiente de entrega" };
-  const classMap = { 0: "status-pending", 1: "status-progress", 2: "status-completed", 3: "status-cancelled", 4: "status-completed" };
+  const statusMap = { 0: "Pendiente", 1: "En preparación", 2: "Entregado", 3: "Cancelado", 4: "Pendiente de entrega", 6: "Cuenta abierta" };
+  const classMap = { 0: "status-pending", 1: "status-progress", 2: "status-completed", 3: "status-cancelled", 4: "status-completed", 6: "status-pending" };
   container.innerHTML = orders.map(o => `
     <div class="order-card">
       <div class="order-info">
@@ -156,6 +156,7 @@ function renderOrders(orders) {
        <div class="order-actions">
          ${o.status === 0 || o.status === 1 ? `<button class="btn-progress" onclick="editActiveOrder(${o.orderId})">✎ Editar</button>` : ""}
          ${o.status === 0 || o.status === 1 || o.status === 4 ? `<button class="btn-complete" onclick="openCashModal(${o.orderId})">💳 Cobrar</button>` : ""}
+         ${o.status === 6 || o.isOpenAccount ? `<button class="btn-complete" onclick="payOpenAccount(${o.orderId})">💳 Cobrar</button>` : ""}
          ${o.status === 0 ? `<button class="btn-progress" onclick="updateOrderStatus(${o.orderId}, 1)">En preparación</button>` : ""}
         ${o.status === 0 || o.status === 1 ? (getOrderPaymentFee(o) > 0
           ? `<button class="btn-complete" onclick="updateOrderStatus(${o.orderId}, 4)">✔ Listo para entregar</button>`
