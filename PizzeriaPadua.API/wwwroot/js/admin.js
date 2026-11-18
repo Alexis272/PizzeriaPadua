@@ -320,6 +320,12 @@ function closeAdminOrderModal() {
   adminOrderCustomizations = {};
 }
 
+function formatPosProductName(value) {
+  return String(value || "")
+    .toLocaleLowerCase("es-MX")
+    .replace(/(^|\s)\S/g, letter => letter.toLocaleUpperCase("es-MX"));
+}
+
 function switchPosSidePanel(panelId) {
   document.querySelectorAll(".pos-side-tab").forEach(tab => {
     tab.classList.toggle("active", tab.dataset.panel === panelId);
@@ -2354,10 +2360,10 @@ loadAdminProducts = async function() {
     var grid = document.getElementById("posProductGrid");
     if (grid) {
       grid.innerHTML = products.map(function(p) {
-        return '<div class="admin-product-card" style="cursor:pointer;" onclick="posAddToCart(' + p.productId + ',\'' + p.name.replace(/'/g, "\\'") + '\',' + p.price + ')">' +
-          '<img src="' + (p.imageUrl || "img/pizza-padua.svg") + '" alt="' + p.name + '" style="width:100%;height:120px;object-fit:cover;border-radius:8px;" />' +
-          '<div style="padding:8px 0;"><strong style="font-size:13px;">' + p.name + '</strong><br><span style="font-size:12px;color:#27ae60;font-weight:700;">$' + p.price.toFixed(2) + '</span> <span style="font-size:11px;color:#999;">' + (p.category ? p.category.name : '') + '</span></div>' +
-          '</div>';
+         return '<div class="admin-product-card" style="cursor:pointer;" onclick="posAddToCart(' + p.productId + ',\'' + p.name.replace(/'/g, "\\'") + '\',' + p.price + ')">' +
+           '<img src="' + (p.imageUrl || "img/pizza-padua.svg") + '" alt="' + p.name + '" style="width:100%;height:120px;object-fit:cover;border-radius:8px;" />' +
+           '<div class="pos-product-copy"><strong class="pos-product-name">' + escapeHtml(formatPosProductName(p.name)) + '</strong><span class="pos-product-price">$' + p.price.toFixed(2) + '</span><span class="pos-product-category">' + escapeHtml(p.category ? p.category.name : '') + '</span></div>' +
+           '</div>';
       }).join("");
     }
     // Populate category filter

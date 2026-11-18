@@ -1325,4 +1325,27 @@ body > .login-box {
   #pos .pos-terminal-layout > .table-card {
     transform: translateY(-50px);
   }
+  #pos #posProductGrid .pos-product-copy {
+    min-width: 0;
+    padding: 8px 2px 0 !important;
+  }
+  #pos #posProductGrid .pos-product-name {
+    display: -webkit-box;
+    min-height: 38px;
+    overflow: hidden;
+    color: #17151d !important;
+    font-size: 15px !important;
+    font-weight: 700 !important;
+    line-height: 1.25;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+  #pos #posProductGrid .pos-product-price {
+    display: block;
+    margin-top: 3px;
+    color: #7b2859 !important;
+    font-size: 16px !important;
+    font-weight: 800 !important;
+  }
+  #pos #posProductGrid .pos-product-category { display: none; }
 }
