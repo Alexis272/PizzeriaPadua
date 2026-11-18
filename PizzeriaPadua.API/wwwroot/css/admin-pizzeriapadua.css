@@ -784,6 +784,44 @@ body, html { background: var(--odoo-bg) !important; }
 #pos .pos-active-panel .order-card {
   background: #fbfaff !important;
 }
+#pos .pos-side-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5px;
+  margin: -4px 0 18px;
+  padding: 4px;
+  border: 1px solid #d9d2df;
+  border-radius: 9px;
+  background: #f3effa;
+}
+#pos .pos-side-tab {
+  min-height: 42px;
+  border: 0 !important;
+  border-radius: 6px !important;
+  color: #5e5364 !important;
+  background: transparent !important;
+  font-size: 14px !important;
+}
+#pos .pos-side-tab.active {
+  color: #fff !important;
+  background: #7b2859 !important;
+  box-shadow: 0 3px 8px rgba(123,40,89,.2);
+}
+#pos .pos-side-panel { display: none; }
+#pos .pos-side-panel.active { display: block; }
+#pos .pos-side-panel .pos-active-panel-head {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  margin: 0 0 14px;
+}
+#pos .pos-side-panel .pos-active-panel-head strong { font-size: 20px; }
+#pos .pos-side-panel .pos-active-panel-head span { color: #766d86; font-size: 12px; }
+#pos .pos-side-panel #ordersList {
+  max-height: 620px;
+  overflow-y: auto;
+}
 
 /* Login */
 body:has(> .login-box) {

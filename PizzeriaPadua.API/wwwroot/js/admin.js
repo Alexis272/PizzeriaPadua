@@ -291,12 +291,16 @@ function closeAdminOrderModal() {
   adminOrderCustomizations = {};
 }
 
-function toggleActiveOrdersPanel() {
-  const panel = document.getElementById("activeOrdersPanel");
-  if (!panel) return;
-  const isOpen = panel.classList.toggle("show");
-  panel.setAttribute("aria-hidden", String(!isOpen));
-  if (isOpen) loadOrders();
+function switchPosSidePanel(panelId) {
+  document.querySelectorAll(".pos-side-tab").forEach(tab => {
+    tab.classList.toggle("active", tab.dataset.panel === panelId);
+  });
+  document.querySelectorAll(".pos-side-panel").forEach(panel => {
+    const active = panel.id === panelId;
+    panel.classList.toggle("active", active);
+    panel.setAttribute("aria-hidden", String(!active));
+  });
+  if (panelId === "activeOrdersPanel") loadOrders();
 }
 
 let editingOrderId = null;
@@ -320,7 +324,7 @@ function editActiveOrder(orderId) {
   renderPosCart();
   document.getElementById("posMsg").textContent = `Editando pedido #${orderId}. Guarda la cuenta para aplicar los cambios.`;
   document.getElementById("posMsg").style.color = "#7b2859";
-  document.getElementById("activeOrdersPanel")?.classList.remove("show");
+  switchPosSidePanel("posOrderPanel");
 }
 
 function parseAdminCustomizationOptions(value) {

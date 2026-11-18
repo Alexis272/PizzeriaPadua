@@ -185,10 +185,7 @@
           </div>
           <div class="table-card">
             <div class="orders-toolbar">
-              <span>Pedidos activos</span>
-              <div style="display:flex;gap:10px;margin-left:auto;">
-                <button class="btn-license pos-active-orders-button" onclick="toggleActiveOrdersPanel()">▣ Pedidos activos</button>
-              </div>
+              <span>Productos disponibles</span>
             </div>
             <div class="pos-terminal-layout" style="display:grid;grid-template-columns:1fr 380px;gap:16px;">
               <div>
@@ -201,46 +198,52 @@
                 <div id="posProductGrid" class="product-grid-admin" style="max-height:520px;overflow-y:auto;"></div>
               </div>
               <div class="table-card" style="padding:16px;">
-                <h3 style="margin-bottom:10px;">🛒 Carrito de Venta</h3>
-                <div id="posCartItems" style="min-height:200px;max-height:320px;overflow-y:auto;border:1px solid #e5ddeb;border-radius:12px;padding:8px;margin-bottom:10px;"></div>
-                <div style="display:flex;gap:8px;margin-bottom:8px;">
-                  <input type="text" id="posCustomerName" placeholder="Nombre del cliente" style="flex:1;" />
-                  <select id="posChannel" style="width:140px;">
-                    <option value="Mostrador">Mostrador</option>
-                    <option value="Local / Mesa">Local / Mesa</option>
-                    <option value="Para Llevar">Para Llevar</option>
-                    <option value="Entrega a Domicilio">Domicilio</option>
-                    <option value="Teléfono">Teléfono</option>
-                  </select>
+                <div class="pos-side-tabs" role="tablist">
+                  <button type="button" class="pos-side-tab active" data-panel="posOrderPanel" onclick="switchPosSidePanel('posOrderPanel')">🛒 Tomar pedido</button>
+                  <button type="button" class="pos-side-tab" data-panel="activeOrdersPanel" onclick="switchPosSidePanel('activeOrdersPanel')">▣ Pedidos activos</button>
                 </div>
-                <div style="display:flex;gap:8px;margin-bottom:8px;">
-                  <select id="posTable" style="flex:1;"><option value="">Sin mesa</option></select>
-                  <input type="number" id="posDiscount" placeholder="Descuento %" style="width:100px;" min="0" max="100" />
+                <div id="posOrderPanel" class="pos-side-panel active">
+                  <h3 style="margin-bottom:10px;">🛒 Carrito de Venta</h3>
+                  <div id="posCartItems" style="min-height:200px;max-height:320px;overflow-y:auto;border:1px solid #e5ddeb;border-radius:12px;padding:8px;margin-bottom:10px;"></div>
+                  <div style="display:flex;gap:8px;margin-bottom:8px;">
+                    <input type="text" id="posCustomerName" placeholder="Nombre del cliente" style="flex:1;" />
+                    <select id="posChannel" style="width:140px;">
+                      <option value="Mostrador">Mostrador</option>
+                      <option value="Local / Mesa">Local / Mesa</option>
+                      <option value="Para Llevar">Para Llevar</option>
+                      <option value="Entrega a Domicilio">Domicilio</option>
+                      <option value="Teléfono">Teléfono</option>
+                    </select>
+                  </div>
+                  <div style="display:flex;gap:8px;margin-bottom:8px;">
+                    <select id="posTable" style="flex:1;"><option value="">Sin mesa</option></select>
+                    <input type="number" id="posDiscount" placeholder="Descuento %" style="width:100px;" min="0" max="100" />
+                  </div>
+                  <div style="display:flex;gap:8px;margin-bottom:8px;">
+                    <input type="text" id="posPromoCode" placeholder="Cupón/Promo" style="flex:1;" />
+                    <input type="number" id="posTip" placeholder="Propina" style="width:100px;" min="0" step="0.01" />
+                  </div>
+                  <div style="background:#f5f0ff;padding:10px;border-radius:10px;margin-bottom:10px;">
+                    <div style="display:flex;justify-content:space-between;font-size:13px;"><span>Subtotal:</span><strong id="posSubtotal">$0.00</strong></div>
+                    <div style="display:flex;justify-content:space-between;font-size:13px;"><span>Descuento:</span><strong id="posDiscountAmt">-$0.00</strong></div>
+                    <div style="display:flex;justify-content:space-between;font-size:13px;"><span>IVA (16%):</span><strong id="posTax">$0.00</strong></div>
+                    <div style="display:flex;justify-content:space-between;font-size:13px;"><span>Propina:</span><strong id="posTipAmt">$0.00</strong></div>
+                    <div style="display:flex;justify-content:space-between;font-size:16px;font-weight:900;border-top:1px solid #ddd;padding-top:6px;margin-top:6px;"><span>TOTAL:</span><strong id="posTotal">$0.00</strong></div>
+                  </div>
+                  <div style="display:flex;gap:8px;">
+                    <button class="btn-license" style="flex:1;background:linear-gradient(135deg,#27ae60,#2ecc71);" onclick="posSaveOpenAccount()">📋 Cuenta Abierta</button>
+                    <button class="btn-license" style="flex:1;" onclick="posCheckout()">💳 Cobrar</button>
+                  </div>
+                  <div id="posMsg" style="font-size:12px;margin-top:8px;text-align:center;"></div>
                 </div>
-                <div style="display:flex;gap:8px;margin-bottom:8px;">
-                  <input type="text" id="posPromoCode" placeholder="Cupón/Promo" style="flex:1;" />
-                  <input type="number" id="posTip" placeholder="Propina" style="width:100px;" min="0" step="0.01" />
+                <div id="activeOrdersPanel" class="pos-side-panel" aria-hidden="true">
+                  <div class="pos-active-panel-head">
+                    <strong>Pedidos activos</strong>
+                    <span>Gestiona, edita o cambia su estado</span>
+                  </div>
+                  <div class="orders-list" id="ordersList"></div>
                 </div>
-                <div style="background:#f5f0ff;padding:10px;border-radius:10px;margin-bottom:10px;">
-                  <div style="display:flex;justify-content:space-between;font-size:13px;"><span>Subtotal:</span><strong id="posSubtotal">$0.00</strong></div>
-                  <div style="display:flex;justify-content:space-between;font-size:13px;"><span>Descuento:</span><strong id="posDiscountAmt">-$0.00</strong></div>
-                  <div style="display:flex;justify-content:space-between;font-size:13px;"><span>IVA (16%):</span><strong id="posTax">$0.00</strong></div>
-                  <div style="display:flex;justify-content:space-between;font-size:13px;"><span>Propina:</span><strong id="posTipAmt">$0.00</strong></div>
-                  <div style="display:flex;justify-content:space-between;font-size:16px;font-weight:900;border-top:1px solid #ddd;padding-top:6px;margin-top:6px;"><span>TOTAL:</span><strong id="posTotal">$0.00</strong></div>
-                </div>
-                <div style="display:flex;gap:8px;">
-                  <button class="btn-license" style="flex:1;background:linear-gradient(135deg,#27ae60,#2ecc71);" onclick="posSaveOpenAccount()">📋 Cuenta Abierta</button>
-                  <button class="btn-license" style="flex:1;" onclick="posCheckout()">💳 Cobrar</button>
-                </div>
-                <div id="posMsg" style="font-size:12px;margin-top:8px;text-align:center;"></div>
               </div>
-            </div>
-            <div id="activeOrdersPanel" class="pos-active-panel" aria-hidden="true">
-              <div class="pos-active-panel-head">
-                <strong>Pedidos activos</strong>
-                <button type="button" onclick="toggleActiveOrdersPanel()">Cerrar</button>
-              </div>
-              <div class="orders-list" id="ordersList"></div>
             </div>
           </div>
         </div>
