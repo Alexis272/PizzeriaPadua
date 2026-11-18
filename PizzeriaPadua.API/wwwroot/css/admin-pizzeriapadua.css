@@ -1348,4 +1348,16 @@ body > .login-box {
     font-weight: 800 !important;
   }
   #pos #posProductGrid .pos-product-category { display: none; }
+  #pos #posProductGrid {
+    grid-auto-rows: 360px !important;
+  }
+  #pos #posProductGrid .admin-product-card {
+    height: 360px !important;
+    min-height: 360px !important;
+  }
+  #pos #posProductGrid .admin-product-card img {
+    flex-basis: 235px !important;
+    height: 235px !important;
+    min-height: 235px !important;
+  }
 }
