@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Pizzería Padua | Sin conexión</title>
+  <style>
+    :root { color-scheme: light; font-family: "Segoe UI", system-ui, sans-serif; }
+    body { min-height: 100vh; margin: 0; display: grid; place-items: center; background: linear-gradient(135deg,#f1eff8,#e8e6f1); color: #30263c; }
+    main { width: min(420px, calc(100% - 40px)); padding: 42px; text-align: center; border: 1px solid #ddd6e8; border-radius: 20px; background: #fff; box-shadow: 0 18px 45px #51416824; }
+    .logo { width: 64px; height: 64px; margin: 0 auto 20px; display: grid; place-items: center; border-radius: 16px; color: #fff; background: #714b67; font-size: 30px; font-weight: 800; }
+    h1 { margin: 0 0 10px; font-size: 25px; }
+    p { margin: 0 0 24px; color: #71687b; line-height: 1.5; }
+    button { border: 0; border-radius: 8px; padding: 12px 22px; color: #fff; background: #714b67; font: inherit; font-weight: 700; cursor: pointer; }
+    button:hover { background: #58384f; }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="logo">P</div>
+    <h1>Sin conexión</h1>
+    <p>No fue posible conectar con Pizzería Padua. Verifica tu conexión a internet e inténtalo nuevamente.</p>
+    <button id="retry">Reintentar</button>
+  </main>
+  <script>
+    const params = new URLSearchParams(location.search);
+    document.getElementById("retry").addEventListener("click", () => {
+      location.href = params.get("url") || "https://pizzeriapadua-production.up.railway.app/PizzeriaPadua/";
+    });
+  </script>
+</body>
+</html>

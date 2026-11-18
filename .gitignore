@@ -10,3 +10,5 @@ appsettings.Development.json
 .env
 *.log
 installer/*.exe
+desktop-pos/node_modules/
+desktop-pos/dist/
