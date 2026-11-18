@@ -185,16 +185,15 @@
           </div>
           <div class="table-card">
             <div class="orders-toolbar">
-              <span>Productos disponibles</span>
+              <div class="pos-header-filters">
+                <input type="text" id="posSearch" placeholder="🔍 Buscar por nombre, SKU, código de barras..." oninput="filterPosProducts()" />
+                <select id="posCategoryFilter" onchange="filterPosProducts()">
+                  <option value="">Todas las categorías</option>
+                </select>
+              </div>
             </div>
             <div class="pos-terminal-layout" style="display:grid;grid-template-columns:1fr 380px;gap:16px;">
               <div>
-                <div style="display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap;">
-                  <input type="text" id="posSearch" placeholder="🔍 Buscar por nombre, SKU, código de barras..." style="flex:1;min-width:200px;" oninput="filterPosProducts()" />
-                  <select id="posCategoryFilter" onchange="filterPosProducts()" style="min-width:160px;">
-                    <option value="">Todas las categorías</option>
-                  </select>
-                </div>
                 <div id="posProductGrid" class="product-grid-admin" style="max-height:520px;overflow-y:auto;"></div>
               </div>
               <div class="table-card" style="padding:16px;">

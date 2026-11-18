@@ -767,10 +767,29 @@ body:has(.module-mode) { overflow: hidden; }
   margin-bottom: 10px !important;
   flex: 0 0 38px;
 }
-#pos > .table-card > .orders-toolbar > span { font-size: 23px !important; }
+#pos > .table-card > .orders-toolbar > span { display: none; }
+#pos > .table-card > .orders-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 4;
+  padding: 0 0 10px !important;
+}
+#pos .pos-header-filters {
+  width: 100%;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 245px;
+  gap: 12px;
+}
+#pos .pos-header-filters input,
+#pos .pos-header-filters select {
+  min-width: 0;
+  min-height: 40px;
+  box-shadow: 0 4px 12px rgba(61,36,70,.08);
+}
 #pos .pos-terminal-layout {
   flex: 1;
   min-height: 0;
+  height: 0;
 }
 #pos .pos-terminal-layout > div:first-child {
   min-height: 0;
@@ -784,6 +803,8 @@ body:has(.module-mode) { overflow: hidden; }
   flex: 1;
   min-height: 0;
   max-height: none !important;
+  overflow-y: auto !important;
+  overscroll-behavior: contain;
 }
 #pos .pos-terminal-layout > .table-card {
   height: 100%;
@@ -810,11 +831,32 @@ body:has(.module-mode) { overflow: hidden; }
   overflow-y: auto;
 }
 #pos #posOrderPanel #posCartItems {
-  max-height: 155px !important;
+  min-height: 92px !important;
+  max-height: 112px !important;
   overflow-y: auto;
 }
 #pos #posOrderPanel h3 {
-  margin-bottom: 12px !important;
+  margin: 4px 0 8px !important;
+  font-size: 21px !important;
+}
+#pos #posOrderPanel input,
+#pos #posOrderPanel select {
+  min-height: 34px !important;
+  padding: 7px 10px !important;
+}
+#pos #posOrderPanel > div[style*="background:#f5f0ff"] {
+  padding: 8px !important;
+  margin-bottom: 8px !important;
+}
+#pos #posOrderPanel > div[style*="background:#f5f0ff"] > div {
+  min-height: 19px !important;
+  font-size: 12px !important;
+}
+#pos #posOrderPanel #posTotal { font-size: 18px !important; }
+#pos #posOrderPanel > div:nth-last-child(2) button {
+  min-height: 42px !important;
+  padding: 7px 10px !important;
+  font-size: 13px !important;
 }
 #pos #posOrderPanel > div[style*="margin-bottom:8px"] {
   margin-bottom: 6px !important;
@@ -830,8 +872,10 @@ body:has(.module-mode) { overflow: hidden; }
   #pos { height: auto; }
   #pos > .table-card { height: auto; }
   #pos .pos-terminal-layout { flex: none; }
+  #pos .pos-terminal-layout { height: auto; }
   #pos .pos-terminal-layout > div:first-child { min-height: 0; }
   #pos #posProductGrid { max-height: 560px !important; }
+  #pos .pos-header-filters { grid-template-columns: 1fr; }
   #pos .pos-terminal-layout > .table-card { height: auto; overflow: visible; }
   #pos .pos-side-panel.active { height: auto; overflow: visible; }
   #pos #activeOrdersPanel #ordersList { max-height: 500px; }
