@@ -1263,3 +1263,50 @@ body > .login-box {
     font-size: 15px !important;
   }
 }
+
+@media (min-width: 801px) {
+  #pos #posProductGrid {
+    grid-auto-rows: 300px !important;
+    align-items: stretch !important;
+  }
+  #pos #posProductGrid .admin-product-card {
+    height: 300px !important;
+    min-height: 300px !important;
+    padding: 10px !important;
+    overflow: hidden !important;
+  }
+  #pos #posProductGrid .admin-product-card img {
+    flex: 0 0 205px !important;
+    height: 205px !important;
+    min-height: 205px !important;
+  }
+  #pos .pos-terminal-layout > .table-card {
+    padding: 14px !important;
+  }
+  #pos #posOrderPanel h3 {
+    margin: 0 0 8px !important;
+    font-size: 21px !important;
+  }
+  #pos #posOrderPanel #posCartItems {
+    min-height: 66px !important;
+    max-height: 82px !important;
+    margin-bottom: 8px !important;
+  }
+  #pos #posOrderPanel input,
+  #pos #posOrderPanel select {
+    min-height: 34px !important;
+    padding: 6px 9px !important;
+  }
+  #pos #posOrderPanel > div[style*="background:#f5f0ff"] {
+    padding: 8px !important;
+    margin: 6px 0 8px !important;
+  }
+  #pos #posOrderPanel > div[style*="background:#f5f0ff"] > div {
+    min-height: 18px !important;
+    font-size: 12px !important;
+  }
+  #pos #posOrderPanel > div:nth-last-child(2) button {
+    min-height: 42px !important;
+    font-size: 13px !important;
+  }
+}
