@@ -1,6 +1,6 @@
 {
   "name": "pizzeria-padua-desktop",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "private": true,
   "description": "Panel de gestión de Pizzería Padua para Windows",
   "main": "src/main.js",

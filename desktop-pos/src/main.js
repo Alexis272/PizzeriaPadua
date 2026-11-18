@@ -88,7 +88,20 @@ if (!lock) {
     mainWindow.focus();
   });
 
-  app.whenReady().then(() => {
+  app.whenReady().then(async () => {
+    await session.defaultSession.clearCache().catch(() => {});
+    session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
+      const headers = { ...(details.responseHeaders || {}) };
+      for (const key of Object.keys(headers)) {
+        const normalized = key.toLowerCase();
+        if (["cache-control", "expires", "pragma", "s-maxage", "max-age"].includes(normalized)) {
+          delete headers[key];
+        }
+      }
+      headers["Cache-Control"] = "no-store, no-cache, must-revalidate";
+      headers["Pragma"] = "no-cache";
+      callback({ responseHeaders: headers });
+    });
     session.defaultSession.setPermissionRequestHandler((_webContents, permission, callback) => {
       callback(permission === "media");
     });
