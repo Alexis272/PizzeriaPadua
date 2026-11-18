@@ -1070,3 +1070,76 @@ body > .login-box {
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
+
+/* Último ajuste POS: altura real para que el catálogo sí pueda desplazarse. */
+@media (min-width: 801px) {
+  #pos .pos-terminal-layout {
+    display: grid !important;
+    flex: none !important;
+    height: calc(100vh - 184px) !important;
+    min-height: 400px !important;
+  }
+  #pos .pos-terminal-layout > div:first-child {
+    height: 100% !important;
+    min-height: 0 !important;
+    overflow: hidden !important;
+  }
+  #pos #posProductGrid {
+    display: grid !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    overflow-y: auto !important;
+    align-content: start;
+  }
+  #pos .pos-terminal-layout > .table-card {
+    height: 100% !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+    align-self: center;
+  }
+  #pos .pos-side-tabs {
+    margin: 0 0 8px !important;
+    padding: 3px !important;
+  }
+  #pos .pos-side-tab {
+    min-height: 34px !important;
+    padding: 5px 8px !important;
+    font-size: 12px !important;
+  }
+  #pos #posOrderPanel.active {
+    height: auto !important;
+    overflow: visible !important;
+  }
+  #pos #posOrderPanel h3 {
+    margin: 2px 0 5px !important;
+    font-size: 19px !important;
+  }
+  #pos #posOrderPanel #posCartItems {
+    min-height: 58px !important;
+    max-height: 72px !important;
+    margin-bottom: 6px !important;
+  }
+  #pos #posOrderPanel input,
+  #pos #posOrderPanel select {
+    min-height: 30px !important;
+    padding: 5px 8px !important;
+    font-size: 12px !important;
+  }
+  #pos #posOrderPanel > div[style*="margin-bottom:8px"] {
+    margin-bottom: 4px !important;
+  }
+  #pos #posOrderPanel > div[style*="background:#f5f0ff"] {
+    padding: 5px !important;
+    margin-bottom: 5px !important;
+  }
+  #pos #posOrderPanel > div[style*="background:#f5f0ff"] > div {
+    min-height: 16px !important;
+    font-size: 11px !important;
+  }
+  #pos #posOrderPanel > div:nth-last-child(2) button {
+    min-height: 36px !important;
+    padding: 5px 7px !important;
+    font-size: 12px !important;
+  }
+}
