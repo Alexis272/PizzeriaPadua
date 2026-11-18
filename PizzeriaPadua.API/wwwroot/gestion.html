@@ -185,22 +185,28 @@
           </div>
           <div class="table-card">
             <div class="orders-toolbar">
-              <div class="pos-header-filters">
-                <input type="text" id="posSearch" placeholder="🔍 Buscar por nombre, SKU, código de barras..." oninput="filterPosProducts()" />
-                <select id="posCategoryFilter" onchange="filterPosProducts()">
-                  <option value="">Todas las categorías</option>
+              <span>Pedidos activos</span>
+              <div class="pos-header-actions">
+                <button class="btn-license" onclick="openAdminOrderModal()">＋ Nueva Venta</button>
+                <select id="posFilter" onchange="loadOrders()">
+                  <option value="all">Todos los pedidos activos</option>
+                  <option value="0">Pendientes</option>
+                  <option value="1">En preparación</option>
+                  <option value="4">Pendientes de entrega</option>
                 </select>
               </div>
             </div>
             <div class="pos-terminal-layout" style="display:grid;grid-template-columns:1fr 380px;gap:16px;">
               <div>
+                <div class="pos-product-filters">
+                  <input type="text" id="posSearch" placeholder="⌕  Buscar por nombre, SKU, código de barras..." oninput="filterPosProducts()" />
+                  <select id="posCategoryFilter" onchange="filterPosProducts()">
+                    <option value="">Pizzas</option>
+                  </select>
+                </div>
                 <div id="posProductGrid" class="product-grid-admin" style="max-height:520px;overflow-y:auto;"></div>
               </div>
               <div class="table-card" style="padding:16px;">
-                <div class="pos-side-tabs" role="tablist">
-                  <button type="button" class="pos-side-tab active" data-panel="posOrderPanel" onclick="switchPosSidePanel('posOrderPanel')">🛒 Tomar pedido</button>
-                  <button type="button" class="pos-side-tab" data-panel="activeOrdersPanel" onclick="switchPosSidePanel('activeOrdersPanel')">▣ Pedidos activos</button>
-                </div>
                 <div id="posOrderPanel" class="pos-side-panel active">
                   <h3 style="margin-bottom:10px;">🛒 Carrito de Venta</h3>
                   <div id="posCartItems" style="min-height:200px;max-height:320px;overflow-y:auto;border:1px solid #e5ddeb;border-radius:12px;padding:8px;margin-bottom:10px;"></div>
