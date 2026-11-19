@@ -1215,7 +1215,7 @@ body > #activeOrdersPanel.pos-floating-orders #ordersList > .order-card {
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  min-height: 220px;
+  min-height: 260px;
 }
 
 @media (max-width: 680px) {

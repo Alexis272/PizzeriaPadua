@@ -487,6 +487,17 @@ namespace PizzeriaPadua.API.Controllers
                 {
                     order.SaleState = "CanceladaTotal";
                     order.CancelledAt = DateTime.UtcNow;
+                    order.IsOpenAccount = false;
+
+                    if (order.TableId.HasValue)
+                    {
+                        var table = await _context.Tables.FindAsync(order.TableId.Value);
+                        if (table != null)
+                        {
+                            table.IsAvailable = true;
+                            table.CurrentOrderId = null;
+                        }
+                    }
                 }
 
                 _context.Orders.Update(order);

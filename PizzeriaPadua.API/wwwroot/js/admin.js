@@ -122,7 +122,8 @@ async function loadOrders() {
     const orders = await apiFetch(API.orders);
     sessionStorage.setItem("adminOrders", JSON.stringify(orders));
   const filter = document.getElementById("orderFilter")?.value || "all";
-    let active = orders.filter(o => o.status === 0 || o.status === 1 || o.status === 4 || o.status === 6 || o.isOpenAccount);
+    let active = orders.filter(o => o.status !== 3 &&
+      (o.status === 0 || o.status === 1 || o.status === 4 || o.status === 6 || o.isOpenAccount));
     let filtered = filter === "all" ? active : active.filter(o => o.status == filter);
     renderOrders(filtered);
     container.dataset.loaded = "true";
@@ -561,8 +562,8 @@ async function loadSalesHistory() {
   container.innerHTML = "<p>Cargando historial...</p>";
   try {
     const orders = await apiFetch(API.orders);
-    const completed = orders.filter(o => o.status === 2);
-    const filtered = filterHistoryByPeriod(completed);
+    const historical = orders.filter(o => o.status === 2 || o.status === 3);
+    const filtered = filterHistoryByPeriod(historical);
     renderHistory(filtered, totalEl, countEl, container);
     await saveHistoryToFile();
   } catch (err) {
@@ -607,9 +608,11 @@ function renderHistory(orders, totalEl, countEl, container) {
     countEl.textContent = "0";
     return;
   }
-  const total = orders.reduce((sum, o) => sum + o.totalAmount, 0);
+  const total = orders
+    .filter(o => o.status === 2)
+    .reduce((sum, o) => sum + o.totalAmount, 0);
   totalEl.textContent = "$" + total.toFixed(2);
-  countEl.textContent = orders.length;
+  countEl.textContent = orders.filter(o => o.status === 2).length;
   container.innerHTML = orders.map(o => `
     <div class="order-card history-card">
       <div class="order-info">
@@ -619,7 +622,7 @@ function renderHistory(orders, totalEl, countEl, container) {
         ${renderOrderPaymentFee(o)}
         ${o.orderItems ? o.orderItems.map(oi => renderOrderItemLine(oi, "items")).join("") : ""}
       </div>
-      <span class="order-status status-completed">Entregado</span>
+       <span class="order-status ${o.status === 3 ? "status-cancelled" : "status-completed"}">${o.status === 3 ? "Cancelado" : "Entregado"}</span>
     </div>
   `).join("");
 }
