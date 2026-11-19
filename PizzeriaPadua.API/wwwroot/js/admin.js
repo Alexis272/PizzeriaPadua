@@ -2086,6 +2086,13 @@ function setPosChannel(channel, button) {
     btn.classList.toggle("active", btn === button);
   });
 }
+function movePosCatalogIntoOrderCard() {
+  var inlineCatalog = document.getElementById("posInlineCatalog");
+  var toolbar = document.querySelector("#pos .pos-catalog-toolbar");
+  var grid = document.getElementById("posProductGrid");
+  if (inlineCatalog && toolbar && toolbar.parentElement !== inlineCatalog) inlineCatalog.appendChild(toolbar);
+  if (inlineCatalog && grid && grid.parentElement !== inlineCatalog) inlineCatalog.appendChild(grid);
+}
 
 function posAddToCart(productId, name, price, imageUrl) {
   var existing = posCart.find(function(i) { return i.productId === productId; });
@@ -2453,6 +2460,7 @@ loadAdminProducts = async function() {
 
 // Initialize on load
 document.addEventListener("DOMContentLoaded", function() {
+  movePosCatalogIntoOrderCard();
   renderPosCart();
   updatePosTotals();
   var defaultChannel = document.getElementById("posChannel")?.value;

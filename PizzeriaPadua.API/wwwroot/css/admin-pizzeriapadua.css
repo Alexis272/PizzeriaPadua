@@ -1991,4 +1991,62 @@ body > .login-box {
     max-height: none !important;
     overflow: visible !important;
   }
+  #pos .pos-terminal-layout {
+    grid-template-columns: minmax(0, 1fr) !important;
+    justify-items: center;
+  }
+  #pos .pos-terminal-layout > div:first-child {
+    display: none !important;
+  }
+  #pos .pos-terminal-layout > .table-card {
+    width: min(760px, 100%) !important;
+    max-width: 760px;
+    position: relative !important;
+  }
+  #pos .pos-inline-catalog {
+    margin-bottom: 14px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #e4dce7;
+  }
+  #pos .pos-inline-catalog > strong {
+    display: block;
+    margin-bottom: 8px;
+    color: #211d25;
+    font-size: 13px;
+  }
+  #pos .pos-inline-catalog .pos-catalog-toolbar {
+    margin-bottom: 9px;
+  }
+  #pos .pos-inline-catalog .pos-search-box {
+    min-height: 38px;
+  }
+  #pos .pos-inline-catalog .pos-category-tabs button {
+    min-height: 32px;
+    padding: 5px 11px !important;
+    font-size: 11px !important;
+  }
+  #pos .pos-inline-catalog #posProductGrid {
+    max-height: 190px !important;
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+    overflow-y: auto !important;
+  }
+  #pos .pos-inline-catalog #posProductGrid .admin-product-card {
+    min-height: 145px;
+    padding: 5px !important;
+  }
+  #pos .pos-inline-catalog #posProductGrid .admin-product-card img {
+    height: 78px !important;
+  }
+  #pos .pos-inline-catalog #posProductGrid .pos-product-copy {
+    padding: 5px 3px 2px !important;
+    gap: 2px;
+  }
+  #pos .pos-inline-catalog #posProductGrid .pos-product-name {
+    min-height: 24px;
+    font-size: 11px !important;
+  }
+  #pos .pos-inline-catalog #posProductGrid .pos-product-price {
+    font-size: 12px !important;
+  }
 }

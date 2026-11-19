@@ -6,7 +6,7 @@
   <title>Pizzería Padua | Panel POS</title>
   <link rel="stylesheet" href="css/apple-tokens.css" />
   <link rel="stylesheet" href="css/admin.css?v=20260715-customizations" />
-  <link rel="stylesheet" href="css/admin-pizzeriapadua.css?v=20261119-pos-scroll-fix" />
+  <link rel="stylesheet" href="css/admin-pizzeriapadua.css?v=20261119-pos-order-card" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
   <style>
     .module-dashboard {
@@ -204,11 +204,12 @@
                  <div id="posProductGrid" class="product-grid-admin" style="max-height:520px;overflow-y:auto;"></div>
               </div>
               <div class="table-card" style="padding:16px;">
-                <div class="pos-side-tabs" role="tablist">
-                  <button type="button" class="pos-side-tab active" data-panel="posOrderPanel" onclick="switchPosSidePanel('posOrderPanel')">🛒 Tomar pedido</button>
-                  <button type="button" class="pos-side-tab" data-panel="activeOrdersPanel" onclick="switchPosSidePanel('activeOrdersPanel')">▣ Pedidos activos</button>
-                </div>
-                <div id="posOrderPanel" class="pos-side-panel active">
+                 <div class="pos-side-tabs" role="tablist">
+                   <button type="button" class="pos-side-tab active" data-panel="posOrderPanel" onclick="switchPosSidePanel('posOrderPanel')">🛒 Tomar pedido</button>
+                   <button type="button" class="pos-side-tab" data-panel="activeOrdersPanel" onclick="switchPosSidePanel('activeOrdersPanel')">▣ Pedidos activos</button>
+                 </div>
+                 <div id="posOrderPanel" class="pos-side-panel active">
+                   <div id="posInlineCatalog" class="pos-inline-catalog"><strong>Agregar productos</strong></div>
                    <div class="pos-order-heading"><div><span>Pedido actual</span><h3>Pedido <strong id="posCurrentOrderLabel">nuevo</strong></h3></div><span class="pos-edit-badge">En edición</span></div>
                    <div class="pos-field-row pos-client-row"><label>Cliente</label><input type="text" id="posCustomerName" placeholder="Buscar o seleccionar cliente..." list="posCustomerOptions" /><datalist id="posCustomerOptions"><option value="Cliente Mostrador"></option></datalist></div>
                    <div class="pos-field-row"><label>Tipo de pedido</label><div class="pos-channel-buttons"><button type="button" data-channel="Para Llevar" onclick="setPosChannel('Para Llevar', this)">✓ Para llevar</button><button type="button" data-channel="Entrega a Domicilio" onclick="setPosChannel('Entrega a Domicilio', this)">A domicilio</button><button type="button" data-channel="Local / Mesa" onclick="setPosChannel('Local / Mesa', this)">En mesa</button></div>
