@@ -1210,7 +1210,7 @@ body:has(.module-mode) { overflow: hidden; }
 }
 
 /* El panel se mueve al body para que no quede limitado por el contenedor del POS. */
-body > #activeOrdersPanel.pos-floating-orders {
+body > #activeOrdersPanel.pos-floating-orders:not(.active) {
   display: none !important;
   pointer-events: none !important;
 }
@@ -1227,6 +1227,7 @@ body > #activeOrdersPanel.pos-floating-orders.active {
   max-height: calc(100dvh - 32px) !important;
   transform: translate(-50%, -50%) !important;
   display: flex !important;
+  pointer-events: auto !important;
   flex-direction: column;
   gap: 18px;
   margin: 0 !important;
