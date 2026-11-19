@@ -1,6 +1,6 @@
 {
   "name": "pizzeria-padua-desktop",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "private": true,
   "description": "Panel de gestión de Pizzería Padua para Windows",
   "main": "src/main.js",
@@ -34,7 +34,9 @@
       "target": [
         {
           "target": "nsis",
-          "arch": ["x64"]
+          "arch": [
+            "x64"
+          ]
         }
       ],
       "requestedExecutionLevel": "asInvoker",
