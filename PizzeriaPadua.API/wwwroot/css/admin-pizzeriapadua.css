@@ -1944,25 +1944,26 @@ body > .login-box {
 
 @media (min-width: 801px) {
   .module-mode .topbar {
-    min-height: 58px !important;
-    padding: 8px 24px !important;
+    min-height: 52px !important;
+    height: 52px !important;
+    padding: 6px 20px !important;
   }
-  .module-mode .app-switcher { width: 32px; min-height: 32px; margin-right: 10px; font-size: 18px !important; }
-  .module-mode .topbar h1 { font-size: 20px !important; }
-  .module-mode .topbar .icons { width: 32px; height: 32px; }
-  .module-mode .main-grid { padding: 14px 24px !important; }
+  .module-mode .app-switcher { width: 28px; min-height: 28px; margin-right: 8px; font-size: 16px !important; }
+  .module-mode .topbar h1 { font-size: 18px !important; }
+  .module-mode .topbar .icons { width: 28px; height: 28px; }
+  .module-mode .main-grid { padding: 10px 20px !important; }
   #pos .module-header { min-height: 38px; margin-bottom: 8px !important; }
-  #pos .pos-terminal-layout { grid-template-columns: minmax(0, 1fr) 370px !important; gap: 12px !important; }
+  #pos .pos-terminal-layout { grid-template-columns: minmax(0, 1fr) 340px !important; gap: 10px !important; }
   #pos .pos-terminal-layout > div:first-child,
   #pos .pos-terminal-layout > .table-card { padding: 14px !important; }
   #pos #posProductGrid { gap: 10px !important; grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
-  #pos #posProductGrid .admin-product-card { min-height: 235px; padding: 7px !important; }
-  #pos #posProductGrid .admin-product-card img { height: 145px !important; }
+  #pos #posProductGrid .admin-product-card { min-height: 205px; padding: 6px !important; }
+  #pos #posProductGrid .admin-product-card img { height: 120px !important; }
   #pos #posProductGrid .pos-product-copy { padding: 7px 4px 2px !important; gap: 4px; }
-  #pos #posProductGrid .pos-product-name { min-height: 32px; font-size: 14px !important; }
-  #pos #posProductGrid .pos-product-price { font-size: 15px !important; }
+  #pos #posProductGrid .pos-product-name { min-height: 28px; font-size: 13px !important; }
+  #pos #posProductGrid .pos-product-price { font-size: 14px !important; }
   #pos .pos-order-heading { margin-bottom: 12px; }
-  #pos .pos-order-heading h3 { font-size: 22px !important; }
+  #pos .pos-order-heading h3 { font-size: 19px !important; }
   #pos .pos-field-row { grid-template-columns: 88px minmax(0, 1fr); margin-bottom: 8px; }
   #pos .pos-field-row > label { font-size: 12px; }
   #pos .pos-field-row input, #pos .pos-field-row select { min-height: 36px; font-size: 12px; }
