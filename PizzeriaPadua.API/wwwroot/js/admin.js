@@ -332,8 +332,16 @@ function formatPosProductName(value) {
 
 function switchPosSidePanel(panelId) {
   const ordersPanel = document.getElementById("activeOrdersPanel");
+  const orderPanel = document.getElementById("posOrderPanel");
   if (ordersPanel && panelId === "activeOrdersPanel" && ordersPanel.parentElement !== document.body) {
     document.body.appendChild(ordersPanel);
+  }
+  if (panelId === "posOrderPanel" && orderPanel) {
+    orderPanel.classList.add("active");
+    orderPanel.style.pointerEvents = "auto";
+  }
+  if (panelId === "activeOrdersPanel" && orderPanel) {
+    orderPanel.style.pointerEvents = "none";
   }
   document.querySelectorAll(".pos-side-tab").forEach(tab => {
     tab.classList.toggle("active", tab.dataset.panel === panelId);

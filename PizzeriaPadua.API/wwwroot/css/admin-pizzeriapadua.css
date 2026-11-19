@@ -910,6 +910,9 @@ body:has(.module-mode) { overflow: hidden; }
   flex-direction: column;
   overflow: visible;
   padding-right: 2px;
+  pointer-events: auto;
+  position: relative;
+  z-index: 2;
 }
 #pos #posOrderPanel > h3 {
   flex: 0 0 auto;
@@ -1209,6 +1212,7 @@ body:has(.module-mode) { overflow: hidden; }
 /* El panel se mueve al body para que no quede limitado por el contenedor del POS. */
 body > #activeOrdersPanel.pos-floating-orders {
   display: none !important;
+  pointer-events: none !important;
 }
 body > #activeOrdersPanel.pos-floating-orders.active {
   position: fixed !important;
