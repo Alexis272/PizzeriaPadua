@@ -1980,4 +1980,15 @@ body > .login-box {
   #pos .pos-grand-total { font-size: 19px; margin-top: 5px; padding-top: 6px; }
   #pos .pos-actions { gap: 7px; margin-top: 10px; }
   #pos .pos-actions button { min-height: 44px; font-size: 13px !important; }
+  #pos .pos-terminal-layout > .table-card {
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    scrollbar-gutter: stable;
+    padding-bottom: 18px !important;
+  }
+  #pos #posOrderPanel.active {
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+  }
 }
