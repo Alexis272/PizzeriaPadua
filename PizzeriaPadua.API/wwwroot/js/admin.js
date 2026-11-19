@@ -330,6 +330,10 @@ function formatPosProductName(value) {
 }
 
 function switchPosSidePanel(panelId) {
+  const ordersPanel = document.getElementById("activeOrdersPanel");
+  if (ordersPanel && panelId === "activeOrdersPanel" && ordersPanel.parentElement !== document.body) {
+    document.body.appendChild(ordersPanel);
+  }
   document.querySelectorAll(".pos-side-tab").forEach(tab => {
     tab.classList.toggle("active", tab.dataset.panel === panelId);
   });
