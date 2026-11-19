@@ -2068,31 +2068,17 @@ async function submitCashCut() {
 
 // POS cart functions
 var posCart = [];
-var posProducts = [];
-var posCategory = "all";
 function filterPosProducts() {
-  renderPosProductGrid(posProducts);
-}
-function setPosCategory(category, button) {
-  posCategory = category || "all";
-  document.querySelectorAll(".pos-category-tabs button").forEach(function(btn) {
-    btn.classList.toggle("active", btn === button);
-  });
-  renderPosProductGrid(posProducts);
-}
-function setPosChannel(channel, button) {
-  document.getElementById("posChannel").value = channel;
-  document.querySelectorAll(".pos-channel-buttons button").forEach(function(btn) {
-    btn.classList.toggle("active", btn === button);
-  });
+  // Basic filter - reload products
+  loadAdminProducts();
 }
 
-function posAddToCart(productId, name, price, imageUrl) {
+function posAddToCart(productId, name, price) {
   var existing = posCart.find(function(i) { return i.productId === productId; });
   if (existing) {
     existing.quantity += 1;
   } else {
-    posCart.push({ productId: productId, name: name, price: price, imageUrl: imageUrl || "img/pizza-padua.svg", quantity: 1, customizations: "" });
+    posCart.push({ productId: productId, name: name, price: price, quantity: 1, customizations: "" });
   }
   renderPosCart();
 }
@@ -2107,7 +2093,7 @@ function renderPosCart() {
   }
   container.innerHTML = posCart.map(function(item, idx) {
     return '<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid #f0f0f0;">' +
-       '<img class="pos-cart-image" src="' + resolveImageUrl(item.imageUrl || "img/pizza-padua.svg") + '" alt="" /><div style="flex:1;"><strong style="font-size:13px;">' + item.name + '</strong><br><span style="font-size:11px;color:#766d86;">$' + item.price.toFixed(2) + ' x ' + item.quantity + '</span></div>' +
+      '<div style="flex:1;"><strong style="font-size:13px;">' + item.name + '</strong><br><span style="font-size:11px;color:#766d86;">$' + item.price.toFixed(2) + ' x ' + item.quantity + '</span></div>' +
       '<div style="display:flex;gap:4px;align-items:center;">' +
       '<button onclick="posCart[' + idx + '].quantity=Math.max(1,posCart[' + idx + '].quantity-1);renderPosCart();" style="width:24px;height:24px;border-radius:4px;border:1px solid #ddd;background:#fff;cursor:pointer;">-</button>' +
       '<span style="font-size:13px;font-weight:700;width:20px;text-align:center;">' + item.quantity + '</span>' +
@@ -2132,8 +2118,6 @@ function updatePosTotals() {
   document.getElementById("posTax").textContent = "$" + tax.toFixed(2);
   document.getElementById("posTipAmt").textContent = "$" + tip.toFixed(2);
   document.getElementById("posTotal").textContent = "$" + total.toFixed(2);
-  var chargeTotal = document.getElementById("posChargeTotal");
-  if (chargeTotal) chargeTotal.textContent = "$" + total.toFixed(2);
 }
 
 async function posSaveOpenAccount() {
@@ -2387,39 +2371,20 @@ function exportReportCSV() {
 
 // Override loadAdminProducts to also populate pos product grid
 var _originalLoadAdminProducts = loadAdminProducts;
-function posProductMatches(product) {
-  var query = (document.getElementById("posSearch")?.value || "").trim().toLocaleLowerCase("es-MX");
-  var text = (product.name + " " + (product.category?.name || "")).toLocaleLowerCase("es-MX");
-  if (query && !text.includes(query)) return false;
-  if (posCategory === "all") return true;
-  var category = (product.category?.name || "").toLocaleLowerCase("es-MX");
-  if (posCategory === "pizza") return category.includes("pizza");
-  if (posCategory === "bebida") return category.includes("bebida");
-  return !category.includes("pizza") && !category.includes("bebida");
-}
-function renderPosProductGrid(products) {
-  var grid = document.getElementById("posProductGrid");
-  if (!grid) return;
-  var filtered = (products || []).filter(posProductMatches);
-  grid.innerHTML = filtered.map(function(p) {
-    var nameArg = JSON.stringify(p.name).replace(/"/g, "&quot;");
-    var imageArg = JSON.stringify(p.imageUrl || "img/pizza-padua.svg").replace(/"/g, "&quot;");
-    return '<div class="admin-product-card" onclick="posAddToCart(' + p.productId + ',' + nameArg + ',' + p.price + ',' + imageArg + ')">' +
-      '<img src="' + resolveImageUrl(p.imageUrl || "img/pizza-padua.svg") + '" alt="' + escapeHtml(p.name) + '" />' +
-      '<div class="pos-product-copy"><strong class="pos-product-name">' + escapeHtml(formatPosProductName(p.name)) + '</strong><span class="pos-product-price">$' + p.price.toFixed(2) + '</span></div>' +
-      '</div>';
-  }).join("") || '<p class="pos-empty-products">No hay productos para esta búsqueda.</p>';
-}
 loadAdminProducts = async function() {
   await _originalLoadAdminProducts();
   // Also populate POS product grid
   try {
     var res = await fetch("/PizzeriaPadua/api/v1/Products");
     var products = await res.json();
-    posProducts = products;
     var grid = document.getElementById("posProductGrid");
     if (grid) {
-      renderPosProductGrid(products);
+      grid.innerHTML = products.map(function(p) {
+         return '<div class="admin-product-card" style="cursor:pointer;" onclick="posAddToCart(' + p.productId + ',\'' + p.name.replace(/'/g, "\\'") + '\',' + p.price + ')">' +
+           '<img src="' + (p.imageUrl || "img/pizza-padua.svg") + '" alt="' + p.name + '" style="width:100%;height:120px;object-fit:cover;border-radius:8px;" />' +
+           '<div class="pos-product-copy"><strong class="pos-product-name">' + escapeHtml(formatPosProductName(p.name)) + '</strong><span class="pos-product-price">$' + p.price.toFixed(2) + '</span><span class="pos-product-category">' + escapeHtml(p.category ? p.category.name : '') + '</span></div>' +
+           '</div>';
+      }).join("");
     }
     // Populate category filter
     var catFilter = document.getElementById("posCategoryFilter");
@@ -2455,7 +2420,4 @@ loadAdminProducts = async function() {
 document.addEventListener("DOMContentLoaded", function() {
   renderPosCart();
   updatePosTotals();
-  var defaultChannel = document.getElementById("posChannel")?.value;
-  var defaultButton = document.querySelector('.pos-channel-buttons button[data-channel="' + defaultChannel + '"]');
-  if (defaultButton) defaultButton.classList.add("active");
 });

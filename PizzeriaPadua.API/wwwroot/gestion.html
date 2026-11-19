@@ -6,7 +6,7 @@
   <title>Pizzería Padua | Panel POS</title>
   <link rel="stylesheet" href="css/apple-tokens.css" />
   <link rel="stylesheet" href="css/admin.css?v=20260715-customizations" />
-  <link rel="stylesheet" href="css/admin-pizzeriapadua.css?v=20261119-pos-redesign" />
+  <link rel="stylesheet" href="css/admin-pizzeriapadua.css?v=20261119-pos-clicks" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
   <style>
     .module-dashboard {
@@ -191,17 +191,8 @@
           </div>
           <div class="table-card">
             <div class="pos-terminal-layout" style="display:grid;grid-template-columns:1fr 380px;gap:16px;">
-               <div>
-                 <div class="pos-catalog-toolbar">
-                   <label class="pos-search-box"><span>⌕</span><input id="posSearch" type="search" placeholder="Buscar producto..." oninput="filterPosProducts()" /></label>
-                   <div class="pos-category-tabs" role="tablist">
-                     <button type="button" class="active" onclick="setPosCategory('all', this)">Todas</button>
-                     <button type="button" onclick="setPosCategory('pizza', this)">Pizzas</button>
-                     <button type="button" onclick="setPosCategory('bebida', this)">Bebidas</button>
-                     <button type="button" onclick="setPosCategory('complemento', this)">Complementos</button>
-                   </div>
-                 </div>
-                 <div id="posProductGrid" class="product-grid-admin" style="max-height:520px;overflow-y:auto;"></div>
+              <div>
+                <div id="posProductGrid" class="product-grid-admin" style="max-height:520px;overflow-y:auto;"></div>
               </div>
               <div class="table-card" style="padding:16px;">
                 <div class="pos-side-tabs" role="tablist">
@@ -209,24 +200,36 @@
                   <button type="button" class="pos-side-tab" data-panel="activeOrdersPanel" onclick="switchPosSidePanel('activeOrdersPanel')">▣ Pedidos activos</button>
                 </div>
                 <div id="posOrderPanel" class="pos-side-panel active">
-                   <div class="pos-order-heading"><div><span>Pedido actual</span><h3>Pedido <strong id="posCurrentOrderLabel">nuevo</strong></h3></div><span class="pos-edit-badge">En edición</span></div>
-                   <div class="pos-field-row pos-client-row"><label>Cliente</label><input type="text" id="posCustomerName" placeholder="Buscar o seleccionar cliente..." list="posCustomerOptions" /><datalist id="posCustomerOptions"><option value="Cliente Mostrador"></option></datalist></div>
-                   <div class="pos-field-row"><label>Tipo de pedido</label><div class="pos-channel-buttons"><button type="button" data-channel="Para Llevar" onclick="setPosChannel('Para Llevar', this)">✓ Para llevar</button><button type="button" data-channel="Entrega a Domicilio" onclick="setPosChannel('Entrega a Domicilio', this)">A domicilio</button><button type="button" data-channel="Local / Mesa" onclick="setPosChannel('Local / Mesa', this)">En mesa</button></div>
-                     <select id="posChannel" aria-label="Tipo de pedido"><option value="Para Llevar" selected>Para Llevar</option><option value="Mostrador">Mostrador</option><option value="Entrega a Domicilio">A domicilio</option><option value="Local / Mesa">En mesa</option><option value="Teléfono">Teléfono</option></select>
-                   </div>
-                   <div class="pos-field-row pos-table-row"><label>Mesa</label><select id="posTable"><option value="">Sin mesa</option></select></div>
-                   <div id="posCartItems" style="min-height:200px;max-height:320px;overflow-y:auto;border:1px solid #e5ddeb;border-radius:12px;padding:8px;margin-bottom:10px;"></div>
-                   <div class="pos-extra-fields"><label>Descuento<input type="number" id="posDiscount" placeholder="Ninguno" min="0" max="100" /></label><label>Cupón / promo<input type="text" id="posPromoCode" placeholder="Ingresar código..." /></label><label>Propina<input type="number" id="posTip" placeholder="$0.00" min="0" step="0.01" /></label></div>
-                   <div class="pos-total-box">
-                     <div style="display:flex;justify-content:space-between;font-size:13px;"><span>Subtotal:</span><strong id="posSubtotal">$0.00</strong></div>
-                     <div style="display:flex;justify-content:space-between;font-size:13px;"><span>IVA incluido (16%):</span><strong id="posTax">$0.00</strong></div>
-                     <div style="display:flex;justify-content:space-between;font-size:13px;"><span>Descuento:</span><strong id="posDiscountAmt">-$0.00</strong></div>
-                     <div class="pos-grand-total"><span>Total:</span><strong id="posTotal">$0.00</strong></div>
-                   </div>
-                   <div class="pos-actions">
-                     <button class="pos-save-button" onclick="posSaveOpenAccount()">▣ Guardar cambios</button>
-                     <button class="pos-charge-button" onclick="posCheckout()">▣ Cobrar <span id="posChargeTotal">$0.00</span></button>
-                   </div>
+                  <h3 style="margin-bottom:10px;">🛒 Carrito de Venta</h3>
+                  <div id="posCartItems" style="min-height:200px;max-height:320px;overflow-y:auto;border:1px solid #e5ddeb;border-radius:12px;padding:8px;margin-bottom:10px;"></div>
+                  <div style="display:flex;gap:8px;margin-bottom:8px;">
+                    <input type="text" id="posCustomerName" placeholder="Nombre del cliente" style="flex:1;" />
+                    <select id="posChannel" style="width:140px;">
+                      <option value="Mostrador">Mostrador</option>
+                      <option value="Local / Mesa">Local / Mesa</option>
+                      <option value="Para Llevar">Para Llevar</option>
+                      <option value="Entrega a Domicilio">Domicilio</option>
+                      <option value="Teléfono">Teléfono</option>
+                    </select>
+                  </div>
+                  <div style="display:flex;gap:8px;margin-bottom:8px;">
+                    <select id="posTable" style="flex:1;"><option value="">Sin mesa</option></select>
+                    <input type="number" id="posDiscount" placeholder="Descuento %" style="width:100px;" min="0" max="100" />
+                  </div>
+                  <div style="display:flex;gap:8px;margin-bottom:8px;">
+                    <input type="text" id="posPromoCode" placeholder="Cupón/Promo" style="flex:1;" />
+                    <input type="number" id="posTip" placeholder="Propina" style="width:100px;" min="0" step="0.01" />
+                  </div>
+                  <div style="background:#f5f0ff;padding:10px;border-radius:10px;margin-bottom:10px;">
+                    <div style="display:flex;justify-content:space-between;font-size:13px;"><span>Subtotal:</span><strong id="posSubtotal">$0.00</strong></div>
+                    <div style="display:flex;justify-content:space-between;font-size:13px;"><span>Descuento:</span><strong id="posDiscountAmt">-$0.00</strong></div>
+                    <div style="display:flex;justify-content:space-between;font-size:13px;"><span>IVA (16%):</span><strong id="posTax">$0.00</strong></div>
+                    <div style="display:flex;justify-content:space-between;font-size:13px;"><span>Propina:</span><strong id="posTipAmt">$0.00</strong></div>
+                    <div style="display:flex;justify-content:space-between;font-size:16px;font-weight:900;border-top:1px solid #ddd;padding-top:6px;margin-top:6px;"><span>TOTAL:</span><strong id="posTotal">$0.00</strong></div>
+                  </div>
+                  <div style="display:flex;gap:8px;">
+                    <button class="btn-license" style="width:100%;" onclick="posSaveOpenAccount()">🧾 Hacer pedido</button>
+                  </div>
                   <div id="posMsg" style="font-size:12px;margin-top:8px;text-align:center;"></div>
                 </div>
                  <div id="activeOrdersPanel" class="pos-side-panel pos-floating-orders" aria-hidden="true">
@@ -621,7 +624,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
-<script src="js/admin.js?v=20261119-pos-redesign"></script>
+<script src="js/admin.js?v=20261119-pos-clicks"></script>
 <script>
 // Función para mostrar módulos (página principal con iconos)
 function showModule(moduleId) {
