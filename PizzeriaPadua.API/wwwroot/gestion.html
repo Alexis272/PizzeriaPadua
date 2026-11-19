@@ -6,7 +6,7 @@
   <title>Pizzería Padua | Panel POS</title>
   <link rel="stylesheet" href="css/apple-tokens.css" />
   <link rel="stylesheet" href="css/admin.css?v=20260715-customizations" />
-  <link rel="stylesheet" href="css/admin-pizzeriapadua.css?v=20261119-floating-orders-v3" />
+  <link rel="stylesheet" href="css/admin-pizzeriapadua.css?v=20261119-history-scroll" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
   <style>
     .module-dashboard {
@@ -107,7 +107,8 @@
         <a class="tab-link" data-tab="openaccounts" onclick="showModule('openaccounts')"><span>▤</span> Cuentas abiertas</a>
         <a class="tab-link" data-tab="cash" onclick="showModule('cash')"><span>＄</span> Caja y cortes</a>
         <div class="nav-group-label">Análisis</div>
-        <a class="tab-link" data-tab="daily" onclick="showModule('daily')"><span>▥</span> Acumulado del día</a>
+         <a class="tab-link" data-tab="daily" onclick="showModule('daily')"><span>▥</span> Acumulado del día</a>
+         <a class="tab-link" data-tab="history" onclick="showModule('history')"><span>◷</span> Históricos</a>
         <a class="tab-link" data-tab="reports" onclick="showModule('reports')"><span>◫</span> Reportes</a>
         <a class="tab-link" data-tab="executive" onclick="showModule('executive')"><span>◈</span> Panel ejecutivo</a>
         <div class="nav-group-label">Administración</div>
@@ -153,6 +154,11 @@
             <div class="module-card" role="link" tabindex="0" onclick="openModule('daily')" onkeydown="activateModule(event, 'daily')">
               <span class="module-icon"><svg viewBox="0 0 64 64" aria-hidden="true"><path d="M14 50V35h10v15zM28 50V25h10v25zM42 50V14h10v36z"/></svg></span>
               <div class="module-title">Acumulado del Día</div>
+            </div>
+            <div class="module-card" role="link" tabindex="0" onclick="openModule('history')" onkeydown="activateModule(event, 'history')">
+              <span class="module-icon">◷</span>
+              <div class="module-title">Históricos</div>
+              <div class="module-desc">Pedidos entregados y cancelados</div>
             </div>
             <div class="module-card" role="link" tabindex="0" onclick="openModule('reports')" onkeydown="activateModule(event, 'reports')">
               <span class="module-icon"><svg viewBox="0 0 64 64" aria-hidden="true"><path d="M17 10h24l9 9v35H17zM41 10v10h9M23 43l8-8 6 5 8-10"/></svg></span>
@@ -322,6 +328,32 @@
             </div>
             <div style="margin-top:16px;"><h3 style="margin-bottom:8px;">Ventas por Categoría</h3><div id="dailyByCategory" style="min-height:150px;"></div></div>
             <div style="margin-top:16px;"><h3 style="margin-bottom:8px;">Ventas por Cajero</h3><div id="dailyByCashier" style="min-height:150px;"></div></div>
+          </div>
+        </div>
+
+        <!-- ==================== HISTÓRICOS ==================== -->
+        <div class="admin-section" id="history">
+          <div class="module-header">
+            <button class="back-btn" onclick="showModule('dashboard')">← Inicio</button>
+            <h2>🗂 Históricos de pedidos</h2>
+          </div>
+          <div class="table-card history-module-card">
+            <div class="orders-toolbar history-toolbar">
+              <span>Pedidos entregados y cancelados</span>
+              <div class="filter-quick-btns">
+                <button type="button" class="filter-btn active" data-period="all">Todo</button>
+                <button type="button" class="filter-btn" data-period="today">Hoy</button>
+                <button type="button" class="filter-btn" data-period="month">Mes</button>
+                <button type="button" class="filter-btn" data-period="year">Año</button>
+                <input id="dateInput" class="date-input" type="text" placeholder="Elegir fecha" />
+                <button type="button" class="btn-license" onclick="loadSalesHistory()">🔄 Actualizar</button>
+              </div>
+            </div>
+            <div class="history-summary">
+              <div><span>Ventas cobradas</span><strong id="totalSales">$0.00</strong></div>
+              <div><span>Pedidos entregados</span><strong id="completedCount">0</strong></div>
+            </div>
+            <div id="historyList" class="orders-list history-orders-list"></div>
           </div>
         </div>
 
@@ -592,7 +624,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
-<script src="js/admin.js?v=20261119-floating-orders-v3"></script>
+<script src="js/admin.js?v=20261119-history-scroll"></script>
 <script>
 // Función para mostrar módulos (página principal con iconos)
 function showModule(moduleId) {
@@ -600,6 +632,7 @@ function showModule(moduleId) {
   if (shell) {
     shell.classList.toggle("launcher-mode", moduleId === "dashboard");
     shell.classList.toggle("module-mode", moduleId !== "dashboard");
+    shell.classList.toggle("pos-mode", moduleId === "pos");
   }
   document.querySelectorAll(".admin-section").forEach(s => s.classList.remove("active"));
   var section = document.getElementById(moduleId);
@@ -616,8 +649,9 @@ function showModule(moduleId) {
     pos: "Terminal de Venta (POS)",
     openaccounts: "Cuentas Abiertas",
     cash: "Caja y Cortes",
-    daily: "Acumulado del Día",
-    reports: "Reportes",
+     daily: "Acumulado del Día",
+     history: "Históricos de pedidos",
+     reports: "Reportes",
     executive: "Panel Ejecutivo",
     controls: "Cancelaciones y Devoluciones",
     catalog: "Catálogos",
@@ -629,7 +663,8 @@ function showModule(moduleId) {
   if (moduleId === "pos") { if (typeof loadOrders === "function") loadOrders(); if (typeof loadAdminProducts === "function") loadAdminProducts(); }
   if (moduleId === "openaccounts") { if (typeof loadOpenAccounts === "function") loadOpenAccounts(); }
   if (moduleId === "cash") { if (typeof loadCashStatus === "function") loadCashStatus(); }
-  if (moduleId === "daily" || moduleId === "reports" || moduleId === "executive") { if (typeof loadSummary === "function") loadSummary(); }
+   if (moduleId === "daily" || moduleId === "reports" || moduleId === "executive") { if (typeof loadSummary === "function") loadSummary(); }
+   if (moduleId === "history") { if (typeof loadSalesHistory === "function") loadSalesHistory(); }
   if (moduleId === "controls") { if (typeof loadControls === "function") loadControls(); }
   if (moduleId === "catalog") { if (typeof loadAdminProducts === "function") loadAdminProducts(); if (typeof loadCategories === "function") loadCategories(); }
   if (moduleId === "config") { if (typeof loadSettings === "function") loadSettings(); }

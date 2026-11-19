@@ -640,6 +640,70 @@ body, html { background: var(--odoo-bg) !important; }
 .module-mode .content,
 .module-mode .main-grid { background: #f7f5f9 !important; }
 .module-mode .main-grid { padding: 28px 34px !important; }
+.module-mode:not(.pos-mode) .main-grid {
+  overflow-x: hidden;
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+  padding-bottom: 42px !important;
+}
+.module-mode:not(.pos-mode) .admin-section.active {
+  min-height: max-content;
+  padding-bottom: 24px;
+}
+.module-mode:not(.pos-mode) .table-card {
+  overflow: visible;
+}
+.history-module-card {
+  min-height: 0;
+}
+.history-toolbar {
+  align-items: flex-start;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.history-toolbar .filter-quick-btns {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-left: auto;
+}
+.history-toolbar .filter-btn,
+.history-toolbar .date-input {
+  min-height: 36px;
+}
+.history-summary {
+  display: flex;
+  gap: 14px;
+  margin: 4px 0 18px;
+}
+.history-summary > div {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 180px;
+  padding: 12px 16px;
+  border: 1px solid var(--module-line);
+  border-radius: 10px;
+  background: var(--module-lavender);
+}
+.history-summary span {
+  color: #766d86;
+  font-size: 12px;
+}
+.history-summary strong {
+  color: var(--module-accent);
+  font-size: 20px;
+}
+.history-orders-list {
+  max-height: none;
+  overflow: visible;
+}
+.history-card .order-status.status-cancelled {
+  color: #a5223f;
+  background: #ffe4ea;
+}
 .module-mode .module-header { border-bottom-color: var(--module-line) !important; }
 .module-mode .module-header h2,
 .module-mode .orders-toolbar > span,
