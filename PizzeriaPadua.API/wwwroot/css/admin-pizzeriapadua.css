@@ -1304,6 +1304,234 @@ body > #activeOrdersPanel.pos-floating-orders #ordersList > .order-card {
 }
 
 /* Login */
+/* POS renovado: catálogo y pedido con jerarquía visual tipo terminal de venta. */
+#pos .pos-catalog-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+#pos .pos-search-box {
+  display: flex;
+  align-items: center;
+  flex: 1 1 280px;
+  min-height: 46px;
+  padding: 0 14px;
+  border: 1px solid #d8d5dc;
+  border-radius: 10px;
+  background: #fff;
+}
+#pos .pos-search-box span {
+  color: #7b2859;
+  font-size: 26px;
+  line-height: 1;
+}
+#pos .pos-search-box input {
+  width: 100%;
+  border: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+  font-size: 16px;
+}
+#pos .pos-category-tabs {
+  display: flex;
+  gap: 7px;
+  flex-wrap: wrap;
+}
+#pos .pos-category-tabs button {
+  min-height: 42px;
+  padding: 7px 16px !important;
+  border: 1px solid #d8cbdc !important;
+  border-radius: 22px !important;
+  color: #5c1d43 !important;
+  background: #fff !important;
+  font-size: 14px !important;
+  font-weight: 700;
+}
+#pos .pos-category-tabs button.active {
+  color: #fff !important;
+  background: #8c174f !important;
+}
+#pos #posProductGrid .admin-product-card img {
+  height: 190px !important;
+  object-fit: cover !important;
+  background: #f4f1f4 !important;
+}
+#pos #posProductGrid .admin-product-card {
+  min-height: 288px;
+  padding: 8px !important;
+  border-radius: 12px !important;
+}
+#pos #posProductGrid .pos-product-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  padding: 10px 7px 4px !important;
+}
+#pos #posProductGrid .pos-product-name {
+  min-height: 38px;
+  font-size: 17px !important;
+}
+#pos #posProductGrid .pos-product-price {
+  font-size: 18px !important;
+}
+#pos .pos-order-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+#pos .pos-order-heading > div > span {
+  color: #766d86;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+#pos .pos-order-heading h3 {
+  margin: 3px 0 0 !important;
+  font-size: 27px !important;
+}
+#pos .pos-edit-badge {
+  padding: 8px 13px;
+  border-radius: 20px;
+  color: #8a5b09;
+  background: #fff0c7;
+  font-size: 12px;
+  font-weight: 800;
+}
+#pos .pos-field-row {
+  display: grid;
+  grid-template-columns: 112px minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+#pos .pos-field-row > label {
+  color: #211d25;
+  font-weight: 800;
+}
+#pos .pos-field-row input,
+#pos .pos-field-row select,
+#pos .pos-extra-fields input {
+  min-height: 42px;
+  width: 100%;
+  border: 1px solid #d8d5dc !important;
+  border-radius: 9px !important;
+  background: #fff !important;
+}
+#pos .pos-channel-buttons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+#pos .pos-channel-buttons button {
+  min-height: 40px;
+  padding: 6px 13px !important;
+  border: 1px solid #d8d5dc !important;
+  border-radius: 9px !important;
+  color: #392f3e !important;
+  background: #fff !important;
+  font-size: 12px !important;
+}
+#pos .pos-channel-buttons button.active {
+  color: #fff !important;
+  background: #8c174f !important;
+}
+#pos #posChannel { display: none; }
+#pos .pos-table-row { margin-bottom: 14px; }
+#pos #posCartItems {
+  min-height: 110px !important;
+  max-height: 265px !important;
+  padding: 6px !important;
+  background: #fff !important;
+}
+#pos #posCartItems > div {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px;
+  min-height: 70px;
+  padding: 8px !important;
+  border: 1px solid #e2dce4 !important;
+  border-radius: 10px;
+  margin-bottom: 7px;
+}
+#pos #posCartItems .pos-cart-image {
+  width: 58px;
+  height: 58px;
+  flex: 0 0 58px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+#pos .pos-extra-fields {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin: 12px 0;
+}
+#pos .pos-extra-fields label {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  color: #211d25;
+  font-size: 12px;
+  font-weight: 800;
+}
+#pos .pos-total-box {
+  padding: 15px 16px !important;
+  border: 1px solid #e2dce4;
+  border-radius: 12px;
+  background: #fbf8fd !important;
+}
+#pos .pos-grand-total {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 9px;
+  padding-top: 10px;
+  border-top: 1px solid #ddd6e3;
+  font-size: 23px;
+  font-weight: 900;
+}
+#pos .pos-grand-total strong { color: #8c174f; }
+#pos .pos-actions {
+  display: grid;
+  grid-template-columns: 1fr 1.15fr;
+  gap: 10px;
+  margin-top: 18px;
+}
+#pos .pos-actions button {
+  min-height: 52px;
+  border-radius: 10px !important;
+  font-size: 15px !important;
+  font-weight: 800;
+}
+#pos .pos-save-button {
+  border: 2px solid #8c174f !important;
+  color: #8c174f !important;
+  background: #fff !important;
+}
+#pos .pos-charge-button {
+  border: 2px solid #8c174f !important;
+  color: #fff !important;
+  background: #8c174f !important;
+}
+#pos .pos-empty-products {
+  grid-column: 1 / -1;
+  padding: 40px;
+  color: #766d86;
+  text-align: center;
+}
+@media (max-width: 980px) {
+  #pos .pos-catalog-toolbar { align-items: stretch; flex-direction: column; }
+  #pos .pos-category-tabs { justify-content: center; }
+}
+@media (max-width: 560px) {
+  #pos .pos-field-row { grid-template-columns: 1fr; gap: 5px; }
+  #pos .pos-extra-fields { grid-template-columns: 1fr; }
+  #pos .pos-actions { grid-template-columns: 1fr; }
+}
+
+/* Login */
 body:has(> .login-box) {
   min-height: 100vh;
   padding: 32px !important;
