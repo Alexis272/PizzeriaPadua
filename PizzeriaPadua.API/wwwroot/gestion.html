@@ -226,13 +226,16 @@
                   </div>
                   <div id="posMsg" style="font-size:12px;margin-top:8px;text-align:center;"></div>
                 </div>
-                <div id="activeOrdersPanel" class="pos-side-panel" aria-hidden="true">
-                  <div class="pos-active-panel-head">
-                    <strong>Pedidos activos</strong>
-                    <span>Gestiona, edita o cambia su estado</span>
-                  </div>
-                  <div class="orders-list" id="ordersList"></div>
-                </div>
+                 <div id="activeOrdersPanel" class="pos-side-panel pos-floating-orders" aria-hidden="true">
+                   <div class="pos-active-panel-head">
+                     <div>
+                       <strong>Pedidos activos</strong>
+                       <span>Gestiona, edita o cambia el estado de cada pedido</span>
+                     </div>
+                     <button type="button" class="pos-close-orders" onclick="switchPosSidePanel('posOrderPanel')" aria-label="Cerrar pedidos activos">✕ Cerrar</button>
+                   </div>
+                   <div class="orders-list" id="ordersList"></div>
+                 </div>
               </div>
             </div>
           </div>
