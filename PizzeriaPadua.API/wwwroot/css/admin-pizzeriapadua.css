@@ -1022,8 +1022,12 @@ body:has(.module-mode) { overflow: hidden; }
   z-index: 1000;
   top: 50%;
   left: 50%;
-  width: min(1120px, calc(100vw - 48px));
-  height: min(760px, calc(100vh - 64px));
+  width: min(1120px, calc(100vw - 32px));
+  height: min(760px, calc(100vh - 32px));
+  max-width: calc(100vw - 32px);
+  max-width: calc(100dvw - 32px);
+  max-height: calc(100vh - 32px);
+  max-height: calc(100dvh - 32px);
   max-height: none;
   transform: translate(-50%, -50%);
   display: flex !important;

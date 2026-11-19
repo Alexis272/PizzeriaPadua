@@ -154,15 +154,14 @@ function renderOrders(orders) {
       </div>
       <span class="order-status ${classMap[o.status] || "status-pending"}">${statusMap[o.status] || "Desconocido"}</span>
        <div class="order-actions">
-         ${o.status === 0 || o.status === 1 ? `<button class="btn-progress" onclick="editActiveOrder(${o.orderId})">✎ Editar</button>` : ""}
-         ${o.status === 0 || o.status === 1 || o.status === 4 ? `<button class="btn-complete" onclick="openCashModal(${o.orderId})">💳 Cobrar</button>` : ""}
-         ${o.status === 6 || o.isOpenAccount ? `<button class="btn-complete" onclick="payOpenAccount(${o.orderId})">💳 Cobrar</button>` : ""}
+         <button class="btn-complete" onclick="${o.status === 6 || o.isOpenAccount ? `payOpenAccount(${o.orderId})` : `openCashModal(${o.orderId})`}">💳 Cobrar</button>
+         <button class="btn-progress" onclick="editActiveOrder(${o.orderId})">✎ Editar</button>
+         <button class="btn-cancel" onclick="updateOrderStatus(${o.orderId}, 3)">✕ Cancelar</button>
          ${o.status === 0 ? `<button class="btn-progress" onclick="updateOrderStatus(${o.orderId}, 1)">En preparación</button>` : ""}
-        ${o.status === 0 || o.status === 1 ? (getOrderPaymentFee(o) > 0
-          ? `<button class="btn-complete" onclick="updateOrderStatus(${o.orderId}, 4)">✔ Listo para entregar</button>`
-          : "") : ""}
-        ${o.status === 0 || o.status === 1 ? `<button class="btn-cancel" onclick="updateOrderStatus(${o.orderId}, 3)">✕ Cancelar</button>` : ""}
-        ${o.status === 4 ? `<button class="btn-progress" onclick="renotifyOrder(${o.orderId})">🔔 Volver a notificar</button>` : ""}
+         ${o.status === 0 || o.status === 1 ? (getOrderPaymentFee(o) > 0
+           ? `<button class="btn-complete" onclick="updateOrderStatus(${o.orderId}, 4)">✔ Listo para entregar</button>`
+           : "") : ""}
+         ${o.status === 4 ? `<button class="btn-progress" onclick="renotifyOrder(${o.orderId})">🔔 Volver a notificar</button>` : ""}
         ${o.status === 4 ? `<button class="btn-complete" onclick="updateOrderStatus(${o.orderId}, 2)">✔ Marcar como entregado</button>` : ""}
       </div>
     </div>
