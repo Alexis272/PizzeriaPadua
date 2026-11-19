@@ -2147,9 +2147,7 @@ async function posSaveOpenAccount() {
       renderPosCart();
       loadOpenAccounts();
       await loadOrders();
-      if (document.getElementById("activeOrdersPanel")?.classList.contains("active")) {
-        switchPosSidePanel("activeOrdersPanel");
-      }
+       switchPosSidePanel("activeOrdersPanel");
     } else {
       document.getElementById("posMsg").textContent = data.message || "Error";
       document.getElementById("posMsg").style.color = "#e74c3c";
