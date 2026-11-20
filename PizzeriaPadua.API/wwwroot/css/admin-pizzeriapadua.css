@@ -2397,3 +2397,33 @@ body > .login-box {
   #pos .pos-home-summary { align-items: flex-start; flex-direction: column; gap: 5px; }
   #pos .pos-home-orders { grid-template-columns: 1fr; }
 }
+
+/* El inicio de pedidos ocupa el panel principal del POS, no una ventana modal. */
+#pos .pos-home-panel {
+  position: relative !important;
+  inset: auto !important;
+  z-index: auto;
+  width: 100% !important;
+  min-height: calc(100% - 12px);
+  max-height: none !important;
+  overflow: visible !important;
+  margin: 0;
+  padding: 0 24px 24px;
+  transform: none !important;
+  border: 1px solid #dce5f2;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 6px 18px rgba(61,36,70,.07);
+}
+#pos .pos-home-heading {
+  min-height: 72px;
+  margin: 0 -24px 20px;
+  padding: 15px 24px;
+  border-bottom: 1px solid #dce5f2;
+}
+#pos .pos-home-summary { margin-bottom: 20px; }
+#pos .pos-home-close {
+  width: 34px;
+  height: 34px;
+  font-size: 22px !important;
+}
