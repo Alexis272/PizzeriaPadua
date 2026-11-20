@@ -376,10 +376,16 @@ async function loadPosHomeOrders() {
     container.innerHTML = active.length
       ? active.slice(0, 8).map(o => `
         <div class="pos-home-order-card">
-          <div><span class="pos-home-order-number">Pedido #${o.orderId}</span><strong>${escapeHtml(o.customerName || "Cliente Mostrador")}</strong></div>
-          <span class="pos-home-order-status">${o.status === 6 || o.isOpenAccount ? "Cuenta abierta" : (o.status === 1 ? "En preparación" : "Pendiente")}</span>
-          <p>${o.orderItems?.length || 0} artículo(s) · $${Number(o.totalAmount || 0).toFixed(2)}</p>
-          <button type="button" onclick="showPosOrderForm(); editActiveOrder(${o.orderId})">Abrir pedido</button>
+          <div class="pos-home-order-head">
+            <div><strong>Pedido #${o.orderId}</strong><small>${escapeHtml(o.customerName || "Cliente Mostrador")}</small></div>
+            <span class="pos-home-order-status">${o.status === 6 || o.isOpenAccount ? "Pendiente" : (o.status === 1 ? "En preparación" : "Pendiente")}</span>
+          </div>
+          <div class="pos-home-order-date">${new Date(o.orderDate).toLocaleDateString("es-MX", { day: "2-digit", month: "short", year: "numeric" })}</div>
+          <div class="pos-home-order-data">
+            <div><small>ARTÍCULOS</small><strong>${o.orderItems?.length || 0}</strong></div>
+            <div><small>TOTAL</small><strong>$${Number(o.totalAmount || 0).toFixed(2)}</strong></div>
+          </div>
+          <div class="pos-home-order-actions"><button type="button" onclick="showPosOrderForm(); editActiveOrder(${o.orderId})">Abrir pedido</button></div>
         </div>`).join("")
       : '<p class="pos-home-empty">No hay pedidos activos.</p>';
     container.insertAdjacentHTML("beforeend", `

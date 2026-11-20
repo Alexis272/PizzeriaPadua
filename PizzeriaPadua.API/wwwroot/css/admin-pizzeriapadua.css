@@ -2427,3 +2427,123 @@ body > .login-box {
   height: 34px;
   font-size: 22px !important;
 }
+
+/* Componentes y colores del flujo de Chapían aplicados al panel de pedidos. */
+#pos .pos-home-panel {
+  border-color: #dbeafe;
+  background: #fff;
+  box-shadow: 0 8px 24px rgba(30,58,138,.07);
+}
+#pos .pos-home-heading {
+  border-color: #dbeafe;
+}
+#pos .pos-home-heading h2 {
+  color: #1f2937;
+  font-size: 18px;
+  letter-spacing: -.02em;
+}
+#pos .pos-home-heading p,
+#pos .pos-home-summary span {
+  color: #64748b;
+}
+#pos .pos-home-close {
+  border-color: #dbeafe !important;
+  color: #64748b !important;
+}
+#pos .pos-home-summary {
+  border-color: #dbeafe;
+  background: #eff6ff;
+}
+#pos .pos-home-summary strong { color: #1e293b; }
+#pos .pos-home-orders { gap: 16px; }
+#pos .pos-home-order-card,
+#pos .pos-new-order-tile {
+  min-height: 172px;
+  padding: 16px;
+  border-color: #dbeafe;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 4px 16px rgba(30,58,138,.04);
+}
+#pos .pos-home-order-card:hover,
+#pos .pos-new-order-tile:hover {
+  border-color: #93c5fd;
+  box-shadow: 0 8px 24px rgba(30,58,138,.09);
+}
+#pos .pos-home-order-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+#pos .pos-home-order-head > div {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+#pos .pos-home-order-head strong {
+  color: #1f2937;
+  font-size: 14px;
+}
+#pos .pos-home-order-head small,
+#pos .pos-home-order-date {
+  color: #64748b;
+  font-size: 11px;
+}
+#pos .pos-home-order-date { margin-top: 8px; }
+#pos .pos-home-order-status {
+  position: static;
+  flex: 0 0 auto;
+  padding: 5px 9px;
+  border-radius: 999px;
+  color: #9a5b00;
+  background: #fff7d6;
+  font-size: 10px;
+  font-weight: 800;
+}
+#pos .pos-home-order-data {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 15px;
+}
+#pos .pos-home-order-data div {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+#pos .pos-home-order-data small {
+  color: #64748b;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .05em;
+}
+#pos .pos-home-order-data strong {
+  color: #1f2937;
+  font-size: 13px;
+}
+#pos .pos-home-order-actions {
+  margin-top: 13px;
+  padding-top: 10px;
+  border-top: 1px solid #dbeafe;
+}
+#pos .pos-home-order-actions button {
+  min-height: 32px;
+  padding: 6px 12px !important;
+  border: 0 !important;
+  border-radius: 7px !important;
+  color: #fff !important;
+  background: #1e3a8a !important;
+  box-shadow: 0 4px 10px rgba(30,58,138,.14);
+  font-size: 11px !important;
+  font-weight: 800;
+}
+#pos .pos-new-order-tile {
+  border: 2px dashed #dbeafe;
+  background: #f8fbff;
+}
+#pos .pos-new-order-tile span {
+  background: #1e3a8a;
+}
+#pos .pos-new-order-tile strong { color: #64748b; }
+#pos .pos-new-order-tile small { color: #94a3b8; }
