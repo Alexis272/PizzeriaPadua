@@ -2081,4 +2081,31 @@ body > .login-box {
     height: min(760px, calc(100vh - 32px)) !important;
     max-height: calc(100vh - 32px) !important;
   }
+  #pos #activeOrdersPanel.pos-floating-orders.active {
+    position: static !important;
+    width: 100% !important;
+    max-width: none !important;
+    height: auto !important;
+    max-height: none !important;
+    transform: none !important;
+    display: block !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+  #pos #activeOrdersPanel.pos-floating-orders.active .pos-active-panel-head {
+    margin-bottom: 12px;
+  }
+  #pos #activeOrdersPanel.pos-floating-orders.active #ordersList {
+    max-height: none !important;
+    overflow: visible !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  #pos .pos-terminal-layout > .table-card {
+    overflow: visible !important;
+  }
 }

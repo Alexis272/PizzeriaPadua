@@ -333,9 +333,6 @@ function formatPosProductName(value) {
 function switchPosSidePanel(panelId) {
   const ordersPanel = document.getElementById("activeOrdersPanel");
   const orderPanel = document.getElementById("posOrderPanel");
-  if (ordersPanel && panelId === "activeOrdersPanel" && ordersPanel.parentElement !== document.body) {
-    document.body.appendChild(ordersPanel);
-  }
   if (panelId === "posOrderPanel" && orderPanel) {
     orderPanel.classList.add("active");
     orderPanel.style.pointerEvents = "auto";
