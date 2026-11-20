@@ -1,9 +1,9 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Pizzería Padua | Panel POS</title>
+  <title>Pizzer�a Padua | Panel POS</title>
   <link rel="stylesheet" href="css/apple-tokens.css" />
   <link rel="stylesheet" href="css/admin.css?v=20260715-customizations" />
   <link rel="stylesheet" href="css/admin-pizzeriapadua.css?v=20261119-pos-chapian-layout" />
@@ -90,53 +90,53 @@
 </head>
 <body>
 
-<div id="offlineBanner" class="offline-banner" style="position:fixed;top:0;left:0;right:0;z-index:999;background:#c0392b;color:#fff;text-align:center;padding:8px 16px;font-size:14px;font-weight:700;display:none;">Sin conexión — el servidor no responde</div>
+<div id="offlineBanner" class="offline-banner" style="position:fixed;top:0;left:0;right:0;z-index:999;background:#c0392b;color:#fff;text-align:center;padding:8px 16px;font-size:14px;font-weight:700;display:none;">Sin conexi�n � el servidor no responde</div>
 <div class="background">
   <main class="dashboard">
 
     <aside class="sidebar">
       <div class="odoo-brand">
         <span class="odoo-brand-mark">P</span>
-        <div><strong>Padua</strong><small>Gestión empresarial</small></div>
+        <div><strong>Padua</strong><small>Gesti�n empresarial</small></div>
       </div>
       <div class="sidebar-caption">Aplicaciones</div>
       <nav>
-        <a class="active tab-link" data-tab="dashboard" onclick="showModule('dashboard')"><span>⌂</span> Inicio</a>
+        <a class="active tab-link" data-tab="dashboard" onclick="showModule('dashboard')"><span>�</span> Inicio</a>
         <div class="nav-group-label">Ventas</div>
-        <a class="tab-link" data-tab="pos" onclick="showModule('pos')"><span>▣</span> Punto de venta</a>
-        <a class="tab-link" data-tab="openaccounts" onclick="showModule('openaccounts')"><span>▤</span> Cuentas abiertas</a>
-        <a class="tab-link" data-tab="cash" onclick="showModule('cash')"><span>＄</span> Caja y cortes</a>
-        <div class="nav-group-label">Análisis</div>
-         <a class="tab-link" data-tab="daily" onclick="showModule('daily')"><span>▥</span> Acumulado del día</a>
-         <a class="tab-link" data-tab="history" onclick="showModule('history')"><span>◷</span> Históricos</a>
-        <a class="tab-link" data-tab="reports" onclick="showModule('reports')"><span>◫</span> Reportes</a>
-        <a class="tab-link" data-tab="executive" onclick="showModule('executive')"><span>◈</span> Panel ejecutivo</a>
-        <div class="nav-group-label">Administración</div>
-        <a class="tab-link" data-tab="controls" onclick="showModule('controls')"><span>◇</span> Cancelaciones</a>
-        <a class="tab-link" data-tab="catalog" onclick="showModule('catalog')"><span>□</span> Catálogos</a>
-        <a class="tab-link" data-tab="config" onclick="showModule('config')"><span>⚙</span> Configuración</a>
-        <a class="logout-link" href="/PizzeriaPadua/admin.html" onclick="sessionStorage.removeItem('adminAuthToken');document.cookie='auth=; path=/PizzeriaPadua; max-age=0';"><span>↪</span> Cerrar sesión</a>
+        <a class="tab-link" data-tab="pos" onclick="showModule('pos')"><span>?</span> Punto de venta</a>
+        <a class="tab-link" data-tab="openaccounts" onclick="showModule('openaccounts')"><span>?</span> Cuentas abiertas</a>
+        <a class="tab-link" data-tab="cash" onclick="showModule('cash')"><span>$</span> Caja y cortes</a>
+        <div class="nav-group-label">An�lisis</div>
+         <a class="tab-link" data-tab="daily" onclick="showModule('daily')"><span>?</span> Acumulado del d�a</a>
+         <a class="tab-link" data-tab="history" onclick="showModule('history')"><span>?</span> Hist�ricos</a>
+        <a class="tab-link" data-tab="reports" onclick="showModule('reports')"><span>?</span> Reportes</a>
+        <a class="tab-link" data-tab="executive" onclick="showModule('executive')"><span>?</span> Panel ejecutivo</a>
+        <div class="nav-group-label">Administraci�n</div>
+        <a class="tab-link" data-tab="controls" onclick="showModule('controls')"><span>?</span> Cancelaciones</a>
+        <a class="tab-link" data-tab="catalog" onclick="showModule('catalog')"><span>?</span> Cat�logos</a>
+        <a class="tab-link" data-tab="config" onclick="showModule('config')"><span>?</span> Configuraci�n</a>
+        <a class="logout-link" href="/PizzeriaPadua/admin.html" onclick="sessionStorage.removeItem('adminAuthToken');document.cookie='auth=; path=/PizzeriaPadua; max-age=0';"><span>?</span> Cerrar sesi�n</a>
       </nav>
     </aside>
 
     <section class="content">
 
       <header class="topbar">
-        <button class="app-switcher" type="button" onclick="showModule('dashboard')" aria-label="Abrir aplicaciones">▦</button>
+        <button class="app-switcher" type="button" onclick="showModule('dashboard')" aria-label="Abrir aplicaciones">?</button>
         <div>
-          <span class="topbar-kicker">Pizzería Padua / Operaciones</span>
-          <h1 id="topbarTitle">Panel de Gestión POS</h1>
+          <span class="topbar-kicker">Pizzer�a Padua / Operaciones</span>
+          <h1 id="topbarTitle">Panel de Gesti�n POS</h1>
         </div>
-        <div class="topbar-actions"><span class="topbar-company">Sucursal Matriz</span><div class="icons">♙</div></div>
+        <div class="topbar-actions"><span class="topbar-company">Sucursal Matriz</span><div class="icons">?</div></div>
       </header>
 
       <div class="main-grid">
 
-        <!-- ==================== DASHBOARD (PÁGINA PRINCIPAL) ==================== -->
+        <!-- ==================== DASHBOARD (P�GINA PRINCIPAL) ==================== -->
         <div class="admin-section active" id="dashboard">
           <div class="dashboard-welcome">
-            <h2>🏠 Panel de Gestión POS</h2>
-            <p>Selecciona un módulo para comenzar a trabajar</p>
+            <h2>?? Panel de Gesti�n POS</h2>
+            <p>Selecciona un m�dulo para comenzar a trabajar</p>
           </div>
           <div class="module-dashboard">
             <div class="module-card" role="link" tabindex="0" onclick="openModule('pos')" onkeydown="activateModule(event, 'pos')">
@@ -153,11 +153,11 @@
             </div>
             <div class="module-card" role="link" tabindex="0" onclick="openModule('daily')" onkeydown="activateModule(event, 'daily')">
               <span class="module-icon"><svg viewBox="0 0 64 64" aria-hidden="true"><path d="M14 50V35h10v15zM28 50V25h10v25zM42 50V14h10v36z"/></svg></span>
-              <div class="module-title">Acumulado del Día</div>
+              <div class="module-title">Acumulado del D�a</div>
             </div>
             <div class="module-card" role="link" tabindex="0" onclick="openModule('history')" onkeydown="activateModule(event, 'history')">
-              <span class="module-icon">◷</span>
-              <div class="module-title">Históricos</div>
+              <span class="module-icon">?</span>
+              <div class="module-title">Hist�ricos</div>
               <div class="module-desc">Pedidos entregados y cancelados</div>
             </div>
             <div class="module-card" role="link" tabindex="0" onclick="openModule('reports')" onkeydown="activateModule(event, 'reports')">
@@ -174,11 +174,11 @@
             </div>
             <div class="module-card" role="link" tabindex="0" onclick="openModule('catalog')" onkeydown="activateModule(event, 'catalog')">
               <span class="module-icon"><svg viewBox="0 0 64 64" aria-hidden="true"><rect x="10" y="31" width="17" height="20" rx="2"/><rect x="27" y="22" width="17" height="29" rx="2"/><rect x="44" y="31" width="10" height="20" rx="2"/><path d="M31 22v-7h9v7"/></svg></span>
-              <div class="module-title">Catálogos</div>
+              <div class="module-title">Cat�logos</div>
             </div>
             <div class="module-card" role="link" tabindex="0" onclick="openModule('config')" onkeydown="activateModule(event, 'config')">
               <span class="module-icon"><svg viewBox="0 0 64 64" aria-hidden="true"><path d="M38 10l3 7 7 2-4 6 3 7-7 1-4 7-5-5-8 1 1-8-5-5 7-4 1-7 7 2z"/><circle cx="33" cy="27" r="6"/></svg></span>
-              <div class="module-title">Configuración</div>
+              <div class="module-title">Configuraci�n</div>
             </div>
           </div>
         </div>
@@ -187,25 +187,25 @@
         <div class="admin-section" id="pos">
           <div id="posHomePanel" class="pos-home-panel">
             <div class="pos-home-heading">
-              <div><h2>Pedidos</h2><p>Pedidos activos · Pizzería Padua</p></div>
-              <button type="button" class="pos-home-close" onclick="showModule('dashboard')" aria-label="Cerrar">×</button>
+              <div><h2>Pedidos</h2><p>Pedidos activos � Pizzer�a Padua</p></div>
+              <button type="button" class="pos-home-close" onclick="showModule('dashboard')" aria-label="Cerrar">�</button>
             </div>
             <div class="pos-home-summary"><strong>Pedidos pendientes</strong><span>Consulta, edita o crea una nueva orden.</span></div>
             <div id="posHomeOrders" class="pos-home-orders"></div>
           </div>
           <div id="posTerminalHeader" class="module-header pos-terminal-view">
-            <button class="back-btn" onclick="showModule('dashboard')">← Inicio</button>
-            <h2>🧾 Terminal de Venta (POS)</h2>
+            <button class="back-btn" onclick="showModule('dashboard')">? Inicio</button>
+            <h2>?? Terminal de Venta (POS)</h2>
           </div>
           <div id="posTerminalCard" class="table-card pos-terminal-view">
             <div class="pos-side-tabs" role="tablist">
-              <button type="button" class="pos-side-tab active" data-panel="posOrderPanel" onclick="switchPosSidePanel('posOrderPanel')">▣ Tomar pedido</button>
-              <button type="button" class="pos-side-tab" data-panel="activeOrdersPanel" onclick="switchPosSidePanel('activeOrdersPanel')">▤ Pedidos activos</button>
+              <button type="button" class="pos-side-tab active" data-panel="posOrderPanel" onclick="switchPosSidePanel('posOrderPanel')">? Tomar pedido</button>
+              <button type="button" class="pos-side-tab" data-panel="activeOrdersPanel" onclick="switchPosSidePanel('activeOrdersPanel')">? Pedidos activos</button>
             </div>
             <div class="pos-terminal-layout" style="display:grid;grid-template-columns:1fr 380px;gap:16px;">
               <div>
                  <div class="pos-catalog-toolbar">
-                   <label class="pos-search-box"><span>⌕</span><input id="posSearch" type="search" placeholder="Buscar producto..." oninput="filterPosProducts()" /></label>
+                   <label class="pos-search-box"><span>?</span><input id="posSearch" type="search" placeholder="Buscar producto..." oninput="filterPosProducts()" /></label>
                    <div class="pos-category-tabs" role="tablist">
                      <button type="button" class="active" onclick="setPosCategory('all', this)">Todas</button>
                      <button type="button" onclick="setPosCategory('pizza', this)">Pizzas</button>
@@ -218,14 +218,14 @@
                <div class="table-card" style="padding:16px;">
                  <div id="posOrderPanel" class="pos-side-panel active">
                    <div id="posInlineCatalog" class="pos-inline-catalog"><strong>Agregar productos</strong></div>
-                   <div class="pos-order-heading"><div><span>Pedido actual</span><h3>Pedido <strong id="posCurrentOrderLabel">nuevo</strong></h3></div><span class="pos-edit-badge">En edición</span></div>
+                    <div class="pos-order-heading"><div><span>Pedido actual</span><h3 id="posFormTitle">Nuevo pedido</h3></div><div style="display:flex;gap:8px;align-items:center;"><span id="posEditBadge" class="pos-edit-badge" style="display:none;">Editando</span><button type="button" id="posNewOrderBtn" class="pos-close-orders" style="display:none;padding:6px 10px!important;min-height:32px;" onclick="startNewPosOrder()">Nuevo</button></div></div>
                    <div class="pos-field-row pos-client-row"><label>Cliente</label><input type="text" id="posCustomerName" placeholder="Buscar o seleccionar cliente..." list="posCustomerOptions" /><datalist id="posCustomerOptions"><option value="Cliente Mostrador"></option></datalist></div>
-                   <div class="pos-field-row"><label>Tipo de pedido</label><div class="pos-channel-buttons"><button type="button" data-channel="Para Llevar" onclick="setPosChannel('Para Llevar', this)">✓ Para llevar</button><button type="button" data-channel="Entrega a Domicilio" onclick="setPosChannel('Entrega a Domicilio', this)">A domicilio</button><button type="button" data-channel="Local / Mesa" onclick="setPosChannel('Local / Mesa', this)">En mesa</button></div>
-                     <select id="posChannel" aria-label="Tipo de pedido"><option value="Para Llevar" selected>Para Llevar</option><option value="Mostrador">Mostrador</option><option value="Entrega a Domicilio">A domicilio</option><option value="Local / Mesa">En mesa</option><option value="Teléfono">Teléfono</option></select>
+                   <div class="pos-field-row"><label>Tipo de pedido</label><div class="pos-channel-buttons"><button type="button" data-channel="Para Llevar" onclick="setPosChannel('Para Llevar', this)">? Para llevar</button><button type="button" data-channel="Entrega a Domicilio" onclick="setPosChannel('Entrega a Domicilio', this)">A domicilio</button><button type="button" data-channel="Local / Mesa" onclick="setPosChannel('Local / Mesa', this)">En mesa</button></div>
+                     <select id="posChannel" aria-label="Tipo de pedido"><option value="Para Llevar" selected>Para Llevar</option><option value="Mostrador">Mostrador</option><option value="Entrega a Domicilio">A domicilio</option><option value="Local / Mesa">En mesa</option><option value="Tel�fono">Tel�fono</option></select>
                    </div>
                    <div class="pos-field-row pos-table-row"><label>Mesa</label><select id="posTable"><option value="">Sin mesa</option></select></div>
                    <div id="posCartItems" style="min-height:200px;max-height:320px;overflow-y:auto;border:1px solid #e5ddeb;border-radius:12px;padding:8px;margin-bottom:10px;"></div>
-                   <div class="pos-extra-fields"><label>Descuento<input type="number" id="posDiscount" placeholder="Ninguno" min="0" max="100" /></label><label>Cupón / promo<input type="text" id="posPromoCode" placeholder="Ingresar código..." /></label><label>Propina<input type="number" id="posTip" placeholder="$0.00" min="0" step="0.01" /></label></div>
+                   <div class="pos-extra-fields"><label>Descuento<input type="number" id="posDiscount" placeholder="Ninguno" min="0" max="100" /></label><label>Cup�n / promo<input type="text" id="posPromoCode" placeholder="Ingresar c�digo..." /></label><label>Propina<input type="number" id="posTip" placeholder="$0.00" min="0" step="0.01" /></label></div>
                    <div class="pos-total-box">
                      <div style="display:flex;justify-content:space-between;font-size:13px;"><span>Subtotal:</span><strong id="posSubtotal">$0.00</strong></div>
                      <div style="display:flex;justify-content:space-between;font-size:13px;"><span>IVA incluido (16%):</span><strong id="posTax">$0.00</strong></div>
@@ -233,8 +233,8 @@
                      <div class="pos-grand-total"><span>Total:</span><strong id="posTotal">$0.00</strong></div>
                    </div>
                    <div class="pos-actions">
-                     <button class="pos-save-button" onclick="posSaveOpenAccount()">▣ Guardar cambios</button>
-                     <button class="pos-charge-button" onclick="posCheckout()">▣ Cobrar <span id="posChargeTotal">$0.00</span></button>
+                      <button type="button" id="posSecondaryBtn" class="pos-save-button" onclick="posSaveOpenAccount()">Crear pedido</button>
+                      <button type="button" id="posPrimaryBtn" class="pos-charge-button" onclick="posCheckout()">Cobrar <span id="posChargeTotal">$0.00</span></button>
                    </div>
                   <div id="posMsg" style="font-size:12px;margin-top:8px;text-align:center;"></div>
                 </div>
@@ -244,7 +244,7 @@
                        <strong>Pedidos activos</strong>
                        <span>Gestiona, edita o cambia el estado de cada pedido</span>
                      </div>
-                     <button type="button" class="pos-close-orders" onclick="switchPosSidePanel('posOrderPanel')" aria-label="Cerrar pedidos activos">✕ Cerrar</button>
+                     <button type="button" class="pos-close-orders" onclick="switchPosSidePanel('posOrderPanel')" aria-label="Cerrar pedidos activos">? Cerrar</button>
                    </div>
                    <div class="orders-list" id="ordersList"></div>
                  </div>
@@ -256,8 +256,8 @@
         <!-- ==================== CUENTAS ABIERTAS ==================== -->
         <div class="admin-section" id="openaccounts">
           <div class="module-header">
-            <button class="back-btn" onclick="showModule('dashboard')">← Inicio</button>
-            <h2>📋 Cuentas Abiertas / Pendientes</h2>
+            <button class="back-btn" onclick="showModule('dashboard')">? Inicio</button>
+            <h2>?? Cuentas Abiertas / Pendientes</h2>
           </div>
           <div class="table-card">
             <div class="orders-toolbar"><span>Cuentas abiertas por mesa y cliente</span></div>
@@ -268,8 +268,8 @@
         <!-- ==================== CAJA Y CORTES ==================== -->
         <div class="admin-section" id="cash">
           <div class="module-header">
-            <button class="back-btn" onclick="showModule('dashboard')">← Inicio</button>
-            <h2>💰 Caja — Arranque, Movimientos y Cortes</h2>
+            <button class="back-btn" onclick="showModule('dashboard')">? Inicio</button>
+            <h2>?? Caja � Arranque, Movimientos y Cortes</h2>
           </div>
           <div class="table-card">
             <div id="cashPanel">
@@ -285,7 +285,7 @@
                     <input type="number" id="cashInitialFund" placeholder="Fondo inicial" style="flex:1;" min="0" step="0.01" />
                   </div>
                   <textarea id="cashOpenNotes" placeholder="Observaciones del arranque" style="width:100%;min-height:60px;margin-bottom:8px;"></textarea>
-                  <button class="btn-license" onclick="openCashRegister()" style="width:100%;">🔓 Abrir Caja</button>
+                  <button class="btn-license" onclick="openCashRegister()" style="width:100%;">?? Abrir Caja</button>
                 </div>
                 <div>
                   <h3 style="margin-bottom:8px;">Estado de Caja Actual</h3>
@@ -293,9 +293,9 @@
                 </div>
               </div>
               <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;">
-                <button class="btn-license" onclick="showCashMovementModal()" style="background:linear-gradient(135deg,#f39c12,#e67e22);">💸 Movimiento de Caja</button>
-                <button class="btn-license" onclick="showCashCutModal('Parcial')" style="background:linear-gradient(135deg,#3498db,#2980b9);">🔍 Corte Parcial (Arqueo)</button>
-                <button class="btn-license" onclick="showCashCutModal('Final')" style="background:linear-gradient(135deg,#c0392b,#96281b);">🔒 Corte Final (Cierre)</button>
+                <button class="btn-license" onclick="showCashMovementModal()" style="background:linear-gradient(135deg,#f39c12,#e67e22);">?? Movimiento de Caja</button>
+                <button class="btn-license" onclick="showCashCutModal('Parcial')" style="background:linear-gradient(135deg,#3498db,#2980b9);">?? Corte Parcial (Arqueo)</button>
+                <button class="btn-license" onclick="showCashCutModal('Final')" style="background:linear-gradient(135deg,#c0392b,#96281b);">?? Corte Final (Cierre)</button>
               </div>
               <h3 style="margin-bottom:8px;">Movimientos Recientes</h3>
               <div id="cashMovementsList" class="orders-list"></div>
@@ -303,11 +303,11 @@
           </div>
         </div>
 
-        <!-- ==================== ACUMULADO DEL DÍA ==================== -->
+        <!-- ==================== ACUMULADO DEL D�A ==================== -->
         <div class="admin-section" id="daily">
           <div class="module-header">
-            <button class="back-btn" onclick="showModule('dashboard')">← Inicio</button>
-            <h2>📊 Acumulado del Día</h2>
+            <button class="back-btn" onclick="showModule('dashboard')">? Inicio</button>
+            <h2>?? Acumulado del D�a</h2>
           </div>
           <div class="table-card">
             <div class="orders-toolbar">
@@ -320,7 +320,7 @@
                 </select>
                 <select id="dailyShift" onchange="loadSummary()" style="min-width:100px;"><option value="all">Todos los turnos</option><option value="Matutino">Matutino</option><option value="Vespertino">Vespertino</option></select>
                 <select id="dailyChannel" onchange="loadSummary()" style="min-width:120px;"><option value="all">Todos los canales</option></select>
-                <button class="btn-license" onclick="loadSummary()" style="background:linear-gradient(135deg,#3498db,#2980b9);">🔄 Actualizar</button>
+                <button class="btn-license" onclick="loadSummary()" style="background:linear-gradient(135deg,#3498db,#2980b9);">?? Actualizar</button>
               </div>
             </div>
             <div id="dailyKpis" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:16px;"></div>
@@ -329,19 +329,19 @@
               <div><h3 style="margin-bottom:8px;">Ventas por Canal</h3><div id="dailyByChannel" style="min-height:200px;"></div></div>
             </div>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px;">
-              <div><h3 style="margin-bottom:8px;">Ventas por Método de Pago</h3><div id="dailyByPayment" style="min-height:200px;"></div></div>
+              <div><h3 style="margin-bottom:8px;">Ventas por M�todo de Pago</h3><div id="dailyByPayment" style="min-height:200px;"></div></div>
               <div><h3 style="margin-bottom:8px;">Ventas por Producto</h3><div id="dailyByProduct" style="min-height:200px;"></div></div>
             </div>
-            <div style="margin-top:16px;"><h3 style="margin-bottom:8px;">Ventas por Categoría</h3><div id="dailyByCategory" style="min-height:150px;"></div></div>
+            <div style="margin-top:16px;"><h3 style="margin-bottom:8px;">Ventas por Categor�a</h3><div id="dailyByCategory" style="min-height:150px;"></div></div>
             <div style="margin-top:16px;"><h3 style="margin-bottom:8px;">Ventas por Cajero</h3><div id="dailyByCashier" style="min-height:150px;"></div></div>
           </div>
         </div>
 
-        <!-- ==================== HISTÓRICOS ==================== -->
+        <!-- ==================== HIST�RICOS ==================== -->
         <div class="admin-section" id="history">
           <div class="module-header">
-            <button class="back-btn" onclick="showModule('dashboard')">← Inicio</button>
-            <h2>🗂 Históricos de pedidos</h2>
+            <button class="back-btn" onclick="showModule('dashboard')">? Inicio</button>
+            <h2>?? Hist�ricos de pedidos</h2>
           </div>
           <div class="table-card history-module-card">
             <div class="orders-toolbar history-toolbar">
@@ -350,9 +350,9 @@
                 <button type="button" class="filter-btn active" data-period="all">Todo</button>
                 <button type="button" class="filter-btn" data-period="today">Hoy</button>
                 <button type="button" class="filter-btn" data-period="month">Mes</button>
-                <button type="button" class="filter-btn" data-period="year">Año</button>
+                <button type="button" class="filter-btn" data-period="year">A�o</button>
                 <input id="dateInput" class="date-input" type="text" placeholder="Elegir fecha" />
-                <button type="button" class="btn-license" onclick="loadSalesHistory()">🔄 Actualizar</button>
+                <button type="button" class="btn-license" onclick="loadSalesHistory()">?? Actualizar</button>
               </div>
             </div>
             <div class="history-summary">
@@ -366,8 +366,8 @@
         <!-- ==================== REPORTES ==================== -->
         <div class="admin-section" id="reports">
           <div class="module-header">
-            <button class="back-btn" onclick="showModule('dashboard')">← Inicio</button>
-            <h2>📈 Reportes Operativos y Gerenciales</h2>
+            <button class="back-btn" onclick="showModule('dashboard')">? Inicio</button>
+            <h2>?? Reportes Operativos y Gerenciales</h2>
           </div>
           <div class="table-card">
             <div class="orders-toolbar">
@@ -379,8 +379,8 @@
                   <option value="month">Mes</option>
                   <option value="all">Todo</option>
                 </select>
-                <button class="btn-license" onclick="exportReportCSV()" style="background:linear-gradient(135deg,#27ae60,#2ecc71);">📥 Exportar CSV</button>
-                <button class="btn-license" onclick="window.print()" style="background:linear-gradient(135deg,#3498db,#2980b9);">🖨 Imprimir</button>
+                <button class="btn-license" onclick="exportReportCSV()" style="background:linear-gradient(135deg,#27ae60,#2ecc71);">?? Exportar CSV</button>
+                <button class="btn-license" onclick="window.print()" style="background:linear-gradient(135deg,#3498db,#2980b9);">?? Imprimir</button>
               </div>
             </div>
             <div id="reportsContent">
@@ -392,13 +392,13 @@
         <!-- ==================== PANEL EJECUTIVO ==================== -->
         <div class="admin-section" id="executive">
           <div class="module-header">
-            <button class="back-btn" onclick="showModule('dashboard')">← Inicio</button>
-            <h2>🎯 Panel Ejecutivo — KPIs y Alertas</h2>
+            <button class="back-btn" onclick="showModule('dashboard')">? Inicio</button>
+            <h2>?? Panel Ejecutivo � KPIs y Alertas</h2>
           </div>
           <div class="table-card">
             <div class="orders-toolbar">
               <span>KPIs y alertas operativas</span>
-              <button class="btn-license" onclick="loadSummary()" style="background:linear-gradient(135deg,#3498db,#2980b9);margin-left:auto;">🔄 Actualizar</button>
+              <button class="btn-license" onclick="loadSummary()" style="background:linear-gradient(135deg,#3498db,#2980b9);margin-left:auto;">?? Actualizar</button>
             </div>
             <div id="executiveAlerts" style="margin-bottom:16px;"></div>
             <div id="executiveKpis" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-bottom:16px;"></div>
@@ -407,15 +407,15 @@
               <div><h3 style="margin-bottom:8px;">Top Productos</h3><div id="execTopProducts" style="min-height:200px;"></div></div>
             </div>
             <div style="margin-top:16px;"><h3 style="margin-bottom:8px;">Cortes de Caja Recientes</h3><div id="execCuts" style="min-height:150px;"></div></div>
-            <div style="margin-top:16px;"><h3 style="margin-bottom:8px;">Bitácora de Auditoría</h3><div id="execAudit" style="min-height:150px;max-height:300px;overflow-y:auto;"></div></div>
+            <div style="margin-top:16px;"><h3 style="margin-bottom:8px;">Bit�cora de Auditor�a</h3><div id="execAudit" style="min-height:150px;max-height:300px;overflow-y:auto;"></div></div>
           </div>
         </div>
 
         <!-- ==================== CANCELACIONES Y DEVOLUCIONES ==================== -->
         <div class="admin-section" id="controls">
           <div class="module-header">
-            <button class="back-btn" onclick="showModule('dashboard')">← Inicio</button>
-            <h2>🛡 Cancelaciones y Devoluciones</h2>
+            <button class="back-btn" onclick="showModule('dashboard')">? Inicio</button>
+            <h2>?? Cancelaciones y Devoluciones</h2>
           </div>
           <div class="table-card">
             <div class="orders-toolbar"><span>Control de cancelaciones y devoluciones</span></div>
@@ -423,25 +423,25 @@
           </div>
         </div>
 
-        <!-- ==================== CATÁLOGOS ==================== -->
+        <!-- ==================== CAT�LOGOS ==================== -->
         <div class="admin-section" id="catalog">
           <div class="module-header">
-            <button class="back-btn" onclick="showModule('dashboard')">← Inicio</button>
-            <h2>🍽 Catálogos</h2>
+            <button class="back-btn" onclick="showModule('dashboard')">? Inicio</button>
+            <h2>?? Cat�logos</h2>
           </div>
           <div class="product-subtabs">
             <button type="button" class="product-subtab active" data-product-subtab="products" onclick="setProductSubtab('products')">Productos</button>
             <button type="button" class="product-subtab" data-product-subtab="promos" onclick="setProductSubtab('promos')">Promociones</button>
-            <button type="button" class="product-subtab" data-product-subtab="categories" onclick="setProductSubtab('categories')">Categorías</button>
+            <button type="button" class="product-subtab" data-product-subtab="categories" onclick="setProductSubtab('categories')">Categor�as</button>
           </div>
           <div class="product-subpanel active" id="productsSubpanel">
             <details class="add-form category-manager" open>
-              <summary>Administrar categorías</summary>
+              <summary>Administrar categor�as</summary>
               <form id="categoryForm" onsubmit="addCategory(event)">
                 <div class="form-row">
-                  <input type="text" id="catName" placeholder="Nombre de categoría" required />
-                  <input type="text" id="catDesc" placeholder="Descripción opcional" />
-                  <button type="submit">Agregar categoría</button>
+                  <input type="text" id="catName" placeholder="Nombre de categor�a" required />
+                  <input type="text" id="catDesc" placeholder="Descripci�n opcional" />
+                  <button type="submit">Agregar categor�a</button>
                 </div>
               </form>
               <div class="category-admin-list" id="categoryAdminList"></div>
@@ -455,12 +455,12 @@
                   <select id="prodCategory"></select>
                 </div>
                 <div class="form-row">
-                  <input type="text" id="prodDesc" placeholder="Descripción" />
+                  <input type="text" id="prodDesc" placeholder="Descripci�n" />
                   <input type="text" id="prodImage" placeholder="URL imagen" />
                   <input type="text" id="prodBadge" placeholder="Etiqueta (ej. Nuevo)" />
                 </div>
                 <div class="form-row">
-                  <textarea id="prodCustomizations" class="product-customization-input" placeholder="Personalizaciones, una por línea."></textarea>
+                  <textarea id="prodCustomizations" class="product-customization-input" placeholder="Personalizaciones, una por l�nea."></textarea>
                 </div>
                 <div class="form-row">
                   <label><input type="checkbox" id="prodFeatured" /> Destacado</label>
@@ -473,36 +473,36 @@
           <div class="product-subpanel" id="promosSubpanel">
             <div class="settings-promos-box">
               <div class="settings-promos-head">
-                <div><h3>Promociones de la tienda</h3><p>Edita las tarjetas que se mueven en la página principal.</p></div>
-                <button type="button" class="btn-license" onclick="addPromoEditor()">➕ Agregar promo</button>
+                <div><h3>Promociones de la tienda</h3><p>Edita las tarjetas que se mueven en la p�gina principal.</p></div>
+                <button type="button" class="btn-license" onclick="addPromoEditor()">? Agregar promo</button>
               </div>
               <div id="promoEditors" class="promo-editors"></div>
             </div>
             <div id="promoSettingsMsg" class="promo-settings-msg"></div>
-            <button class="btn-license" onclick="saveSettings('promos')">💾 Guardar promociones</button>
+            <button class="btn-license" onclick="saveSettings('promos')">?? Guardar promociones</button>
           </div>
           <div class="product-subpanel" id="categoriesSubpanel">
             <div class="table-card" style="margin-top:16px;">
-              <div class="orders-toolbar"><span>Categorías</span></div>
+              <div class="orders-toolbar"><span>Categor�as</span></div>
               <div id="categoriesList" class="orders-list"></div>
             </div>
           </div>
         </div>
 
-        <!-- ==================== CONFIGURACIÓN ==================== -->
+        <!-- ==================== CONFIGURACI�N ==================== -->
         <div class="admin-section" id="config">
           <div class="module-header">
-            <button class="back-btn" onclick="showModule('dashboard')">← Inicio</button>
-            <h2>⚙ Configuración del Negocio</h2>
+            <button class="back-btn" onclick="showModule('dashboard')">? Inicio</button>
+            <h2>? Configuraci�n del Negocio</h2>
           </div>
           <div class="table-card">
             <div style="padding:4px 0;">
               <div style="margin-bottom:14px;">
-                <label style="font-size:13px;font-weight:700;color:#555;">Dirección del local</label>
-                <input type="text" id="setAddress" style="width:100%;margin-top:4px;padding:10px 14px;border:1px solid #e5ddeb;border-radius:12px;font-size:14px;box-sizing:border-box;" placeholder="Calle y número, Colonia, Ciudad" />
+                <label style="font-size:13px;font-weight:700;color:#555;">Direcci�n del local</label>
+                <input type="text" id="setAddress" style="width:100%;margin-top:4px;padding:10px 14px;border:1px solid #e5ddeb;border-radius:12px;font-size:14px;box-sizing:border-box;" placeholder="Calle y n�mero, Colonia, Ciudad" />
               </div>
               <div style="margin-bottom:14px;">
-                <label style="font-size:13px;font-weight:700;color:#555;">Teléfono</label>
+                <label style="font-size:13px;font-weight:700;color:#555;">Tel�fono</label>
                 <input type="tel" id="setPhone" style="width:100%;margin-top:4px;padding:10px 14px;border:1px solid #e5ddeb;border-radius:12px;font-size:14px;box-sizing:border-box;" placeholder="777 123 4567" />
               </div>
               <div style="margin-bottom:14px;">
@@ -514,17 +514,17 @@
                 <input type="time" id="setClosing" style="width:100%;margin-top:4px;padding:10px 14px;border:1px solid #e5ddeb;border-radius:12px;font-size:14px;box-sizing:border-box;" />
               </div>
               <div id="settingsMsg" style="font-size:13px;font-weight:800;margin-bottom:10px;"></div>
-              <button class="btn-license" onclick="saveSettings()" style="width:100%;">💾 Guardar configuración</button>
+              <button class="btn-license" onclick="saveSettings()" style="width:100%;">?? Guardar configuraci�n</button>
             </div>
             <div style="margin-top:30px;padding-top:20px;border-top:2px solid #e5ddeb;">
-              <h3 style="margin-bottom:15px;color:#4a3c3a;">📁 Ubicación de guardado automático</h3>
+              <h3 style="margin-bottom:15px;color:#4a3c3a;">?? Ubicaci�n de guardado autom�tico</h3>
               <div id="currentHistoryPath" style="padding:10px;background:#f5f0ff;border-radius:8px;margin-bottom:10px;font-size:13px;color:#6c5ce7;font-weight:600;">No configurado</div>
-              <button class="btn-license" onclick="changeHistoryFolder()" style="background:linear-gradient(135deg,#6c5ce7,#a29bfe);">🔄 Configurar / Descargar</button>
+              <button class="btn-license" onclick="changeHistoryFolder()" style="background:linear-gradient(135deg,#6c5ce7,#a29bfe);">?? Configurar / Descargar</button>
             </div>
             <div class="settings-license-tools">
-              <h3>Administración de licencia</h3>
+              <h3>Administraci�n de licencia</h3>
               <p id="licenseAdminStatus">Consulta o elimina la licencia instalada sin bloquear el acceso al sistema.</p>
-              <button type="button" class="btn-license" onclick="revokeInstalledLicense()">🗑 Eliminar licencia instalada</button>
+              <button type="button" class="btn-license" onclick="revokeInstalledLicense()">?? Eliminar licencia instalada</button>
             </div>
           </div>
         </div>
@@ -537,22 +537,22 @@
 <!-- Modals -->
 <div class="modal-overlay" id="cashMovementModal" style="display:none;">
   <div class="modal-box" style="width:460px;">
-    <h2>💸 Movimiento de Caja</h2>
+    <h2>?? Movimiento de Caja</h2>
     <label>Tipo de movimiento</label>
     <select id="cmType" style="width:100%;margin-bottom:10px;">
       <option value="EntradaExtraordinaria">Entrada Extraordinaria</option>
       <option value="RetiroParcial">Retiro Parcial</option>
-      <option value="Deposito">Depósito</option>
+      <option value="Deposito">Dep�sito</option>
       <option value="PagoAutorizado">Pago Autorizado</option>
       <option value="SalidaCambio">Salida por Cambio</option>
       <option value="AjusteAutorizado">Ajuste Autorizado</option>
       <option value="ReembolsoEfectivo">Reembolso en Efectivo</option>
     </select>
-    <label>Método de pago</label>
+    <label>M�todo de pago</label>
     <select id="cmMethod" style="width:100%;margin-bottom:10px;">
       <option value="Efectivo">Efectivo</option>
-      <option value="Tarjeta de Débito">Tarjeta de Débito</option>
-      <option value="Tarjeta de Crédito">Tarjeta de Crédito</option>
+      <option value="Tarjeta de D�bito">Tarjeta de D�bito</option>
+      <option value="Tarjeta de Cr�dito">Tarjeta de Cr�dito</option>
       <option value="Transferencia SPEI">Transferencia SPEI</option>
     </select>
     <label>Importe</label>
@@ -561,7 +561,7 @@
     <input type="text" id="cmReason" placeholder="Motivo del movimiento" style="width:100%;margin-bottom:10px;" />
     <label>Observaciones</label>
     <textarea id="cmNotes" style="width:100%;margin-bottom:10px;min-height:60px;" placeholder="Observaciones opcionales"></textarea>
-    <label>PIN de autorización (Supervisor/Gerente)</label>
+    <label>PIN de autorizaci�n (Supervisor/Gerente)</label>
     <input type="password" id="cmPin" placeholder="PIN" style="width:100%;margin-bottom:10px;" />
     <div class="modal-actions">
       <button class="btn-modal-cancel" onclick="closeCashMovementModal()">Cancelar</button>
@@ -583,7 +583,7 @@
     <label>Otros medios contados</label>
     <input type="number" id="cutOtherCounted" step="0.01" min="0" placeholder="0.00" style="width:100%;margin-bottom:10px;" />
     <label>Motivo de diferencia (si aplica)</label>
-    <textarea id="cutDiffExplanation" style="width:100%;margin-bottom:10px;min-height:60px;" placeholder="Explicación obligatoria si hay diferencia"></textarea>
+    <textarea id="cutDiffExplanation" style="width:100%;margin-bottom:10px;min-height:60px;" placeholder="Explicaci�n obligatoria si hay diferencia"></textarea>
     <label>Observaciones</label>
     <textarea id="cutNotes" style="width:100%;margin-bottom:10px;min-height:60px;" placeholder="Observaciones opcionales"></textarea>
     <label>PIN de supervisor (obligatorio para corte)</label>
@@ -597,15 +597,15 @@
 
 <div class="modal-overlay" id="checkoutModal" style="display:none;">
   <div class="modal-box" style="width:480px;">
-    <h2>💳 Cobrar Venta</h2>
+    <h2>?? Cobrar Venta</h2>
     <div style="background:#f5f0ff;padding:12px;border-radius:10px;margin-bottom:12px;">
       <div style="font-size:18px;font-weight:900;text-align:center;">Total a cobrar: <span id="checkoutTotal">$0.00</span></div>
     </div>
-    <label>Método de pago</label>
+    <label>M�todo de pago</label>
     <select id="checkoutMethod" style="width:100%;margin-bottom:10px;" onchange="toggleCheckoutFields()">
       <option value="Efectivo">Efectivo</option>
-      <option value="Tarjeta de Débito">Tarjeta de Débito</option>
-      <option value="Tarjeta de Crédito">Tarjeta de Crédito</option>
+      <option value="Tarjeta de D�bito">Tarjeta de D�bito</option>
+      <option value="Tarjeta de Cr�dito">Tarjeta de Cr�dito</option>
       <option value="Transferencia SPEI">Transferencia SPEI</option>
       <option value="Pago QR / CoDi">Pago QR / CoDi</option>
       <option value="Vales / Monedero">Vales / Monedero</option>
@@ -616,7 +616,7 @@
       <div style="font-size:14px;font-weight:700;margin-bottom:10px;">Cambio: <span id="checkoutChange">$0.00</span></div>
     </div>
     <div id="refFields" style="display:none;">
-      <label>Referencia / Autorización / Últimos 4 dígitos</label>
+      <label>Referencia / Autorizaci�n / �ltimos 4 d�gitos</label>
       <input type="text" id="checkoutRef" placeholder="Ej. AUTH-1234 / *4921" style="width:100%;margin-bottom:10px;" />
     </div>
     <label>Propina (opcional)</label>
@@ -628,11 +628,44 @@
   </div>
 </div>
 
+<div class="modal-overlay" id="payOrderModal" style="display:none;">
+  <div class="modal-box" style="width:480px;">
+    <h2>?? Cobrar pedido</h2>
+    <div id="payOrderInfo" style="background:#f8f4fb;border:1px solid #e8deef;padding:12px;border-radius:12px;margin-bottom:12px;font-size:13px;color:#4b3f57;"></div>
+    <div style="background:#f5f0ff;padding:12px;border-radius:10px;margin-bottom:12px;">
+      <div style="font-size:18px;font-weight:900;text-align:center;">Total a cobrar: <span id="payOrderTotal">$0.00</span></div>
+    </div>
+    <label>M�todo de pago</label>
+    <select id="payOrderMethod" style="width:100%;margin-bottom:10px;" onchange="togglePayOrderFields()">
+      <option value="Efectivo">Efectivo</option>
+      <option value="Tarjeta de D�bito">Tarjeta de D�bito</option>
+      <option value="Tarjeta de Cr�dito">Tarjeta de Cr�dito</option>
+      <option value="Transferencia SPEI">Transferencia SPEI</option>
+      <option value="Pago QR / CoDi">Pago QR / CoDi</option>
+      <option value="Vales / Monedero">Vales / Monedero</option>
+    </select>
+    <div id="payOrderCashFields">
+      <label>Efectivo recibido</label>
+      <input type="number" id="payOrderReceived" step="0.01" min="0" placeholder="0.00" style="width:100%;margin-bottom:6px;" oninput="calcPayOrderChange()" />
+      <div style="font-size:16px;font-weight:800;color:#27ae60;margin-bottom:10px;">Cambio: <span id="payOrderChange">$0.00</span></div>
+    </div>
+    <div id="payOrderRefFields" style="display:none;">
+      <label>Referencia / Autorizaci�n / �ltimos 4 d�gitos</label>
+      <input type="text" id="payOrderRef" placeholder="Ej. AUTH-1234 / *4921" style="width:100%;margin-bottom:10px;" />
+    </div>
+    <div id="payOrderMsg" style="font-size:12px;margin-bottom:8px;text-align:center;"></div>
+    <div class="modal-actions">
+      <button class="btn-modal-cancel" onclick="closePayOrderModal()">Cancelar</button>
+      <button class="btn-modal-confirm" onclick="submitPayOrderModal()">Confirmar cobro</button>
+    </div>
+  </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
-<script src="js/admin.js?v=20261119-pos-redesign"></script>
+<script src="js/admin.js?v=20261120-pos-pro"></script>
 <script>
-// Función para mostrar módulos (página principal con iconos)
+// Funci�n para mostrar m�dulos (p�gina principal con iconos)
 function showModule(moduleId) {
   var shell = document.querySelector(".dashboard");
   if (shell) {
@@ -651,17 +684,17 @@ function showModule(moduleId) {
 
   // Update topbar title
   var titles = {
-    dashboard: "Panel de Gestión POS",
+    dashboard: "Panel de Gesti�n POS",
     pos: "Terminal de Venta (POS)",
     openaccounts: "Cuentas Abiertas",
     cash: "Caja y Cortes",
-     daily: "Acumulado del Día",
-     history: "Históricos de pedidos",
+     daily: "Acumulado del D�a",
+     history: "Hist�ricos de pedidos",
      reports: "Reportes",
     executive: "Panel Ejecutivo",
     controls: "Cancelaciones y Devoluciones",
-    catalog: "Catálogos",
-    config: "Configuración",
+    catalog: "Cat�logos",
+    config: "Configuraci�n",
   };
   document.getElementById("topbarTitle").textContent = titles[moduleId] || "Panel POS";
 
@@ -676,8 +709,8 @@ function showModule(moduleId) {
   if (moduleId === "config") { if (typeof loadSettings === "function") loadSettings(); }
 }
 
-// Las tarjetas reutilizan el enlace del menú para conservar la validación
-// de licencia y cualquier regla de visibilidad que se agregue al menú.
+// Las tarjetas reutilizan el enlace del men� para conservar la validaci�n
+// de licencia y cualquier regla de visibilidad que se agregue al men�.
 function openModule(moduleId) {
   var link = document.querySelector('[data-tab="' + moduleId + '"]');
   if (link) link.click();

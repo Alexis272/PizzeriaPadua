@@ -1,4 +1,4 @@
-﻿const API = { products: "/PizzeriaPadua/api/v1/Products", orders: "/PizzeriaPadua/api/v1/Orders", categories: "/PizzeriaPadua/api/v1/Categories" };
+const API = { products: "/PizzeriaPadua/api/v1/Products", orders: "/PizzeriaPadua/api/v1/Orders", categories: "/PizzeriaPadua/api/v1/Categories" };
 
 function resolveImageUrl(url) {
   if (!url) return "img/hero-tech.jpg";
@@ -135,38 +135,75 @@ async function loadOrders() {
   }
 }
 
+function getPosStatusInfo(order) {
+  const statusMap = { 0: "Pendiente", 1: "En preparación", 2: "Entregado", 3: "Cancelado", 4: "Listo para entrega", 6: "Cuenta abierta" };
+  const classMap = { 0: "status-pending", 1: "status-progress", 2: "status-completed", 3: "status-cancelled", 4: "status-completed", 6: "status-pending" };
+  const isOpen = !!(order && (order.status === 6 || order.isOpenAccount));
+  const status = isOpen ? 6 : Number(order?.status ?? 0);
+  return { label: isOpen ? "Cuenta abierta" : (statusMap[status] || "Pendiente"), cls: classMap[status] || "status-pending", isOpen };
+}
+
+function formatPosDate(value) {
+  if (!value) return "";
+  const d = new Date(value);
+  return isNaN(d.getTime()) ? "" : d.toLocaleString("es-MX", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" });
+}
+
+function renderPosOrderCard(order, opts = {}) {
+  const info = getPosStatusInfo(order);
+  const name = escapeHtml(order.customerName || "Cliente Mostrador");
+  const items = Array.isArray(order.orderItems) ? order.orderItems : [];
+  const total = Number(order.totalAmount || 0);
+  const channel = escapeHtml(order.channel || (order.table?.tableNumber ? `Mesa ${order.table.tableNumber}` : "Mostrador"));
+  const date = formatPosDate(order.orderDate);
+  const itemsPreview = items.slice(0, 3).map(oi => {
+    const n = oi.product ? oi.product.name : `Producto #${oi.productId}`;
+    return `<li><span>${Number(oi.quantity || 1)}x ${escapeHtml(n)}</span><span class="muted">$${Number(oi.subtotal || 0).toFixed(2)}</span></li>`;
+  }).join("") || '<li><span class="muted">Sin productos</span><span></span></li>';
+  const more = items.length > 3 ? `<li><span class="muted">+${items.length - 3} producto(s) más</span><span></span></li>` : "";
+  const showStatusActions = opts.showStatusActions !== false;
+  let secondary = "";
+  if (showStatusActions) {
+    if (order.status === 0) secondary += `<button type="button" class="pos-btn-secondary" onclick="updateOrderStatus(${order.orderId}, 1)">En preparación</button>`;
+    if (order.status === 0 || order.status === 1) secondary += `<button type="button" class="pos-btn-secondary" onclick="updateOrderStatus(${order.orderId}, 4)">Listo</button>`;
+    if (order.status === 4) secondary += `<button type="button" class="pos-btn-secondary" onclick="renotifyOrder(${order.orderId})">Notificar</button><button type="button" class="pos-btn-secondary" onclick="updateOrderStatus(${order.orderId}, 2)">Entregado</button>`;
+  }
+  const chargeAction = (info.isOpen || order.status === 6)
+    ? `openPayOrderModal(${order.orderId})`
+    : `openCashModal(${order.orderId})`;
+  return `
+    <div class="order-card pos-order-pro">
+      <div class="pos-card-top">
+        <div>
+          <h3 class="pos-card-customer">${name}</h3>
+          <p class="pos-card-meta">Pedido #${order.orderId} · ${date || "Sin fecha"}</p>
+        </div>
+        <div class="pos-card-badges">
+          <span class="pos-chip">${channel}</span>
+          <span class="pos-chip ${info.cls}">${info.label}</span>
+        </div>
+      </div>
+      <div class="pos-card-total-row"><span class="pos-card-total-label">Total</span><span class="pos-card-total">$${total.toFixed(2)}</span></div>
+      ${renderOrderPaymentFee(order)}
+      <ul class="pos-card-items">${itemsPreview}${more}</ul>
+      <div class="pos-card-details">${items.length} artículo(s)${order.table?.tableNumber ? ` · ${escapeHtml(String(order.table.tableNumber))}` : ""}</div>
+      <div class="order-actions">
+        <button type="button" class="pos-btn-charge" onclick="${chargeAction}">Cobrar</button>
+        <button type="button" class="pos-btn-edit" onclick="showPosOrderForm(); editActiveOrder(${order.orderId})">Editar</button>
+        <button type="button" class="pos-btn-cancel" onclick="cancelPosOrder(${order.orderId})">Cancelar</button>
+        ${secondary}
+      </div>
+    </div>`;
+}
+
 function renderOrders(orders) {
   const container = document.getElementById("ordersList");
+  if (!container) return;
   if (!orders || orders.length === 0) {
-    container.innerHTML = "<p style='text-align:center;color:#999;'>No hay pedidos</p>";
+    container.innerHTML = "<div class='pos-home-empty'>No hay pedidos activos. Crea uno nuevo para comenzar.</div>";
     return;
   }
-  const statusMap = { 0: "Pendiente", 1: "En preparación", 2: "Entregado", 3: "Cancelado", 4: "Pendiente de entrega", 6: "Cuenta abierta" };
-  const classMap = { 0: "status-pending", 1: "status-progress", 2: "status-completed", 3: "status-cancelled", 4: "status-completed", 6: "status-pending" };
-  container.innerHTML = orders.map(o => `
-    <div class="order-card">
-      <div class="order-info">
-        <h3>Pedido #${o.orderId} ${o.customerName ? `- ${o.customerName}` : ""}</h3>
-        <p>${new Date(o.orderDate).toLocaleString("es-MX")} | ${o.orderItems ? o.orderItems.length : 0} artículo(s)</p>
-        <p><strong>Total: $${o.totalAmount.toFixed(2)}</strong></p>
-        ${renderOrderPaymentFee(o)}
-        ${o.table ? `<p>Entrega: ${o.table.tableNumber}</p>` : ""}
-        ${o.orderItems ? o.orderItems.map(oi => renderOrderItemLine(oi)).join("") : ""}
-      </div>
-      <span class="order-status ${classMap[o.status] || "status-pending"}">${statusMap[o.status] || "Desconocido"}</span>
-       <div class="order-actions">
-         <button class="btn-complete" onclick="${o.status === 6 || o.isOpenAccount ? `payOpenAccount(${o.orderId})` : `openCashModal(${o.orderId})`}">💳 Cobrar</button>
-         <button class="btn-progress" onclick="editActiveOrder(${o.orderId})">✎ Editar</button>
-         <button class="btn-cancel" onclick="updateOrderStatus(${o.orderId}, 3)">✕ Cancelar</button>
-         ${o.status === 0 ? `<button class="btn-progress" onclick="updateOrderStatus(${o.orderId}, 1)">En preparación</button>` : ""}
-         ${o.status === 0 || o.status === 1 ? (getOrderPaymentFee(o) > 0
-           ? `<button class="btn-complete" onclick="updateOrderStatus(${o.orderId}, 4)">✔ Listo para entregar</button>`
-           : "") : ""}
-         ${o.status === 4 ? `<button class="btn-progress" onclick="renotifyOrder(${o.orderId})">🔔 Volver a notificar</button>` : ""}
-        ${o.status === 4 ? `<button class="btn-complete" onclick="updateOrderStatus(${o.orderId}, 2)">✔ Marcar como entregado</button>` : ""}
-      </div>
-    </div>
-  `).join("");
+  container.innerHTML = orders.map(o => renderPosOrderCard(o, { showStatusActions: true })).join("");
 }
 
 function renderOrderPaymentFee(order) {
@@ -227,10 +264,17 @@ async function updateOrderStatus(orderId, status) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ orderId, status, tableId: null, employeeId: null })
     });
-    loadOrders();
+    await loadOrders();
+    if (typeof loadOpenAccounts === "function") loadOpenAccounts();
+    if (typeof loadPosHomeOrders === "function" && document.getElementById("posHomeOrders")) loadPosHomeOrders();
   } catch (err) {
     alert("Error al actualizar pedido: " + err.message);
   }
+}
+
+function cancelPosOrder(orderId) {
+  if (!confirm(`¿Cancelar el pedido #${orderId}? Esta acción lo marcará como cancelado.`)) return;
+  updateOrderStatus(orderId, 3);
 }
 
 let pendingOrderId = null;
@@ -358,11 +402,47 @@ function showPosHome() {
   loadPosHomeOrders();
 }
 
-function showPosOrderForm() {
+function showPosOrderForm(reset = false) {
   document.getElementById("posHomePanel")?.classList.add("hidden");
   document.getElementById("posTerminalHeader")?.classList.remove("hidden");
   document.getElementById("posTerminalCard")?.classList.remove("hidden");
+  if (reset) resetPosOrderForm();
+  updatePosFormUi();
   if (typeof loadAdminProducts === "function") loadAdminProducts();
+  renderPosCart();
+}
+
+function startNewPosOrder() {
+  showPosOrderForm(true);
+  switchPosSidePanel("posOrderPanel");
+}
+
+function resetPosOrderForm() {
+  editingOrderId = null;
+  posCart = [];
+  if (document.getElementById("posCustomerName")) document.getElementById("posCustomerName").value = "";
+  if (document.getElementById("posDiscount")) document.getElementById("posDiscount").value = "";
+  if (document.getElementById("posPromoCode")) document.getElementById("posPromoCode").value = "";
+  if (document.getElementById("posTip")) document.getElementById("posTip").value = "";
+  if (document.getElementById("posChannel")) document.getElementById("posChannel").value = "Para Llevar";
+  if (document.getElementById("posTable")) document.getElementById("posTable").value = "";
+  document.querySelectorAll(".pos-channel-buttons button").forEach((btn, i) => btn.classList.toggle("active", i === 0));
+  const msg = document.getElementById("posMsg");
+  if (msg) { msg.textContent = ""; msg.style.color = ""; }
+  updatePosFormUi();
+  renderPosCart();
+}
+
+function updatePosFormUi() {
+  const isEdit = !!editingOrderId;
+  const title = document.getElementById("posFormTitle");
+  const badge = document.getElementById("posEditBadge");
+  const newBtn = document.getElementById("posNewOrderBtn");
+  const secondary = document.getElementById("posSecondaryBtn");
+  if (title) title.textContent = isEdit ? `Pedido #${editingOrderId}` : "Nuevo pedido";
+  if (badge) badge.style.display = isEdit ? "inline-flex" : "none";
+  if (newBtn) newBtn.style.display = isEdit ? "inline-flex" : "none";
+  if (secondary) secondary.textContent = isEdit ? "Guardar cambios" : "Crear pedido";
 }
 
 async function loadPosHomeOrders() {
@@ -374,23 +454,28 @@ async function loadPosHomeOrders() {
     const active = orders.filter(o => o.status !== 3 &&
       (o.status === 0 || o.status === 1 || o.status === 4 || o.status === 6 || o.isOpenAccount));
     container.innerHTML = active.length
-      ? active.slice(0, 8).map(o => `
+      ? active.slice(0, 10).map(o => {
+          const info = getPosStatusInfo(o);
+          const name = escapeHtml(o.customerName || "Cliente Mostrador");
+          const items = (o.orderItems || []).length;
+          return `
         <div class="pos-home-order-card">
           <div class="pos-home-order-head">
-            <div><strong>Pedido #${o.orderId}</strong><small>${escapeHtml(o.customerName || "Cliente Mostrador")}</small></div>
-            <span class="pos-home-order-status">${o.status === 6 || o.isOpenAccount ? "Pendiente" : (o.status === 1 ? "En preparación" : "Pendiente")}</span>
+            <div><strong>Pedido #${o.orderId}</strong><small>${name}</small></div>
+            <span class="pos-home-order-status ${info.cls}">${info.label}</span>
           </div>
-          <div class="pos-home-order-date">${new Date(o.orderDate).toLocaleDateString("es-MX", { day: "2-digit", month: "short", year: "numeric" })}</div>
+          <div class="pos-home-order-date pos-home-order-meta">${formatPosDate(o.orderDate)} · ${escapeHtml(o.channel || "Mostrador")}</div>
           <div class="pos-home-order-data">
-            <div><small>ARTÍCULOS</small><strong>${o.orderItems?.length || 0}</strong></div>
+            <div><small>ARTÍCULOS</small><strong>${items}</strong></div>
             <div><small>TOTAL</small><strong>$${Number(o.totalAmount || 0).toFixed(2)}</strong></div>
           </div>
-          <div class="pos-home-order-actions"><button type="button" onclick="showPosOrderForm(); editActiveOrder(${o.orderId})">Abrir pedido</button></div>
-        </div>`).join("")
-      : '<p class="pos-home-empty">No hay pedidos activos.</p>';
+          <div class="pos-home-order-actions"><button type="button" onclick="showPosOrderForm(); editActiveOrder(${o.orderId})">Abrir y editar</button></div>
+        </div>`;
+        }).join("")
+      : '<p class="pos-home-empty">No hay pedidos activos. Crea el primero con el botón “Nuevo pedido”.</p>';
     container.insertAdjacentHTML("beforeend", `
-      <button type="button" class="pos-new-order-tile" onclick="showPosOrderForm()">
-        <span>+</span><strong>Nuevo pedido</strong><small>Agregar productos y cobrar</small>
+      <button type="button" class="pos-new-order-tile" onclick="startNewPosOrder()">
+        <span>+</span><strong>Nuevo pedido</strong><small>Llenar información y crear tarjeta</small>
       </button>`);
   } catch {
     container.innerHTML = '<p class="pos-home-empty">No se pudieron cargar los pedidos.</p>';
@@ -408,16 +493,21 @@ function editActiveOrder(orderId) {
   posCart = (order.orderItems || []).map(item => ({
     productId: item.productId,
     name: item.product?.name || `Producto #${item.productId}`,
-    price: Number(item.unitPrice || item.subtotal || 0) / Math.max(1, Number(item.quantity || 1)),
+    price: Number(item.unitPrice || 0) || (Number(item.subtotal || 0) / Math.max(1, Number(item.quantity || 1))),
+    imageUrl: item.product?.imageUrl || item.imageUrl || "img/pizza-padua.svg",
     quantity: Number(item.quantity || 1),
     customizations: item.customizations || ""
   }));
-  document.getElementById("posCustomerName").value = order.customerName || "";
-  document.getElementById("posChannel").value = order.channel || "Mostrador";
+  if (document.getElementById("posCustomerName")) document.getElementById("posCustomerName").value = order.customerName || "";
+  if (document.getElementById("posChannel")) document.getElementById("posChannel").value = order.channel || "Para Llevar";
   if (document.getElementById("posTable")) document.getElementById("posTable").value = order.table?.tableId || "";
+  document.querySelectorAll(".pos-channel-buttons button").forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.channel === (order.channel || "Para Llevar"));
+  });
   renderPosCart();
-  document.getElementById("posMsg").textContent = `Editando pedido #${orderId}. Guarda la cuenta para aplicar los cambios.`;
-  document.getElementById("posMsg").style.color = "#7b2859";
+  const msg = document.getElementById("posMsg");
+  if (msg) { msg.textContent = `Editando pedido #${orderId}. Revisa la información y guarda los cambios.`; msg.style.color = "#7b2859"; }
+  updatePosFormUi();
   switchPosSidePanel("posOrderPanel");
 }
 
@@ -1941,18 +2031,17 @@ function renderSimpleList(containerId, items, formatter) {
 // Load open accounts
 async function loadOpenAccounts() {
   try {
-    var res = await fetch("/PizzeriaPadua/api/v1/Orders");
-    var orders = await res.json();
-    var open = orders.filter(function(o) { return o.isOpenAccount || o.status === 6; });
-    var container = document.getElementById("openAccountsList");
+    const res = await fetch("/PizzeriaPadua/api/v1/Orders");
+    const orders = await res.json();
+    const open = orders.filter(o => o.isOpenAccount || o.status === 6);
+    const container = document.getElementById("openAccountsList");
     if (!container) return;
     if (open.length === 0) {
-      container.innerHTML = "<p style='text-align:center;color:#999;padding:20px;'>No hay cuentas abiertas</p>";
+      container.innerHTML = "<div class='pos-home-empty'>No hay cuentas abiertas.</div>";
       return;
     }
-    container.innerHTML = open.map(function(o) {
-      return '<div class="order-card"><div class="order-info"><h3>Pedido #' + o.orderId + ' - ' + (o.customerName || "Sin nombre") + '</h3><p>' + new Date(o.orderDate).toLocaleString("es-MX") + ' | ' + (o.orderItems ? o.orderItems.length : 0) + ' artículo(s)</p><p><strong>Total: $' + o.totalAmount.toFixed(2) + '</strong></p></div><span class="order-status status-pending">Cuenta Abierta</span><div class="order-actions"><button class="btn-complete" onclick="payOpenAccount(' + o.orderId + ')">💳 Cobrar</button></div></div>';
-    }).join("");
+    sessionStorage.setItem("adminOrders", JSON.stringify(orders));
+    container.innerHTML = open.map(o => renderPosOrderCard(o, { showStatusActions: false })).join("");
   } catch (err) {
     console.error("Error loading open accounts:", err);
   }
@@ -2187,64 +2276,61 @@ function updatePosTotals() {
 }
 
 async function posSaveOpenAccount() {
-  if (posCart.length === 0) { alert("Agrega al menos un producto"); return; }
+  if (posCart.length === 0) { alert("Agrega al menos un producto al pedido."); return; }
   if (editingOrderId) {
     await saveEditedPosOrder();
     return;
   }
+  const msg = document.getElementById("posMsg");
   try {
-    var customerName = document.getElementById("posCustomerName").value || "Cliente Mostrador";
-    var channel = document.getElementById("posChannel").value;
-    var tableId = document.getElementById("posTable").value;
-    var discountPct = parseFloat(document.getElementById("posDiscount").value) || 0;
-    var tip = parseFloat(document.getElementById("posTip").value) || 0;
-    var promoCode = document.getElementById("posPromoCode").value;
+    const customerName = (document.getElementById("posCustomerName")?.value || "").trim() || "Cliente Mostrador";
+    const channel = document.getElementById("posChannel")?.value || "Mostrador";
+    const tableId = document.getElementById("posTable")?.value;
+    const discountPct = parseFloat(document.getElementById("posDiscount")?.value) || 0;
+    const tip = parseFloat(document.getElementById("posTip")?.value) || 0;
+    const promoCode = document.getElementById("posPromoCode")?.value || null;
+    const items = posCart.map(i => ({ productId: i.productId, quantity: i.quantity, customizations: i.customizations || "" }));
 
-    var items = posCart.map(function(i) { return { productId: i.productId, quantity: i.quantity, customizations: i.customizations }; });
-    var subtotal = posCart.reduce(function(s, i) { return s + i.price * i.quantity; }, 0);
-
-    var res = await fetch("/PizzeriaPadua/api/v1/Pos/sale", {
+    const res = await fetch("/PizzeriaPadua/api/v1/Pos/sale", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         cashRegisterId: 1,
         cashierUsername: "cajero1",
-        channel: channel,
-        customerName: customerName,
+        channel,
+        customerName,
         tableId: tableId ? parseInt(tableId) : null,
         saveAsOpenAccount: true,
         discountPercent: discountPct,
         tipAmount: tip,
-        promoCode: promoCode || null,
-        items: items
+        promoCode,
+        items
       })
     });
-    var data = await res.json();
+    const data = await res.json();
     if (data.success) {
-      document.getElementById("posMsg").textContent = "Pedido creado: " + (data.order?.folio || data.folio || "");
-      document.getElementById("posMsg").style.color = "#27ae60";
-      posCart = [];
-      renderPosCart();
-      loadOpenAccounts();
+      if (msg) { msg.textContent = `Pedido creado correctamente (${data.order?.folio || data.folio || "tarjeta generada"}).`; msg.style.color = "#27ae60"; }
+      resetPosOrderForm();
       await loadOrders();
-       switchPosSidePanel("activeOrdersPanel");
+      if (typeof loadOpenAccounts === "function") loadOpenAccounts();
+      if (typeof loadPosHomeOrders === "function") loadPosHomeOrders();
+      switchPosSidePanel("activeOrdersPanel");
     } else {
-      document.getElementById("posMsg").textContent = data.message || "Error";
-      document.getElementById("posMsg").style.color = "#e74c3c";
+      if (msg) { msg.textContent = data.message || "No se pudo crear el pedido."; msg.style.color = "#e74c3c"; }
     }
   } catch (err) {
     console.error("Error:", err);
-    document.getElementById("posMsg").textContent = "Error de conexión";
-    document.getElementById("posMsg").style.color = "#e74c3c";
+    if (msg) { msg.textContent = "Error de conexión al crear el pedido."; msg.style.color = "#e74c3c"; }
   }
 }
 
 async function saveEditedPosOrder() {
   const orderId = editingOrderId;
+  const msg = document.getElementById("posMsg");
   const payload = {
-    customerName: document.getElementById("posCustomerName").value || "Cliente Mostrador",
-    channel: document.getElementById("posChannel").value,
-    tableId: document.getElementById("posTable").value ? parseInt(document.getElementById("posTable").value) : null,
+    customerName: document.getElementById("posCustomerName")?.value || "Cliente Mostrador",
+    channel: document.getElementById("posChannel")?.value || "Mostrador",
+    tableId: document.getElementById("posTable")?.value ? parseInt(document.getElementById("posTable").value) : null,
     items: posCart.map(item => ({
       productId: item.productId,
       quantity: item.quantity,
@@ -2259,15 +2345,16 @@ async function saveEditedPosOrder() {
     });
     const data = await res.json();
     if (!res.ok || !data.success) throw new Error(data.message || "No se pudo editar el pedido");
-    editingOrderId = null;
-    posCart = [];
-    renderPosCart();
-    document.getElementById("posMsg").textContent = "Pedido actualizado correctamente.";
-    document.getElementById("posMsg").style.color = "#27ae60";
-    loadOrders();
+    if (msg) { msg.textContent = `Pedido #${orderId} actualizado correctamente.`; msg.style.color = "#27ae60"; }
+    const keepMsg = msg ? msg.textContent : "";
+    const keepColor = msg ? msg.style.color : "";
+    resetPosOrderForm();
+    if (msg && keepMsg) { msg.textContent = keepMsg; msg.style.color = keepColor; }
+    await loadOrders();
+    if (typeof loadOpenAccounts === "function") loadOpenAccounts();
+    if (typeof loadPosHomeOrders === "function") loadPosHomeOrders();
   } catch (err) {
-    document.getElementById("posMsg").textContent = err.message;
-    document.getElementById("posMsg").style.color = "#c0392b";
+    if (msg) { msg.textContent = err.message || "No se pudo editar el pedido"; msg.style.color = "#c0392b"; }
   }
 }
 
@@ -2298,87 +2385,160 @@ function calcChange() {
 
 async function submitCheckout() {
   try {
-    var customerName = document.getElementById("posCustomerName").value || "Cliente Mostrador";
-    var channel = document.getElementById("posChannel").value;
-    var tableId = document.getElementById("posTable").value;
-    var discountPct = parseFloat(document.getElementById("posDiscount").value) || 0;
-    var tip = parseFloat(document.getElementById("checkoutTip").value) || parseFloat(document.getElementById("posTip").value) || 0;
-    var promoCode = document.getElementById("posPromoCode").value;
-    var method = document.getElementById("checkoutMethod").value;
-    var received = parseFloat(document.getElementById("checkoutReceived").value) || 0;
-    var ref = document.getElementById("checkoutRef").value;
+    const msg = document.getElementById("posMsg");
+    const customerName = (document.getElementById("posCustomerName")?.value || "").trim() || "Cliente Mostrador";
+    const channel = document.getElementById("posChannel")?.value || "Mostrador";
+    const tableId = document.getElementById("posTable")?.value;
+    const discountPct = parseFloat(document.getElementById("posDiscount")?.value) || 0;
+    const tip = parseFloat(document.getElementById("checkoutTip")?.value) || parseFloat(document.getElementById("posTip")?.value) || 0;
+    const promoCode = document.getElementById("posPromoCode")?.value || null;
+    const method = document.getElementById("checkoutMethod")?.value || "Efectivo";
+    const received = parseFloat(document.getElementById("checkoutReceived")?.value) || 0;
+    const ref = document.getElementById("checkoutRef")?.value || "";
 
-    var items = posCart.map(function(i) { return { productId: i.productId, quantity: i.quantity, customizations: i.customizations }; });
-    var total = parseFloat(document.getElementById("posTotal").textContent.replace("$", "")) || 0;
+    const items = posCart.map(i => ({ productId: i.productId, quantity: i.quantity, customizations: i.customizations || "" }));
+    const total = parseFloat((document.getElementById("posTotal")?.textContent || "$0").replace("$", "")) || 0;
 
-    var payment = { paymentMethod: method, amount: total, amountReceived: received > 0 ? received : total };
+    const payment = { paymentMethod: method, amount: total, amountReceived: received > 0 ? received : total };
     if (ref) payment.reference = ref;
     if (tip > 0) payment.tipAmount = tip;
 
-    var res = await fetch("/PizzeriaPadua/api/v1/Pos/sale", {
+    const res = await fetch("/PizzeriaPadua/api/v1/Pos/sale", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         cashRegisterId: 1,
         cashierUsername: "cajero1",
-        channel: channel,
-        customerName: customerName,
+        channel,
+        customerName,
         tableId: tableId ? parseInt(tableId) : null,
         saveAsOpenAccount: false,
         discountPercent: discountPct,
         tipAmount: tip,
-        promoCode: promoCode || null,
-        items: items,
+        promoCode,
+        items,
         payments: [payment]
       })
     });
-    var data = await res.json();
+    const data = await res.json();
     if (data.success) {
-      document.getElementById("posMsg").textContent = "Venta cobrada: " + data.order.folio + " | Cambio: $" + data.order.changeGiven.toFixed(2);
-      document.getElementById("posMsg").style.color = "#27ae60";
-      posCart = [];
-      renderPosCart();
+      const change = Number(data.order?.changeGiven || 0).toFixed(2);
+      if (msg) { msg.textContent = `Venta cobrada: ${data.order?.folio || ""} | Cambio: $${change}`; msg.style.color = "#27ae60"; }
       closeCheckoutModal();
-      loadOrders();
-      loadSummary();
+      resetPosOrderForm();
+      await loadOrders();
+      if (typeof loadSummary === "function") loadSummary();
+      if (typeof loadPosHomeOrders === "function") loadPosHomeOrders();
     } else {
-      document.getElementById("posMsg").textContent = data.message || "Error";
-      document.getElementById("posMsg").style.color = "#e74c3c";
+      if (msg) { msg.textContent = data.message || "Error al cobrar"; msg.style.color = "#e74c3c"; }
     }
   } catch (err) {
     console.error("Error:", err);
-    document.getElementById("posMsg").textContent = "Error de conexión";
-    document.getElementById("posMsg").style.color = "#e74c3c";
+    const msg = document.getElementById("posMsg");
+    if (msg) { msg.textContent = "Error de conexión"; msg.style.color = "#e74c3c"; }
   }
 }
 
-async function payOpenAccount(orderId) {
-  var method = prompt("Método de pago:", "Efectivo");
-  if (!method) return;
-  var amount = parseFloat(prompt("Importe a cobrar:", "0"));
-  if (!amount || amount <= 0) return;
+let payOrderTargetId = null;
+let payOrderTargetTotal = 0;
 
+function openPayOrderModal(orderId) {
+  const orders = JSON.parse(sessionStorage.getItem("adminOrders") || "[]");
+  let order = orders.find(o => o.orderId === orderId);
+  if (!order) {
+    fetch("/PizzeriaPadua/api/v1/Orders").then(r => r.json()).then(list => {
+      sessionStorage.setItem("adminOrders", JSON.stringify(list || []));
+      const found = (list || []).find(o => o.orderId === orderId);
+      if (found) openPayOrderModal(orderId); else alert("No se encontró el pedido.");
+    }).catch(() => alert("No se pudo cargar la información del pedido."));
+    return;
+  }
+  payOrderTargetId = orderId;
+  payOrderTargetTotal = Number(order.totalAmount || 0);
+  const info = document.getElementById("payOrderInfo");
+  const totalEl = document.getElementById("payOrderTotal");
+  if (info) info.innerHTML = `<strong>Pedido #${order.orderId}</strong> · ${escapeHtml(order.customerName || "Cliente Mostrador")}<br><span style="color:#766d86;">${formatPosDate(order.orderDate)} · ${(order.orderItems || []).length} artículo(s) · ${escapeHtml(order.channel || "Mostrador")}</span>`;
+  if (totalEl) totalEl.textContent = "$" + payOrderTargetTotal.toFixed(2);
+  const method = document.getElementById("payOrderMethod"); if (method) method.value = "Efectivo";
+  const received = document.getElementById("payOrderReceived"); if (received) received.value = payOrderTargetTotal.toFixed(2);
+  const ref = document.getElementById("payOrderRef"); if (ref) ref.value = "";
+  const msg = document.getElementById("payOrderMsg"); if (msg) { msg.textContent = ""; msg.style.color = ""; }
+  togglePayOrderFields();
+  calcPayOrderChange();
+  const modal = document.getElementById("payOrderModal");
+  if (modal) modal.style.display = "flex";
+}
+
+function closePayOrderModal() {
+  const modal = document.getElementById("payOrderModal");
+  if (modal) modal.style.display = "none";
+  payOrderTargetId = null;
+  payOrderTargetTotal = 0;
+}
+
+function togglePayOrderFields() {
+  const method = document.getElementById("payOrderMethod")?.value || "Efectivo";
+  const isCash = method === "Efectivo";
+  const cash = document.getElementById("payOrderCashFields");
+  const ref = document.getElementById("payOrderRefFields");
+  if (cash) cash.style.display = isCash ? "block" : "none";
+  if (ref) ref.style.display = isCash ? "none" : "block";
+  if (!isCash) {
+    const received = document.getElementById("payOrderReceived");
+    if (received) received.value = payOrderTargetTotal.toFixed(2);
+  }
+  calcPayOrderChange();
+}
+
+function calcPayOrderChange() {
+  const received = parseFloat(document.getElementById("payOrderReceived")?.value) || 0;
+  const method = document.getElementById("payOrderMethod")?.value || "Efectivo";
+  const effective = method === "Efectivo" ? received : payOrderTargetTotal;
+  const change = Math.max(0, effective - payOrderTargetTotal);
+  const el = document.getElementById("payOrderChange");
+  if (el) el.textContent = "$" + change.toFixed(2);
+}
+
+async function submitPayOrderModal() {
+  if (!payOrderTargetId) return;
+  const msg = document.getElementById("payOrderMsg");
+  const method = document.getElementById("payOrderMethod")?.value || "Efectivo";
+  const received = parseFloat(document.getElementById("payOrderReceived")?.value) || 0;
+  const ref = document.getElementById("payOrderRef")?.value || "";
+  const amountReceived = method === "Efectivo" ? received : payOrderTargetTotal;
+  if (method === "Efectivo" && amountReceived + 0.001 < payOrderTargetTotal) {
+    if (msg) { msg.textContent = "El monto recibido es menor al total."; msg.style.color = "#c0392b"; }
+    return;
+  }
+  const payment = { paymentMethod: method, amount: payOrderTargetTotal, amountReceived };
+  if (ref) payment.reference = ref;
   try {
-    var res = await fetch("/PizzeriaPadua/api/v1/Pos/account/" + orderId + "/pay", {
+    const res = await fetch("/PizzeriaPadua/api/v1/Pos/account/" + payOrderTargetId + "/pay", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        cashierUsername: "cajero1",
-        payments: [{ paymentMethod: method, amount: amount, amountReceived: amount }]
-      })
+      body: JSON.stringify({ cashierUsername: "cajero1", payments: [payment] })
     });
-    var data = await res.json();
+    const data = await res.json();
     if (data.success) {
-      alert("Cuenta cobrada: " + data.order.folio);
-      loadOpenAccounts();
-      loadSummary();
+      closePayOrderModal();
+      await loadOrders();
+      if (typeof loadOpenAccounts === "function") loadOpenAccounts();
+      if (typeof loadPosHomeOrders === "function") loadPosHomeOrders();
+      if (typeof loadSummary === "function") loadSummary();
+      const posMsg = document.getElementById("posMsg");
+      if (posMsg) { posMsg.textContent = `Pedido cobrado correctamente. Cambio: $${Number(data.order?.changeGiven || 0).toFixed(2)}`; posMsg.style.color = "#27ae60"; }
     } else {
-      alert(data.message || "Error al cobrar");
+      if (msg) { msg.textContent = data.message || "Error al cobrar"; msg.style.color = "#c0392b"; }
     }
   } catch (err) {
     console.error("Error:", err);
-    alert("Error al cobrar cuenta");
+    if (msg) { msg.textContent = "Error de conexión al cobrar la cuenta."; msg.style.color = "#c0392b"; }
   }
+}
+
+// Compatibilidad: cobrar cuentas abiertas desde otras vistas
+async function payOpenAccount(orderId) {
+  return openPayOrderModal(orderId);
 }
 
 async function loadControls() {

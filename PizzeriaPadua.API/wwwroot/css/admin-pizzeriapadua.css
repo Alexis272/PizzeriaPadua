@@ -2892,3 +2892,55 @@ body > .login-box {
 }
 #pos .pos-new-order-tile strong { color: var(--chapian-muted); font-size: 13px; }
 #pos .pos-new-order-tile small { color: var(--chapian-muted); font-size: 11px; }
+/* === POS pro order cards & flow (2026) === */
+#pos .pos-order-form-head { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:8px; }
+#pos #posFormTitle { margin:0; font-size:20px; color:#2b2230; }
+#pos #posSecondaryBtn, #pos #posPrimaryBtn { min-height:44px; border-radius:10px !important; font-weight:700; }
+#pos #posSecondaryBtn { background:#fff !important; color:#7b2859 !important; border:1px solid #d9cfe1 !important; }
+#pos #posSecondaryBtn:hover { background:#f7f2fa !important; }
+#pos #posPrimaryBtn { background:linear-gradient(135deg,#7b2859,#5a1f43) !important; color:#fff !important; border:0 !important; }
+
+#pos #activeOrdersPanel #ordersList > .order-card.pos-order-pro,
+#pos #openAccountsList > .order-card.pos-order-pro,
+#openaccounts #openAccountsList > .order-card.pos-order-pro {
+  display:flex; flex-direction:column; align-items:stretch; gap:12px;
+  padding:18px 18px 16px 22px; min-height:0;
+  background:linear-gradient(145deg,#ffffff,#fbf8ff) !important;
+  border:1px solid #e7deee !important; border-radius:16px !important;
+  box-shadow:0 8px 22px rgba(61,36,70,.08) !important;
+}
+.order-card.pos-order-pro .pos-card-top { display:flex; justify-content:space-between; align-items:flex-start; gap:12px; }
+.order-card.pos-order-pro .pos-card-customer { margin:0; font-size:18px; color:#2b2230; line-height:1.2; }
+.order-card.pos-order-pro .pos-card-meta { margin:4px 0 0; color:#766d86; font-size:12px; }
+.order-card.pos-order-pro .pos-card-badges { display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end; }
+.order-card.pos-order-pro .pos-chip { display:inline-flex; align-items:center; padding:4px 10px; border-radius:999px; font-size:11px; font-weight:700; background:#f3eef7; color:#5e5364; }
+.order-card.pos-order-pro .pos-chip.status-pending { background:#fff4d9; color:#946200; }
+.order-card.pos-order-pro .pos-chip.status-progress { background:#e7f0ff; color:#2458a6; }
+.order-card.pos-order-pro .pos-chip.status-completed { background:#def7e8; color:#1f7a4d; }
+.order-card.pos-order-pro .pos-chip.status-cancelled { background:#ffe3e8; color:#a62744; }
+.order-card.pos-order-pro .pos-card-total-row { display:flex; align-items:center; justify-content:space-between; padding:10px 12px; border-radius:12px; background:#fff; border:1px solid #efe7f4; }
+.order-card.pos-order-pro .pos-card-total-label { font-size:12px; color:#766d86; font-weight:600; }
+.order-card.pos-order-pro .pos-card-total { font-size:22px; color:#2b2230; font-weight:800; }
+.order-card.pos-order-pro .pos-card-items { margin:0; padding:0; list-style:none; display:grid; gap:4px; }
+.order-card.pos-order-pro .pos-card-items li { font-size:13px; color:#4a4152; display:flex; justify-content:space-between; gap:8px; }
+.order-card.pos-order-pro .pos-card-items .muted { color:#8a8196; font-size:12px; }
+.order-card.pos-order-pro .pos-card-details { font-size:12px; color:#766d86; }
+.order-card.pos-order-pro .order-actions { display:flex; flex-wrap:wrap; gap:8px; margin-top:2px; padding-top:10px; border-top:1px solid #eee7f1; }
+.order-card.pos-order-pro .order-actions button { flex:1 1 120px; min-height:38px; border-radius:10px !important; font-size:13px !important; font-weight:700; border:1px solid transparent !important; }
+.order-card.pos-order-pro .pos-btn-charge { background:linear-gradient(135deg,#1f9d63,#157a4a) !important; color:#fff !important; }
+.order-card.pos-order-pro .pos-btn-edit { background:#f3effa !important; color:#5a2a4d !important; border-color:#dfd3e8 !important; }
+.order-card.pos-order-pro .pos-btn-cancel { background:#fff1f3 !important; color:#a62744 !important; border-color:#f1c8d1 !important; }
+.order-card.pos-order-pro .pos-btn-secondary { background:#fff !important; color:#5e5364 !important; border-color:#e5ddeb !important; flex:1 1 100px; font-size:12px !important; min-height:34px; }
+.order-card.pos-order-pro .order-actions button:hover { transform:translateY(-1px); filter:brightness(0.98); }
+
+#openaccounts #openAccountsList { display:grid; grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); gap:14px; align-content:start; }
+#pos .pos-home-order-card .pos-home-order-total { font-size:18px; color:#2b2230; font-weight:800; margin-top:2px; }
+#pos .pos-home-order-card .pos-home-order-meta { color:#766d86; font-size:12px; }
+#pos .pos-home-order-actions { display:flex; gap:8px; margin-top:auto; }
+#pos .pos-home-order-actions button { flex:1; }
+#pos .pos-home-empty { grid-column:1/-1; text-align:center; color:#766d86; padding:24px; }
+
+@media (max-width: 680px) {
+  .order-card.pos-order-pro .pos-card-top { flex-direction:column; }
+  .order-card.pos-order-pro .pos-card-badges { justify-content:flex-start; }
+}
