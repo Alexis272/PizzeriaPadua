@@ -6,7 +6,7 @@
   <title>Pizzería Padua | Panel POS</title>
   <link rel="stylesheet" href="css/apple-tokens.css" />
   <link rel="stylesheet" href="css/admin.css?v=20260715-customizations" />
-  <link rel="stylesheet" href="css/admin-pizzeriapadua.css?v=20261119-pos-full-card" />
+  <link rel="stylesheet" href="css/admin-pizzeriapadua.css?v=20261119-pos-home-orders" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
   <style>
     .module-dashboard {
@@ -185,11 +185,21 @@
 
         <!-- ==================== TERMINAL POS ==================== -->
         <div class="admin-section" id="pos">
-          <div class="module-header">
+          <div id="posHomePanel" class="pos-home-panel">
+            <div class="pos-home-heading">
+              <div><span>OPERACIONES</span><h2>Pedidos</h2><p>Consulta pedidos activos o crea uno nuevo.</p></div>
+              <button type="button" class="back-btn" onclick="showModule('dashboard')">← Inicio</button>
+            </div>
+            <div id="posHomeOrders" class="pos-home-orders"></div>
+            <button type="button" class="pos-new-order-tile" onclick="showPosOrderForm()">
+              <span>+</span><strong>Nuevo pedido</strong><small>Agregar productos y cobrar</small>
+            </button>
+          </div>
+          <div id="posTerminalHeader" class="module-header pos-terminal-view">
             <button class="back-btn" onclick="showModule('dashboard')">← Inicio</button>
             <h2>🧾 Terminal de Venta (POS)</h2>
           </div>
-          <div class="table-card">
+          <div id="posTerminalCard" class="table-card pos-terminal-view">
             <div class="pos-terminal-layout" style="display:grid;grid-template-columns:1fr 380px;gap:16px;">
                <div>
                  <div class="pos-catalog-toolbar">
@@ -658,7 +668,7 @@ function showModule(moduleId) {
   document.getElementById("topbarTitle").textContent = titles[moduleId] || "Panel POS";
 
   // Load module data
-  if (moduleId === "pos") { if (typeof loadOrders === "function") loadOrders(); if (typeof loadAdminProducts === "function") loadAdminProducts(); }
+   if (moduleId === "pos") { if (typeof showPosHome === "function") showPosHome(); }
   if (moduleId === "openaccounts") { if (typeof loadOpenAccounts === "function") loadOpenAccounts(); }
   if (moduleId === "cash") { if (typeof loadCashStatus === "function") loadCashStatus(); }
    if (moduleId === "daily" || moduleId === "reports" || moduleId === "executive") { if (typeof loadSummary === "function") loadSummary(); }

@@ -351,6 +351,42 @@ function switchPosSidePanel(panelId) {
   if (panelId === "activeOrdersPanel") loadOrders();
 }
 
+function showPosHome() {
+  document.getElementById("posHomePanel")?.classList.remove("hidden");
+  document.getElementById("posTerminalHeader")?.classList.add("hidden");
+  document.getElementById("posTerminalCard")?.classList.add("hidden");
+  loadPosHomeOrders();
+}
+
+function showPosOrderForm() {
+  document.getElementById("posHomePanel")?.classList.add("hidden");
+  document.getElementById("posTerminalHeader")?.classList.remove("hidden");
+  document.getElementById("posTerminalCard")?.classList.remove("hidden");
+  if (typeof loadAdminProducts === "function") loadAdminProducts();
+}
+
+async function loadPosHomeOrders() {
+  const container = document.getElementById("posHomeOrders");
+  if (!container) return;
+  try {
+    const orders = await apiFetch(API.orders);
+    sessionStorage.setItem("adminOrders", JSON.stringify(orders));
+    const active = orders.filter(o => o.status !== 3 &&
+      (o.status === 0 || o.status === 1 || o.status === 4 || o.status === 6 || o.isOpenAccount));
+    container.innerHTML = active.length
+      ? active.slice(0, 8).map(o => `
+        <div class="pos-home-order-card">
+          <div><span class="pos-home-order-number">Pedido #${o.orderId}</span><strong>${escapeHtml(o.customerName || "Cliente Mostrador")}</strong></div>
+          <span class="pos-home-order-status">${o.status === 6 || o.isOpenAccount ? "Cuenta abierta" : (o.status === 1 ? "En preparación" : "Pendiente")}</span>
+          <p>${o.orderItems?.length || 0} artículo(s) · $${Number(o.totalAmount || 0).toFixed(2)}</p>
+          <button type="button" onclick="showPosOrderForm(); editActiveOrder(${o.orderId})">Abrir pedido</button>
+        </div>`).join("")
+      : '<p class="pos-home-empty">No hay pedidos activos.</p>';
+  } catch {
+    container.innerHTML = '<p class="pos-home-empty">No se pudieron cargar los pedidos.</p>';
+  }
+}
+
 let editingOrderId = null;
 
 function editActiveOrder(orderId) {
