@@ -2106,6 +2106,45 @@ body > .login-box {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
   #pos .pos-terminal-layout > .table-card {
+    height: 100% !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    overflow: hidden !important;
+    display: flex;
+    flex-direction: column;
+  }
+  #pos .pos-side-tabs { flex: 0 0 auto; }
+  #pos #posOrderPanel.active {
+    display: flex !important;
+    flex-direction: column;
+    min-height: 0 !important;
+    height: 100% !important;
     overflow: visible !important;
+  }
+  #pos #posOrderPanel .pos-inline-catalog {
+    flex: 0 0 auto;
+  }
+  #pos #posOrderPanel .pos-order-heading,
+  #pos #posOrderPanel .pos-field-row,
+  #pos #posOrderPanel .pos-extra-fields,
+  #pos #posOrderPanel .pos-total-box,
+  #pos #posOrderPanel .pos-actions,
+  #pos #posOrderPanel #posMsg {
+    flex: 0 0 auto;
+  }
+  #pos #posOrderPanel #posCartItems {
+    flex: 0 0 auto;
+    min-height: 70px !important;
+    max-height: none !important;
+    overflow: visible !important;
+  }
+  #pos #activeOrdersPanel.pos-floating-orders.active {
+    height: 100% !important;
+    overflow: hidden !important;
+  }
+  #pos #activeOrdersPanel.pos-floating-orders.active #ordersList {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: auto !important;
   }
 }
