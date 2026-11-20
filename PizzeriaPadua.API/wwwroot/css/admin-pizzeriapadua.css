@@ -2049,4 +2049,36 @@ body > .login-box {
   #pos .pos-inline-catalog #posProductGrid .pos-product-price {
     font-size: 12px !important;
   }
+  #pos .pos-terminal-layout > .table-card {
+    width: min(900px, 100%) !important;
+    max-width: 900px;
+  }
+  #pos .pos-inline-catalog #posProductGrid {
+    grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+    max-height: 180px !important;
+  }
+  #pos .pos-inline-catalog #posProductGrid .admin-product-card {
+    min-height: 116px;
+    padding: 4px !important;
+  }
+  #pos .pos-inline-catalog #posProductGrid .admin-product-card img {
+    height: 58px !important;
+  }
+  #pos .pos-inline-catalog #posProductGrid .pos-product-copy {
+    padding: 3px 2px 1px !important;
+    gap: 1px;
+  }
+  #pos .pos-inline-catalog #posProductGrid .pos-product-name {
+    min-height: 20px;
+    font-size: 10px !important;
+  }
+  #pos .pos-inline-catalog #posProductGrid .pos-product-price {
+    font-size: 11px !important;
+  }
+  body > #activeOrdersPanel.pos-floating-orders.active {
+    width: min(900px, calc(100vw - 32px)) !important;
+    max-width: calc(100vw - 32px) !important;
+    height: min(760px, calc(100vh - 32px)) !important;
+    max-height: calc(100vh - 32px) !important;
+  }
 }
