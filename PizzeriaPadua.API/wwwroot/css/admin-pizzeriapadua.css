@@ -2580,3 +2580,152 @@ body > .login-box {
   color: #fff !important;
   background: #1e3a8a !important;
 }
+
+/* Copia directa de los componentes de Chapían: panel, charge-card y tokens. */
+#pos .pos-home-panel {
+  --chapian-bg: #f1f5f9;
+  --chapian-panel: #fff;
+  --chapian-ink: #1a1a2e;
+  --chapian-muted: #64748b;
+  --chapian-line: #dbeafe;
+  --chapian-brand: #1e3a8a;
+  --chapian-brand-2: #2563eb;
+  width: min(940px, 100%) !important;
+  max-width: 940px !important;
+  border: 1px solid var(--chapian-line);
+  border-radius: 18px;
+  background: var(--chapian-panel);
+  box-shadow: 0 8px 24px rgb(30 58 138 / .07);
+}
+#pos .pos-home-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 15px;
+  min-height: 78px;
+  padding: 20px 22px;
+  border-bottom: 1px solid var(--chapian-line);
+}
+#pos .pos-home-heading h2 {
+  margin: 0 0 5px;
+  color: var(--chapian-ink);
+  font-size: 18px;
+  letter-spacing: -.025em;
+}
+#pos .pos-home-heading p {
+  margin: 0;
+  color: var(--chapian-muted);
+  font-size: 11px;
+}
+#pos .pos-home-summary {
+  min-height: 68px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 22px 0 16px;
+  padding: 14px 16px;
+  border: 1px solid var(--chapian-line);
+  border-radius: 14px;
+  background: var(--chapian-bg);
+}
+#pos .pos-home-summary strong { color: var(--chapian-ink); font-size: 14px; }
+#pos .pos-home-summary span { color: var(--chapian-muted); font-size: 11px; }
+#pos .pos-home-orders {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+  margin: 0;
+}
+#pos .pos-home-order-card,
+#pos .pos-new-order-tile {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 172px;
+  padding: 16px;
+  border: 1px solid var(--chapian-line) !important;
+  border-radius: 16px !important;
+  background: var(--chapian-panel) !important;
+  box-shadow: 0 4px 16px rgb(0 0 0 / .04) !important;
+  transition: transform .18s ease, box-shadow .18s ease;
+}
+#pos .pos-home-order-card:hover,
+#pos .pos-new-order-tile:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgb(0 0 0 / .08) !important;
+}
+#pos .pos-home-order-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+#pos .pos-home-order-head > div { display: flex; flex-direction: column; gap: 2px; }
+#pos .pos-home-order-head strong { color: var(--chapian-ink); font-size: 14px; }
+#pos .pos-home-order-head small,
+#pos .pos-home-order-date { color: var(--chapian-muted); font-size: 11px; }
+#pos .pos-home-order-status {
+  position: static;
+  padding: 5px 9px;
+  border-radius: 999px;
+  color: #9a5b00;
+  background: #fff7d6;
+  font-size: 10px;
+  font-weight: 800;
+}
+#pos .pos-home-order-data {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 12px;
+}
+#pos .pos-home-order-data div { display: flex; flex-direction: column; gap: 2px; }
+#pos .pos-home-order-data small {
+  color: var(--chapian-muted);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+}
+#pos .pos-home-order-data strong { color: var(--chapian-ink); font-size: 12px; }
+#pos .pos-home-order-actions {
+  margin-top: auto;
+  padding-top: 8px;
+  border-top: 1px solid var(--chapian-line);
+}
+#pos .pos-home-order-actions button {
+  min-height: 34px;
+  padding: 7px 12px !important;
+  border: 0 !important;
+  border-radius: 7px !important;
+  color: #fff !important;
+  background: var(--chapian-brand) !important;
+  box-shadow: 0 5px 12px rgb(30 58 138 / .15) !important;
+  font-size: 11px !important;
+}
+#pos .pos-new-order-tile {
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 8px;
+  min-height: 120px;
+  cursor: pointer;
+  border: 2px dashed var(--chapian-line) !important;
+  background: var(--chapian-bg) !important;
+  color: var(--chapian-muted) !important;
+  font-weight: 600;
+}
+#pos .pos-new-order-tile span {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  min-height: 44px;
+  padding: 0 !important;
+  border-radius: 50% !important;
+  color: #fff !important;
+  background: var(--chapian-brand) !important;
+  font-size: 28px;
+  font-weight: 400;
+}
+#pos .pos-new-order-tile strong { color: var(--chapian-muted); font-size: 13px; }
+#pos .pos-new-order-tile small { color: var(--chapian-muted); font-size: 11px; }
