@@ -200,7 +200,7 @@ function renderOrders(orders) {
   const container = document.getElementById("ordersList");
   if (!container) return;
   if (!orders || orders.length === 0) {
-    container.innerHTML = "<div class='pos-home-empty'>No hay pedidos activos. Crea uno nuevo para comenzar.</div>";
+    container.innerHTML = "<div class='pos-empty-state'>No hay pedidos activos. Usa \"Nuevo pedido\" para crear el primero.</div>";
     return;
   }
   container.innerHTML = orders.map(o => renderPosOrderCard(o, { showStatusActions: true })).join("");
@@ -374,51 +374,58 @@ function formatPosProductName(value) {
     .replace(/(^|\s)\S/g, letter => letter.toLocaleUpperCase("es-MX"));
 }
 
+function switchPosTab(tab) {
+  const tomar = tab === "tomar";
+  document.querySelectorAll(".pos-main-tab").forEach(btn => {
+    const active = btn.dataset.tab === (tomar ? "tomar" : "activos");
+    btn.classList.toggle("active", active);
+    btn.setAttribute("aria-selected", String(active));
+  });
+  const tomarView = document.getElementById("posTomarView");
+  const activosView = document.getElementById("posActivosView");
+  if (tomarView) {
+    tomarView.classList.toggle("active", tomar);
+    tomarView.style.display = tomar ? "flex" : "none";
+    tomarView.setAttribute("aria-hidden", String(!tomar));
+  }
+  if (activosView) {
+    activosView.classList.toggle("active", !tomar);
+    activosView.style.display = tomar ? "none" : "flex";
+    activosView.setAttribute("aria-hidden", String(tomar));
+  }
+  if (!tomar) {
+    if (typeof loadOrders === "function") loadOrders();
+  } else {
+    if (typeof loadAdminProducts === "function") loadAdminProducts();
+    renderPosCart();
+  }
+}
+
+// Compatibilidad con llamadas previas
 function switchPosSidePanel(panelId) {
-  const ordersPanel = document.getElementById("activeOrdersPanel");
-  const orderPanel = document.getElementById("posOrderPanel");
-  if (panelId === "posOrderPanel" && orderPanel) {
-    orderPanel.classList.add("active");
-    orderPanel.style.pointerEvents = "auto";
-  }
-  if (panelId === "activeOrdersPanel" && orderPanel) {
-    orderPanel.style.pointerEvents = "none";
-  }
-  document.querySelectorAll(".pos-side-tab").forEach(tab => {
-    tab.classList.toggle("active", tab.dataset.panel === panelId);
-  });
-  document.querySelectorAll(".pos-side-panel").forEach(panel => {
-    const active = panel.id === panelId;
-    panel.classList.toggle("active", active);
-    panel.setAttribute("aria-hidden", String(!active));
-  });
-  if (panelId === "activeOrdersPanel") loadOrders();
+  if (panelId === "activeOrdersPanel") switchPosTab("activos");
+  else switchPosTab("tomar");
 }
 
 function showPosHome() {
-  document.getElementById("posHomePanel")?.classList.remove("hidden");
-  document.getElementById("posTerminalHeader")?.classList.add("hidden");
-  document.getElementById("posTerminalCard")?.classList.add("hidden");
-  loadPosHomeOrders();
+  switchPosTab("activos");
 }
 
 function showPosOrderForm(reset = false) {
-  document.getElementById("posHomePanel")?.classList.add("hidden");
-  document.getElementById("posTerminalHeader")?.classList.remove("hidden");
-  document.getElementById("posTerminalCard")?.classList.remove("hidden");
   if (reset) resetPosOrderForm();
   updatePosFormUi();
-  if (typeof loadAdminProducts === "function") loadAdminProducts();
-  renderPosCart();
+  switchPosTab("tomar");
 }
 
 function startNewPosOrder() {
-  showPosOrderForm(true);
-  switchPosSidePanel("posOrderPanel");
+  resetPosOrderForm();
+  updatePosFormUi();
+  switchPosTab("tomar");
 }
 
 function resetPosOrderForm() {
   editingOrderId = null;
+  editingOrderFolio = null;
   posCart = [];
   if (document.getElementById("posCustomerName")) document.getElementById("posCustomerName").value = "";
   if (document.getElementById("posDiscount")) document.getElementById("posDiscount").value = "";
@@ -439,7 +446,10 @@ function updatePosFormUi() {
   const badge = document.getElementById("posEditBadge");
   const newBtn = document.getElementById("posNewOrderBtn");
   const secondary = document.getElementById("posSecondaryBtn");
-  if (title) title.textContent = isEdit ? `Pedido #${editingOrderId}` : "Nuevo pedido";
+  if (title) {
+    if (!isEdit) title.textContent = "Nuevo pedido";
+    else title.textContent = editingOrderFolio ? `Pedido #${editingOrderId} · ${editingOrderFolio}` : `Pedido #${editingOrderId}`;
+  }
   if (badge) badge.style.display = isEdit ? "inline-flex" : "none";
   if (newBtn) newBtn.style.display = isEdit ? "inline-flex" : "none";
   if (secondary) secondary.textContent = isEdit ? "Guardar cambios" : "Crear pedido";
@@ -483,6 +493,7 @@ async function loadPosHomeOrders() {
 }
 
 let editingOrderId = null;
+let editingOrderFolio = null;
 
 function editActiveOrder(orderId) {
   const orders = JSON.parse(sessionStorage.getItem("adminOrders") || "[]");
@@ -490,6 +501,7 @@ function editActiveOrder(orderId) {
   if (!order) return;
 
   editingOrderId = orderId;
+  editingOrderFolio = order.folio || order.Folio || null;
   posCart = (order.orderItems || []).map(item => ({
     productId: item.productId,
     name: item.product?.name || `Producto #${item.productId}`,
@@ -506,9 +518,15 @@ function editActiveOrder(orderId) {
   });
   renderPosCart();
   const msg = document.getElementById("posMsg");
-  if (msg) { msg.textContent = `Editando pedido #${orderId}. Revisa la información y guarda los cambios.`; msg.style.color = "#7b2859"; }
+  const folio = editingOrderFolio || "";
+  if (msg) {
+    msg.textContent = folio
+      ? `Editando pedido #${orderId} (${folio}). Revisa la información y guarda los cambios.`
+      : `Editando pedido #${orderId}. Revisa la información y guarda los cambios.`;
+    msg.style.color = "#7b2859";
+  }
   updatePosFormUi();
-  switchPosSidePanel("posOrderPanel");
+  switchPosTab("tomar");
 }
 
 function parseAdminCustomizationOptions(value) {
@@ -2219,11 +2237,7 @@ function setPosChannel(channel, button) {
   });
 }
 function movePosCatalogIntoOrderCard() {
-  var catalogColumn = document.querySelector("#pos .pos-terminal-layout > div:first-child");
-  var toolbar = document.querySelector("#pos .pos-catalog-toolbar");
-  var grid = document.getElementById("posProductGrid");
-  if (catalogColumn && toolbar && toolbar.parentElement !== catalogColumn) catalogColumn.insertBefore(toolbar, grid);
-  if (catalogColumn && grid && grid.parentElement !== catalogColumn) catalogColumn.appendChild(grid);
+  // Layout nuevo: el catálogo y el pedido se renderizan en su estructura fija.
 }
 
 function posAddToCart(productId, name, price, imageUrl) {
@@ -2259,20 +2273,20 @@ function renderPosCart() {
 
 function updatePosTotals() {
   var subtotal = posCart.reduce(function(s, i) { return s + i.price * i.quantity; }, 0);
-  var discountPct = parseFloat(document.getElementById("posDiscount").value) || 0;
+  var discountPct = parseFloat(document.getElementById("posDiscount")?.value) || 0;
   var discountAmt = subtotal * (discountPct / 100);
-  var net = subtotal - discountAmt;
+  var net = Math.max(0, subtotal - discountAmt);
   var tax = net - (net / 1.16);
-  var tip = parseFloat(document.getElementById("posTip").value) || 0;
+  var tip = parseFloat(document.getElementById("posTip")?.value) || 0;
   var total = net + tip;
 
-  document.getElementById("posSubtotal").textContent = "$" + subtotal.toFixed(2);
-  document.getElementById("posDiscountAmt").textContent = "-$" + discountAmt.toFixed(2);
-  document.getElementById("posTax").textContent = "$" + tax.toFixed(2);
-  document.getElementById("posTipAmt").textContent = "$" + tip.toFixed(2);
-  document.getElementById("posTotal").textContent = "$" + total.toFixed(2);
-  var chargeTotal = document.getElementById("posChargeTotal");
-  if (chargeTotal) chargeTotal.textContent = "$" + total.toFixed(2);
+  const setText = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+  setText("posSubtotal", "$" + subtotal.toFixed(2));
+  setText("posDiscountAmt", "-$" + discountAmt.toFixed(2));
+  setText("posTax", "$" + tax.toFixed(2));
+  setText("posTipAmt", "$" + tip.toFixed(2));
+  setText("posTotal", "$" + total.toFixed(2));
+  setText("posChargeTotal", "$" + total.toFixed(2));
 }
 
 async function posSaveOpenAccount() {
@@ -2313,8 +2327,7 @@ async function posSaveOpenAccount() {
       resetPosOrderForm();
       await loadOrders();
       if (typeof loadOpenAccounts === "function") loadOpenAccounts();
-      if (typeof loadPosHomeOrders === "function") loadPosHomeOrders();
-      switchPosSidePanel("activeOrdersPanel");
+      switchPosTab("activos");
     } else {
       if (msg) { msg.textContent = data.message || "No se pudo crear el pedido."; msg.style.color = "#e74c3c"; }
     }
@@ -2614,9 +2627,14 @@ function renderPosProductGrid(products) {
   grid.innerHTML = filtered.map(function(p) {
     var nameArg = JSON.stringify(p.name).replace(/"/g, "&quot;");
     var imageArg = JSON.stringify(p.imageUrl || "img/pizza-padua.svg").replace(/"/g, "&quot;");
-    return '<div class="admin-product-card" onclick="posAddToCart(' + p.productId + ',' + nameArg + ',' + p.price + ',' + imageArg + ')">' +
-      '<img src="' + resolveImageUrl(p.imageUrl || "img/pizza-padua.svg") + '" alt="' + escapeHtml(p.name) + '" />' +
-      '<div class="pos-product-copy"><strong class="pos-product-name">' + escapeHtml(formatPosProductName(p.name)) + '</strong><span class="pos-product-price">$' + p.price.toFixed(2) + '</span></div>' +
+    var safeName = escapeHtml(formatPosProductName(p.name));
+    return '<div class="admin-product-card pos-catalog-card">' +
+      '<img src="' + resolveImageUrl(p.imageUrl || "img/pizza-padua.svg") + '" alt="' + safeName + '" loading="lazy" />' +
+      '<div class="pos-product-copy">' +
+        '<strong class="pos-product-name">' + safeName + '</strong>' +
+        '<div class="pos-product-bottom"><span class="pos-product-price">$' + Number(p.price || 0).toFixed(2) + '</span>' +
+        '<button type="button" class="pos-add-btn" aria-label="Agregar ' + safeName + '" onclick="event.stopPropagation(); posAddToCart(' + p.productId + ',' + nameArg + ',' + Number(p.price || 0) + ',' + imageArg + ')">+</button></div>' +
+      '</div>' +
       '</div>';
   }).join("") || '<p class="pos-empty-products">No hay productos para esta búsqueda.</p>';
 }
