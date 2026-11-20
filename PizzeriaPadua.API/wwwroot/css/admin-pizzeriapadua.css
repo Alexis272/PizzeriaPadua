@@ -2547,3 +2547,36 @@ body > .login-box {
 }
 #pos .pos-new-order-tile strong { color: #64748b; }
 #pos .pos-new-order-tile small { color: #94a3b8; }
+
+#pos .pos-home-panel {
+  width: min(940px, 100%) !important;
+  max-width: 940px !important;
+  margin: 0 auto !important;
+}
+#pos .pos-home-orders {
+  grid-template-columns: repeat(auto-fill, minmax(260px, 290px));
+  justify-content: start;
+}
+#pos .pos-new-order-tile {
+  width: auto !important;
+  min-width: 260px;
+  max-width: 290px;
+  min-height: 172px !important;
+  padding: 16px !important;
+  border: 2px dashed #dbeafe !important;
+  border-radius: 16px !important;
+  color: #64748b !important;
+  background: #f8fbff !important;
+  box-shadow: none !important;
+}
+#pos .pos-new-order-tile:hover {
+  color: #1e3a8a !important;
+  background: #eff6ff !important;
+}
+#pos .pos-new-order-tile span {
+  min-height: 44px;
+  padding: 0 !important;
+  border-radius: 50% !important;
+  color: #fff !important;
+  background: #1e3a8a !important;
+}
