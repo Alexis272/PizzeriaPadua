@@ -6,7 +6,7 @@
   <title>Pizzería Padua | Panel POS</title>
   <link rel="stylesheet" href="css/apple-tokens.css" />
   <link rel="stylesheet" href="css/admin.css?v=20260715-customizations" />
-  <link rel="stylesheet" href="css/admin-pizzeriapadua.css?v=20261119-chapian-direct-style" />
+  <link rel="stylesheet" href="css/admin-pizzeriapadua.css?v=20261119-pos-chapian-layout" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
   <style>
     .module-dashboard {
@@ -198,8 +198,12 @@
             <h2>🧾 Terminal de Venta (POS)</h2>
           </div>
           <div id="posTerminalCard" class="table-card pos-terminal-view">
+            <div class="pos-side-tabs" role="tablist">
+              <button type="button" class="pos-side-tab active" data-panel="posOrderPanel" onclick="switchPosSidePanel('posOrderPanel')">▣ Tomar pedido</button>
+              <button type="button" class="pos-side-tab" data-panel="activeOrdersPanel" onclick="switchPosSidePanel('activeOrdersPanel')">▤ Pedidos activos</button>
+            </div>
             <div class="pos-terminal-layout" style="display:grid;grid-template-columns:1fr 380px;gap:16px;">
-               <div>
+              <div>
                  <div class="pos-catalog-toolbar">
                    <label class="pos-search-box"><span>⌕</span><input id="posSearch" type="search" placeholder="Buscar producto..." oninput="filterPosProducts()" /></label>
                    <div class="pos-category-tabs" role="tablist">
@@ -210,12 +214,8 @@
                    </div>
                  </div>
                  <div id="posProductGrid" class="product-grid-admin" style="max-height:520px;overflow-y:auto;"></div>
-              </div>
-              <div class="table-card" style="padding:16px;">
-                 <div class="pos-side-tabs" role="tablist">
-                   <button type="button" class="pos-side-tab active" data-panel="posOrderPanel" onclick="switchPosSidePanel('posOrderPanel')">🛒 Tomar pedido</button>
-                   <button type="button" class="pos-side-tab" data-panel="activeOrdersPanel" onclick="switchPosSidePanel('activeOrdersPanel')">▣ Pedidos activos</button>
-                 </div>
+               </div>
+               <div class="table-card" style="padding:16px;">
                  <div id="posOrderPanel" class="pos-side-panel active">
                    <div id="posInlineCatalog" class="pos-inline-catalog"><strong>Agregar productos</strong></div>
                    <div class="pos-order-heading"><div><span>Pedido actual</span><h3>Pedido <strong id="posCurrentOrderLabel">nuevo</strong></h3></div><span class="pos-edit-badge">En edición</span></div>

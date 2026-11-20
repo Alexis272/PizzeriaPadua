@@ -2130,11 +2130,11 @@ function setPosChannel(channel, button) {
   });
 }
 function movePosCatalogIntoOrderCard() {
-  var inlineCatalog = document.getElementById("posInlineCatalog");
+  var catalogColumn = document.querySelector("#pos .pos-terminal-layout > div:first-child");
   var toolbar = document.querySelector("#pos .pos-catalog-toolbar");
   var grid = document.getElementById("posProductGrid");
-  if (inlineCatalog && toolbar && toolbar.parentElement !== inlineCatalog) inlineCatalog.appendChild(toolbar);
-  if (inlineCatalog && grid && grid.parentElement !== inlineCatalog) inlineCatalog.appendChild(grid);
+  if (catalogColumn && toolbar && toolbar.parentElement !== catalogColumn) catalogColumn.insertBefore(toolbar, grid);
+  if (catalogColumn && grid && grid.parentElement !== catalogColumn) catalogColumn.appendChild(grid);
 }
 
 function posAddToCart(productId, name, price, imageUrl) {
