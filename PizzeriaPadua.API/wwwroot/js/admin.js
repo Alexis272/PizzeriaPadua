@@ -382,6 +382,10 @@ async function loadPosHomeOrders() {
           <button type="button" onclick="showPosOrderForm(); editActiveOrder(${o.orderId})">Abrir pedido</button>
         </div>`).join("")
       : '<p class="pos-home-empty">No hay pedidos activos.</p>';
+    container.insertAdjacentHTML("beforeend", `
+      <button type="button" class="pos-new-order-tile" onclick="showPosOrderForm()">
+        <span>+</span><strong>Nuevo pedido</strong><small>Agregar productos y cobrar</small>
+      </button>`);
   } catch {
     container.innerHTML = '<p class="pos-home-empty">No se pudieron cargar los pedidos.</p>';
   }

@@ -6,7 +6,7 @@
   <title>Pizzería Padua | Panel POS</title>
   <link rel="stylesheet" href="css/apple-tokens.css" />
   <link rel="stylesheet" href="css/admin.css?v=20260715-customizations" />
-  <link rel="stylesheet" href="css/admin-pizzeriapadua.css?v=20261119-pos-home-orders" />
+  <link rel="stylesheet" href="css/admin-pizzeriapadua.css?v=20261119-pos-home-modal" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
   <style>
     .module-dashboard {
@@ -187,13 +187,11 @@
         <div class="admin-section" id="pos">
           <div id="posHomePanel" class="pos-home-panel">
             <div class="pos-home-heading">
-              <div><span>OPERACIONES</span><h2>Pedidos</h2><p>Consulta pedidos activos o crea uno nuevo.</p></div>
-              <button type="button" class="back-btn" onclick="showModule('dashboard')">← Inicio</button>
+              <div><h2>Pedidos</h2><p>Pedidos activos · Pizzería Padua</p></div>
+              <button type="button" class="pos-home-close" onclick="showModule('dashboard')" aria-label="Cerrar">×</button>
             </div>
+            <div class="pos-home-summary"><strong>Pedidos pendientes</strong><span>Consulta, edita o crea una nueva orden.</span></div>
             <div id="posHomeOrders" class="pos-home-orders"></div>
-            <button type="button" class="pos-new-order-tile" onclick="showPosOrderForm()">
-              <span>+</span><strong>Nuevo pedido</strong><small>Agregar productos y cobrar</small>
-            </button>
           </div>
           <div id="posTerminalHeader" class="module-header pos-terminal-view">
             <button class="back-btn" onclick="showModule('dashboard')">← Inicio</button>
