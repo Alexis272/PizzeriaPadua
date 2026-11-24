@@ -100,8 +100,8 @@
         <a class="active tab-link" data-tab="pos" onclick="showModule('pos')"><span>▣</span> Ventas</a>
         <a class="tab-link" data-tab="openaccounts" onclick="showModule('openaccounts')"><span>▤</span> Pedidos</a>
         <a class="tab-link" data-tab="catalog" onclick="showModule('catalog')"><span>◉</span> Menú</a>
-        <a class="tab-link" data-tab="tables" onclick="showModule('tables')"><span>♜</span> Mesas</a>
-        <a class="tab-link" data-tab="users" onclick="showModule('users')"><span>♟</span> Clientes</a>
+        <a class="tab-link" data-tab="openaccounts" onclick="showModule('openaccounts')"><span>♜</span> Mesas</a>
+        <a class="tab-link" data-tab="history" onclick="showModule('history')"><span>♟</span> Clientes</a>
         <a class="tab-link" data-tab="catalog" onclick="showModule('catalog')"><span>▰</span> Inventario</a>
         <a class="tab-link" data-tab="reports" onclick="showModule('reports')"><span>▥</span> Reportes</a>
         <a class="tab-link" data-tab="config" onclick="showModule('config')"><span>⚙</span> Configuración</a>
@@ -113,7 +113,7 @@
 
       <header class="topbar">
         <button class="branch-selector" type="button">▣ &nbsp; Sucursal Principal <span>⌄</span></button>
-        <label class="global-search">⌕ <input type="search" placeholder="Buscar pedidos, clientes o productos..." /></label>
+        <label class="global-search">⌕ <input id="posGlobalSearch" type="search" placeholder="Buscar pedidos, clientes o productos..." oninput="filterPosBoard()" /></label>
         <div class="topbar-actions"><span class="online-dot">●</span><span class="topbar-company">Conectado</span><i></i><div class="user-avatar">●</div><strong>Alexis</strong><span>⌄</span></div>
       </header>
 
@@ -177,8 +177,7 @@
             <h2>Terminal de Venta (POS)</h2>
           </div>
           <div class="pos-tabs-bar" role="tablist" aria-label="Navegación POS">
-            <button type="button" class="pos-main-tab" data-tab="tomar" onclick="switchPosTab('tomar')">Tomar pedido</button>
-            <button type="button" class="pos-main-tab active" data-tab="activos" onclick="switchPosTab('activos')">Pedidos activos</button>
+            <button type="button" class="pos-main-tab active" data-tab="activos" onclick="switchPosTab('activos')">← Pedidos</button>
           </div>
 
           <div id="posTomarView" class="pos-view" aria-hidden="true">
@@ -246,15 +245,21 @@
 
           <div id="posActivosView" class="pos-view active" aria-hidden="false">
             <div class="pos-kpis">
-              <div><b>🛒</b><strong id="posKpiOrders">12</strong><span>Pedidos de hoy</span></div>
-              <div><b>💲</b><strong>$2,845.00</strong><span>Ventas de hoy</span></div>
-              <div><b>◷</b><strong id="posKpiPending">3</strong><span>Pedidos pendientes</span></div>
+              <div><b>🛒</b><strong id="posKpiOrders">0</strong><span>Pedidos de hoy</span></div>
+              <div><b>💲</b><strong id="posKpiSales">$0.00</strong><span>Ventas de hoy</span></div>
+              <div><b>◷</b><strong id="posKpiPending">0</strong><span>Pedidos pendientes</span></div>
             </div>
             <div class="pos-board-heading"><h2>Pedidos</h2><button type="button" class="pos-new-order-btn" onclick="startNewPosOrder()">＋ Nuevo pedido</button></div>
-            <div class="pos-status-filters"><button class="active" onclick="filterPosBoard('all',this)">☷ &nbsp; Todos (12)</button><button onclick="filterPosBoard('preparing',this)">♟ &nbsp; En preparación (3)</button><button onclick="filterPosBoard('ready',this)">✓ &nbsp; Listos (4)</button><button onclick="filterPosBoard('shipping',this)">▰ &nbsp; En camino (2)</button><button onclick="filterPosBoard('delivered',this)">● &nbsp; Entregados (3)</button></div>
+            <div class="pos-status-filters" role="tablist" aria-label="Filtrar pedidos">
+              <button class="active" data-pos-filter="all" onclick="filterPosBoard('all',this)">☷ Todos (0)</button>
+              <button data-pos-filter="preparing" onclick="filterPosBoard('preparing',this)">♟ En preparación (0)</button>
+              <button data-pos-filter="ready" onclick="filterPosBoard('ready',this)">✓ Listos (0)</button>
+              <button data-pos-filter="shipping" onclick="filterPosBoard('shipping',this)">▰ En camino (0)</button>
+              <button data-pos-filter="delivered" onclick="filterPosBoard('delivered',this)">● Entregados (0)</button>
+            </div>
             <div class="pos-board-layout">
-            <div id="ordersList" class="orders-list pos-orders-list"></div>
-            <aside class="pos-detail-panel"><h2>Pedido #1007 <span>🚚 En camino</span></h2><div class="detail-meta">◷ &nbsp; 09:42 AM &nbsp;&nbsp; ♟ &nbsp; María López</div><hr><h3>Productos</h3><p><b>1 × Mexicana</b><strong>$159.00</strong></p><p><b>1 × Alitas (6 pzas)</b><strong>$90.00</strong></p><hr><div class="detail-total"><p>Subtotal: <b>$249.00</b></p><p>Costo de envío: <b>$0.00</b></p><strong>Total: <big>$249.00</big></strong></div><button class="detail-accept">✓ &nbsp; Aceptar pedido</button><button class="detail-ready">♨ &nbsp; Marcar listo</button><button class="detail-charge">▣ &nbsp; Cobrar</button></aside>
+              <div id="ordersList" class="orders-list pos-orders-list"></div>
+              <aside id="posOrderDetail" class="pos-detail-panel" aria-live="polite"></aside>
             </div>
           </div>
         </div>
@@ -701,7 +706,8 @@ function showModule(moduleId) {
     catalog: "Catálogos",
     config: "Configuraciñ",
   };
-  document.getElementById("topbarTitle").textContent = titles[moduleId] || "Panel POS";
+  var topbarTitle = document.getElementById("topbarTitle");
+  if (topbarTitle) topbarTitle.textContent = titles[moduleId] || "Panel POS";
 
   // Load module data
    if (moduleId === "pos") { if (typeof showPosHome === "function") showPosHome(); }
@@ -737,7 +743,7 @@ document.addEventListener("DOMContentLoaded", function() {
       if (tab) showModule(tab);
     });
   });
-  showModule("dashboard");
+  showModule("pos");
 });
 
 function checkServer() {

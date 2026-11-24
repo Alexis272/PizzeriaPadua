@@ -3288,7 +3288,9 @@ html, body { background:var(--pos-bg) !important; }
 /* Prioridad final del tablero de pedidos */
 #pos .pos-terminal-header, #pos .pos-tabs-bar { display:none !important; }
 #pos.admin-section.active { height:auto !important; min-height:0 !important; overflow:visible !important; gap:0 !important; }
-#pos #posActivosView { display:flex !important; height:auto !important; overflow:visible !important; gap:0 !important; }
+#pos #posActivosView { height:auto !important; overflow:visible !important; gap:0 !important; }
+#pos #posActivosView.active { display:flex !important; }
+#pos #posActivosView:not(.active) { display:none !important; }
 #pos #posActivosView #ordersList.pos-orders-list { display:grid !important; grid-template-columns:repeat(3,minmax(0,1fr)) !important; overflow:visible !important; max-height:none !important; }
 #pos .order-card.pos-order-pro { border:1px solid #e9eef1 !important; border-top:3px solid var(--pos-green) !important; background:#fff !important; }
 #pos .order-card.pos-order-pro:nth-child(3n+2) { border-top-color:var(--pos-orange) !important; }
@@ -3296,3 +3298,37 @@ html, body { background:var(--pos-bg) !important; }
 #pos .order-card.pos-order-pro .pos-card-total-row { border:0 !important; border-top:1px solid #e7ecef !important; background:#fff !important; }
 @media (max-width:1200px) { #pos #posActivosView #ordersList.pos-orders-list { grid-template-columns:repeat(2,minmax(0,1fr)) !important; } }
 @media (max-width:640px) { #pos #posActivosView #ordersList.pos-orders-list { grid-template-columns:1fr !important; } }
+
+/* Ajuste funcional y adaptativo del POS completo */
+.background { padding:0 !important; align-items:stretch !important; }
+.dashboard { min-height:100vh; }
+.module-mode .sidebar { display:block !important; }
+.module-mode.pos-mode .main-grid { padding:0 20px 24px !important; overflow:visible !important; }
+.module-mode.pos-mode .content { min-height:100vh; height:auto !important; overflow:visible !important; }
+#pos .pos-order-pro { cursor:pointer; transition:transform .15s, box-shadow .15s, border-color .15s; }
+#pos .pos-order-pro:hover { transform:translateY(-2px) !important; }
+#pos .pos-order-pro.selected { outline:3px solid rgba(39,120,232,.16); border-color:var(--pos-blue) !important; }
+#pos .pos-order-pro .order-actions { gap:5px !important; flex-wrap:nowrap !important; }
+#pos .pos-order-pro .order-actions button { min-width:0; padding:6px 8px !important; flex:1 1 0 !important; }
+#pos .pos-order-pro .order-actions .pos-btn-secondary { flex-basis:100% !important; }
+.pos-detail-panel { position:sticky; top:16px; max-height:calc(100vh - 32px); overflow:auto; }
+.pos-detail-panel button:disabled { opacity:.45; cursor:not-allowed; }
+.pos-detail-products { max-height:210px; overflow:auto; }
+.detail-deliver { background:#138f64 !important; }
+.detail-edit { color:var(--pos-ink) !important; background:#edf2f8 !important; }
+.detail-cancel { color:#b42332 !important; background:#fff0f1 !important; }
+.pos-detail-empty { padding:60px 12px; text-align:center; color:var(--pos-muted); }
+.pos-detail-empty span { display:block; font-size:48px; color:#9ba9bb; }
+#pos.pos-order-form-open .pos-tabs-bar { display:flex !important; height:40px; flex:0 0 auto; margin-bottom:10px !important; }
+#pos.pos-order-form-open .pos-main-tab { flex:0 0 auto !important; }
+#pos.pos-order-form-open #posTomarView { display:flex !important; }
+#pos #posTomarView:not(.active) { display:none !important; }
+#pos #posTomarView { overflow:visible !important; }
+#pos #posTomarView .pos-tomar-layout { height:auto !important; min-height:calc(100vh - 152px); }
+#pos #posTomarView .pos-catalog-panel, #pos #posTomarView .pos-order-panel { height:calc(100vh - 152px) !important; max-height:none !important; }
+#pos #posProductGrid.pos-catalog-grid { min-height:0 !important; }
+#pos #posCartItems { min-height:120px !important; max-height:220px !important; overflow:auto !important; }
+@media (min-width:1600px) { .pos-board-layout { grid-template-columns:minmax(0,1fr) 400px; } #pos #posActivosView #ordersList.pos-orders-list { grid-template-columns:repeat(4,minmax(0,1fr)) !important; } }
+@media (max-width:1200px) { .pos-detail-panel { position:static; max-height:none; } .pos-kpis { gap:12px; } }
+@media (max-width:900px) { #pos #posTomarView .pos-catalog-panel, #pos #posTomarView .pos-order-panel { height:auto !important; min-height:480px; } .dashboard { display:block !important; } .module-mode .sidebar { position:relative; height:auto; }.module-mode .sidebar nav { display:flex; overflow-x:auto; } .module-mode .padua-logo { display:none; } }
+@media (max-width:640px) { .topbar-actions { display:none !important; }.module-mode.pos-mode .main-grid { padding:0 12px 20px !important; }.pos-kpis { grid-template-columns:1fr !important; }.pos-kpis > div { min-height:70px; }.pos-board-heading h2 { font-size:28px !important; }.pos-status-filters { flex-wrap:nowrap; overflow:auto; padding-bottom:6px; }.pos-status-filters button { white-space:nowrap; }.pos-order-pro .order-actions { flex-wrap:wrap !important; } }

@@ -21,6 +21,9 @@ let historyDownloadFallback = false;
 let ordersRefreshInProgress = false;
 let usersRefreshInProgress = false;
 const realtimeRefreshTimers = {};
+let posBoardOrders = [];
+let posBoardFilter = "all";
+let selectedPosOrderId = null;
 
 const HISTORY_DB_NAME = "pizzeriaPaduaHistory";
 const HISTORY_DB_STORE = "settings";
@@ -121,11 +124,8 @@ async function loadOrders() {
   try {
     const orders = await apiFetch(API.orders);
     sessionStorage.setItem("adminOrders", JSON.stringify(orders));
-  const filter = document.getElementById("orderFilter")?.value || "all";
-    let active = orders.filter(o => o.status !== 3 &&
-      (o.status === 0 || o.status === 1 || o.status === 4 || o.status === 6 || o.isOpenAccount));
-    let filtered = filter === "all" ? active : active.filter(o => o.status == filter);
-    renderOrders(filtered);
+    posBoardOrders = orders.filter(o => Number(o.status) !== 3);
+    renderPosBoard();
     container.dataset.loaded = "true";
     await saveHistoryToFile();
   } catch (err) {
@@ -164,15 +164,15 @@ function renderPosOrderCard(order, opts = {}) {
   const showStatusActions = opts.showStatusActions !== false;
   let secondary = "";
   if (showStatusActions) {
-    if (order.status === 0) secondary += `<button type="button" class="pos-btn-secondary" onclick="updateOrderStatus(${order.orderId}, 1)">En preparación</button>`;
-    if (order.status === 0 || order.status === 1) secondary += `<button type="button" class="pos-btn-secondary" onclick="updateOrderStatus(${order.orderId}, 4)">Listo</button>`;
-    if (order.status === 4) secondary += `<button type="button" class="pos-btn-secondary" onclick="renotifyOrder(${order.orderId})">Notificar</button><button type="button" class="pos-btn-secondary" onclick="updateOrderStatus(${order.orderId}, 2)">Entregado</button>`;
+    if (order.status === 0) secondary += `<button type="button" class="pos-btn-secondary" onclick="event.stopPropagation();updateOrderStatus(${order.orderId}, 1)">En preparación</button>`;
+    if (order.status === 0 || order.status === 1) secondary += `<button type="button" class="pos-btn-secondary" onclick="event.stopPropagation();updateOrderStatus(${order.orderId}, 4)">Listo</button>`;
+    if (order.status === 4) secondary += `<button type="button" class="pos-btn-secondary" onclick="event.stopPropagation();updateOrderStatus(${order.orderId}, 2)">Entregado</button>`;
   }
   const chargeAction = (info.isOpen || order.status === 6)
     ? `openPayOrderModal(${order.orderId})`
     : `openCashModal(${order.orderId})`;
   return `
-    <div class="order-card pos-order-pro">
+    <div class="order-card pos-order-pro ${Number(order.orderId) === selectedPosOrderId ? "selected" : ""}" onclick="selectPosOrder(${order.orderId})" role="button" tabindex="0" onkeydown="if(event.key==='Enter')selectPosOrder(${order.orderId})">
       <div class="pos-card-top">
         <div>
            <h3 class="pos-card-customer">#${order.orderId} <small>${date || "Sin fecha"}</small></h3>
@@ -188,9 +188,9 @@ function renderPosOrderCard(order, opts = {}) {
       <ul class="pos-card-items">${itemsPreview}${more}</ul>
       <div class="pos-card-details">${items.length} artículo(s)${order.table?.tableNumber ? ` · ${escapeHtml(String(order.table.tableNumber))}` : ""}</div>
       <div class="order-actions">
-        <button type="button" class="pos-btn-charge" onclick="${chargeAction}">Cobrar</button>
-        <button type="button" class="pos-btn-edit" onclick="showPosOrderForm(); editActiveOrder(${order.orderId})">Editar</button>
-        <button type="button" class="pos-btn-cancel" onclick="cancelPosOrder(${order.orderId})">Cancelar</button>
+        <button type="button" class="pos-btn-charge" onclick="event.stopPropagation();${chargeAction}">Cobrar</button>
+        <button type="button" class="pos-btn-edit" onclick="event.stopPropagation();showPosOrderForm(); editActiveOrder(${order.orderId})">Editar</button>
+        <button type="button" class="pos-btn-cancel" onclick="event.stopPropagation();cancelPosOrder(${order.orderId})">Cancelar</button>
         ${secondary}
       </div>
     </div>`;
@@ -204,6 +204,88 @@ function renderOrders(orders) {
     return;
   }
   container.innerHTML = orders.map(o => renderPosOrderCard(o, { showStatusActions: true })).join("");
+}
+
+function filterPosBoard(filter, button) {
+  if (filter) posBoardFilter = filter;
+  document.querySelectorAll("[data-pos-filter]").forEach(btn => btn.classList.toggle("active", btn.dataset.posFilter === posBoardFilter));
+  renderPosBoard();
+}
+
+function selectPosOrder(orderId) {
+  selectedPosOrderId = Number(orderId);
+  document.querySelectorAll("#ordersList .pos-order-pro").forEach(card => card.classList.toggle("selected", card.getAttribute("onclick") === `selectPosOrder(${orderId})`));
+  const order = posBoardOrders.find(o => Number(o.orderId) === selectedPosOrderId);
+  if (order) renderPosOrderDetail(order);
+}
+
+function renderPosBoard() {
+  const today = new Date();
+  const isToday = value => {
+    const date = new Date(value);
+    return !isNaN(date) && date.toDateString() === today.toDateString();
+  };
+  const todayOrders = posBoardOrders.filter(o => isToday(o.orderDate));
+  const counts = {
+    all: posBoardOrders.length,
+    preparing: posBoardOrders.filter(o => Number(o.status) === 1).length,
+    ready: posBoardOrders.filter(o => Number(o.status) === 4).length,
+    shipping: posBoardOrders.filter(o => /domicilio/i.test(o.channel || "") && Number(o.status) === 1).length,
+    delivered: posBoardOrders.filter(o => Number(o.status) === 2).length
+  };
+  document.querySelectorAll("[data-pos-filter]").forEach(btn => {
+    const key = btn.dataset.posFilter;
+    btn.textContent = btn.textContent.replace(/\(\d+\)/, `(${counts[key] || 0})`);
+  });
+  const sales = todayOrders.filter(o => Number(o.status) === 2).reduce((sum, o) => sum + Number(o.totalAmount || 0), 0);
+  const pending = posBoardOrders.filter(o => [0, 1, 4, 6].includes(Number(o.status))).length;
+  const setText = (id, text) => { const el = document.getElementById(id); if (el) el.textContent = text; };
+  setText("posKpiOrders", String(todayOrders.length));
+  setText("posKpiSales", "$" + sales.toLocaleString("es-MX", { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+  setText("posKpiPending", String(pending));
+
+  const query = (document.getElementById("posGlobalSearch")?.value || "").trim().toLocaleLowerCase("es-MX");
+  const filtered = posBoardOrders.filter(order => {
+    const status = Number(order.status);
+    const matchesStatus = posBoardFilter === "all" ||
+      (posBoardFilter === "preparing" && status === 1) ||
+      (posBoardFilter === "ready" && status === 4) ||
+      (posBoardFilter === "shipping" && status === 1 && /domicilio/i.test(order.channel || "")) ||
+      (posBoardFilter === "delivered" && status === 2);
+    const text = `${order.orderId} ${order.folio || ""} ${order.customerName || ""} ${order.channel || ""} ${(order.orderItems || []).map(i => i.product?.name || "").join(" ")}`.toLocaleLowerCase("es-MX");
+    return matchesStatus && (!query || text.includes(query));
+  });
+  renderOrders(filtered);
+  if (!filtered.some(o => Number(o.orderId) === selectedPosOrderId)) selectedPosOrderId = filtered[0]?.orderId ?? null;
+  const selected = posBoardOrders.find(o => Number(o.orderId) === selectedPosOrderId);
+  if (selected) renderPosOrderDetail(selected);
+  else {
+    const panel = document.getElementById("posOrderDetail");
+    if (panel) panel.innerHTML = '<div class="pos-detail-empty"><span>＋</span><h3>Selecciona un pedido</h3><p>Aquí aparecerán sus productos, totales y acciones.</p></div>';
+  }
+}
+
+function renderPosOrderDetail(order) {
+  const panel = document.getElementById("posOrderDetail");
+  if (!panel) return;
+  const info = getPosStatusInfo(order);
+  const items = Array.isArray(order.orderItems) ? order.orderItems : [];
+  const itemRows = items.map(item => `<p><b>${Number(item.quantity || 1)} × ${escapeHtml(item.product?.name || `Producto #${item.productId}`)}</b><strong>$${Number(item.subtotal || 0).toFixed(2)}</strong></p>`).join("") || "<p>Sin productos registrados.</p>";
+  const subtotal = Number(order.subtotalAmount || items.reduce((sum, item) => sum + Number(item.subtotal || 0), 0));
+  const fee = getOrderPaymentFee(order);
+  const isOpen = info.isOpen || Number(order.status) === 6;
+  const charge = isOpen ? `openPayOrderModal(${order.orderId})` : `openCashModal(${order.orderId})`;
+  panel.innerHTML = `
+    <h2>Pedido #${order.orderId}<span class="pos-chip ${info.cls}">${escapeHtml(info.label)}</span></h2>
+    <div class="detail-meta">◷ ${formatPosDate(order.orderDate) || "Sin fecha"}<br>♟ ${escapeHtml(order.customerName || "Cliente Mostrador")}<br>▣ ${escapeHtml(order.channel || "Mostrador")}</div>
+    <hr><h3>Productos</h3><div class="pos-detail-products">${itemRows}</div><hr>
+    <div class="detail-total"><p>Subtotal: <b>$${subtotal.toFixed(2)}</b></p><p>Costo de envío: <b>$0.00</b></p>${fee > 0 ? `<p>Cargo de pago: <b>$${fee.toFixed(2)}</b></p>` : ""}<strong>Total: <big>$${Number(order.totalAmount || 0).toFixed(2)}</big></strong></div>
+    <button class="detail-accept" onclick="updateOrderStatus(${order.orderId},1)" ${Number(order.status) !== 0 ? "disabled" : ""}>✓ Aceptar pedido</button>
+    <button class="detail-ready" onclick="updateOrderStatus(${order.orderId},4)" ${![0,1,6].includes(Number(order.status)) ? "disabled" : ""}>♨ Marcar listo</button>
+    ${Number(order.status) === 4 ? `<button class="detail-deliver" onclick="updateOrderStatus(${order.orderId},2)">✓ Marcar entregado</button>` : ""}
+    <button class="detail-charge" onclick="${charge}" ${Number(order.status) === 2 ? "disabled" : ""}>▣ Cobrar</button>
+    <button class="detail-edit" onclick="editActiveOrder(${order.orderId})">Editar pedido</button>
+    <button class="detail-cancel" onclick="cancelPosOrder(${order.orderId})" ${[2,3].includes(Number(order.status)) ? "disabled" : ""}>Cancelar pedido</button>`;
 }
 
 function renderOrderPaymentFee(order) {
@@ -376,6 +458,10 @@ function formatPosProductName(value) {
 
 function switchPosTab(tab) {
   const tomar = tab === "tomar";
+  const posSection = document.getElementById("pos");
+  if (posSection) posSection.classList.toggle("pos-order-form-open", tomar);
+  const tabs = document.querySelector(".pos-tabs-bar");
+  if (tabs) tabs.style.display = tomar ? "flex" : "none";
   document.querySelectorAll(".pos-main-tab").forEach(btn => {
     const active = btn.dataset.tab === (tomar ? "tomar" : "activos");
     btn.classList.toggle("active", active);
