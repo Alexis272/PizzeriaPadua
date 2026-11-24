@@ -518,13 +518,13 @@ namespace PizzeriaPadua.API.Controllers
                 _context.Orders.Update(order);
                 await _context.SaveChangesAsync();
 
-                NotifyOrderChanged(order);
-                return Ok(order);
+                try { NotifyOrderChanged(order); } catch { /* no bloquear actualización por notificación */ }
+                return Ok(new { success = true, orderId = order.OrderId, status = (int)order.Status, saleState = order.SaleState });
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error updating order: {Error}", ex);
-                return BadRequest("Internal Error");
+                _logger.LogError(ex, "Error updating order {OrderId}", model?.OrderId);
+                return BadRequest(new { success = false, message = ex.InnerException?.Message ?? ex.Message });
             }
         }
 
