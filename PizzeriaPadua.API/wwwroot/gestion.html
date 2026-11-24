@@ -6,7 +6,7 @@
   <title>Pizzería Padua | Panel POS</title>
   <link rel="stylesheet" href="css/apple-tokens.css" />
   <link rel="stylesheet" href="css/admin.css?v=20260715-customizations" />
-  <link rel="stylesheet" href="css/admin-pizzeriapadua.css?v=20261124-pos-no-sidebar" />
+  <link rel="stylesheet" href="css/admin-pizzeriapadua.css?v=20261124-pos-fixed-kpis" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
   <style>
     .module-dashboard {
@@ -114,7 +114,11 @@
       <header class="topbar">
         <button class="pos-modules-btn" type="button" onclick="showModule('dashboard')" aria-label="Abrir módulos" title="Módulos">▦</button>
         <button class="branch-selector" type="button">▣ &nbsp; Sucursal Principal <span>⌄</span></button>
-        <label class="global-search">⌕ <input id="posGlobalSearch" type="search" placeholder="Buscar pedidos, clientes o productos..." oninput="filterPosBoard()" /></label>
+        <div class="pos-kpis">
+          <div><b>🛒</b><strong id="posKpiOrders">0</strong><span>Pedidos de hoy</span></div>
+          <div><b>💲</b><strong id="posKpiSales">$0.00</strong><span>Ventas de hoy</span></div>
+          <div><b>◷</b><strong id="posKpiPending">0</strong><span>Pedidos pendientes</span></div>
+        </div>
         <div class="topbar-actions"><span class="online-dot">●</span><span class="topbar-company">Conectado</span><i></i><div class="user-avatar">●</div><strong>Alexis</strong><span>⌄</span></div>
       </header>
 
@@ -245,12 +249,11 @@
           </div>
 
           <div id="posActivosView" class="pos-view active" aria-hidden="false">
-            <div class="pos-kpis">
-              <div><b>🛒</b><strong id="posKpiOrders">0</strong><span>Pedidos de hoy</span></div>
-              <div><b>💲</b><strong id="posKpiSales">$0.00</strong><span>Ventas de hoy</span></div>
-              <div><b>◷</b><strong id="posKpiPending">0</strong><span>Pedidos pendientes</span></div>
+            <div class="pos-board-heading">
+              <h2>Pedidos</h2>
+              <label class="global-search">⌕ <input id="posGlobalSearch" type="search" placeholder="Buscar pedidos, clientes o productos..." oninput="filterPosBoard()" /></label>
+              <button type="button" class="pos-new-order-btn" onclick="startNewPosOrder()">＋ Nuevo pedido</button>
             </div>
-            <div class="pos-board-heading"><h2>Pedidos</h2><button type="button" class="pos-new-order-btn" onclick="startNewPosOrder()">＋ Nuevo pedido</button></div>
             <div class="pos-status-filters" role="tablist" aria-label="Filtrar pedidos">
               <button class="active" data-pos-filter="all" onclick="filterPosBoard('all',this)">☷ Todos (0)</button>
               <button data-pos-filter="preparing" onclick="filterPosBoard('preparing',this)">♟ En preparación (0)</button>
