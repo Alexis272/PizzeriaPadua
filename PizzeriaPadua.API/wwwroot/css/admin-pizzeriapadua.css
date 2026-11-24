@@ -3356,3 +3356,62 @@ body:has(.module-mode) { overflow-y:auto !important; }
   .topbar-actions { gap:6px !important; }
   .topbar-actions .topbar-company, .topbar-actions i { display:none; }
 }
+
+/* POS compacto: densidad útil sin textos partidos ni scroll horizontal */
+.module-mode .sidebar { padding:16px 10px !important; }
+.padua-logo { height:130px; }
+.padua-logo span { font-size:48px; }
+.sidebar nav { gap:2px !important; }
+.sidebar nav a { min-height:43px; font-size:15px !important; }
+.module-mode .topbar { min-height:68px !important; height:68px; padding:10px 18px !important; gap:14px; }
+.branch-selector { min-width:260px; min-height:42px; padding:9px 15px !important; border-radius:18px !important; font-size:14px !important; }
+.global-search { height:42px; min-width:120px; }
+.global-search input { min-width:0; font-size:14px !important; }
+.module-mode.pos-mode .main-grid { padding:0 16px 20px !important; }
+.pos-kpis { gap:12px; margin-bottom:10px; }
+.pos-kpis > div { min-height:70px; padding:9px 14px; grid-template-columns:44px minmax(0,1fr); column-gap:10px; border-radius:13px; }
+.pos-kpis b { width:40px; height:40px; border-radius:11px; font-size:21px; }
+.pos-kpis strong { font-size:22px; }
+.pos-kpis span { font-size:12px; }
+.pos-board-heading { margin:2px 0 8px; }
+.pos-board-heading h2 { font-size:30px !important; }
+.pos-new-order-btn { min-height:38px !important; padding:7px 14px !important; font-size:13px !important; }
+.pos-status-filters { gap:8px; margin-bottom:12px; }
+.pos-status-filters button { min-height:34px; padding:6px 12px !important; font-size:12px !important; white-space:nowrap; }
+.pos-board-layout { width:100%; min-width:0; grid-template-columns:minmax(0,1fr) 330px; gap:14px; }
+#pos #posActivosView #ordersList.pos-orders-list { width:100%; min-width:0; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)) !important; gap:12px !important; align-content:start; }
+#pos #ordersList > .order-card.pos-order-pro { display:flex !important; flex-direction:column; align-items:stretch; gap:7px !important; width:100%; min-width:0 !important; max-width:100%; min-height:0; padding:12px !important; overflow:hidden; }
+#pos .order-card.pos-order-pro .pos-card-top { display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:start; gap:6px; min-width:0; }
+#pos .order-card.pos-order-pro .pos-card-top > div { min-width:0; }
+#pos .order-card.pos-order-pro .pos-card-customer { display:flex; align-items:baseline; gap:7px; margin:0; white-space:nowrap; font-size:16px !important; }
+#pos .pos-card-customer small { margin:0; overflow:hidden; text-overflow:ellipsis; font-size:10px; white-space:nowrap; }
+#pos .order-card.pos-order-pro .pos-card-badges { display:flex; flex-wrap:nowrap; gap:4px; }
+#pos .order-card.pos-order-pro .pos-chip { padding:4px 7px; font-size:10px; white-space:nowrap; }
+#pos .order-card.pos-order-pro .pos-card-meta { margin:3px 0 0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:12px; }
+#pos .order-card.pos-order-pro .pos-card-total-row { order:4; padding:7px 0 0; margin-top:auto; }
+#pos .order-card.pos-order-pro .pos-card-total-label { font-size:11px; }
+#pos .order-card.pos-order-pro .pos-card-total { font-size:19px; white-space:nowrap; }
+#pos .order-card.pos-order-pro .pos-card-items { order:2; gap:3px; }
+#pos .order-card.pos-order-pro .pos-card-items li { min-width:0; font-size:11px; line-height:1.25; }
+#pos .order-card.pos-order-pro .pos-card-items li > span:first-child { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+#pos .order-card.pos-order-pro .pos-card-items li > span:last-child { flex:0 0 auto; font-size:10px; }
+#pos .order-card.pos-order-pro .pos-card-details { order:3; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:10px; }
+#pos .order-card.pos-order-pro .order-actions { order:5; display:grid !important; grid-template-columns:repeat(3,minmax(0,1fr)); gap:4px !important; padding-top:6px; }
+#pos .order-card.pos-order-pro .order-actions button { width:100%; min-width:0 !important; min-height:28px; padding:5px 3px !important; overflow:hidden; font-size:10px !important; white-space:nowrap; }
+#pos .order-card.pos-order-pro .order-actions .pos-btn-secondary { grid-column:span 3; }
+.pos-detail-panel { display:block !important; width:100%; min-width:0; max-width:100%; padding:15px; overflow-x:hidden; }
+.pos-detail-panel h2 { flex-wrap:wrap; gap:8px; font-size:20px; }
+.pos-detail-panel h3 { margin:12px 0 8px; font-size:15px; }
+.pos-detail-panel .detail-meta { padding:10px 0; font-size:12px; line-height:1.7; }
+.pos-detail-products { max-height:160px; }
+.pos-detail-products p, .detail-total p { gap:10px; margin:9px 0; font-size:12px; }
+.pos-detail-products p b { min-width:0; overflow-wrap:anywhere; }
+.pos-detail-products p strong, .detail-total p b { flex:0 0 auto; white-space:nowrap; }
+.detail-total { margin:14px 0 10px; }
+.detail-total > strong { padding:10px; font-size:15px; }
+.detail-total big { font-size:23px; }
+.pos-detail-panel button { min-height:38px !important; margin-top:7px; padding:7px 10px !important; font-size:13px !important; }
+@media (min-width:1600px) { .pos-board-layout { grid-template-columns:minmax(0,1fr) 370px; } #pos #posActivosView #ordersList.pos-orders-list { grid-template-columns:repeat(auto-fill,minmax(240px,1fr)) !important; } }
+@media (max-width:1100px) { .pos-board-layout { grid-template-columns:minmax(0,1fr) 290px; gap:12px; } #pos #posActivosView #ordersList.pos-orders-list { grid-template-columns:1fr !important; } }
+@media (max-width:900px) { .pos-board-layout { grid-template-columns:1fr; } #pos #posActivosView #ordersList.pos-orders-list { grid-template-columns:repeat(auto-fill,minmax(210px,1fr)) !important; } .pos-detail-panel { position:static; max-height:none; } }
+@media (max-width:640px) { .module-mode .topbar { height:auto; min-height:60px !important; }.branch-selector { min-width:0; }.global-search { flex-basis:100%; }.pos-kpis { grid-template-columns:repeat(3,minmax(0,1fr)) !important; }.pos-kpis > div { display:flex; flex-direction:column; align-items:flex-start; gap:3px; }.pos-kpis b { display:none; }.pos-kpis strong { font-size:18px; }.pos-kpis span { font-size:10px; }.pos-board-layout { grid-template-columns:1fr; }.pos-detail-panel { display:block !important; } }
