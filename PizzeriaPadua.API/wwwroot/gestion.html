@@ -6,7 +6,7 @@
   <title>Pizzería Padua | Panel POS</title>
   <link rel="stylesheet" href="css/apple-tokens.css" />
   <link rel="stylesheet" href="css/admin.css?v=20260715-customizations" />
-  <link rel="stylesheet" href="css/admin-pizzeriapadua.css?v=20261124-pos-compact" />
+  <link rel="stylesheet" href="css/admin-pizzeriapadua.css?v=20261124-pos-no-sidebar" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
   <style>
     .module-dashboard {
@@ -112,6 +112,7 @@
     <section class="content">
 
       <header class="topbar">
+        <button class="pos-modules-btn" type="button" onclick="showModule('dashboard')" aria-label="Abrir módulos" title="Módulos">▦</button>
         <button class="branch-selector" type="button">▣ &nbsp; Sucursal Principal <span>⌄</span></button>
         <label class="global-search">⌕ <input id="posGlobalSearch" type="search" placeholder="Buscar pedidos, clientes o productos..." oninput="filterPosBoard()" /></label>
         <div class="topbar-actions"><span class="online-dot">●</span><span class="topbar-company">Conectado</span><i></i><div class="user-avatar">●</div><strong>Alexis</strong><span>⌄</span></div>
