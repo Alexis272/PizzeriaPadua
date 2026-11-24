@@ -149,6 +149,52 @@ function formatPosDate(value) {
   return isNaN(d.getTime()) ? "" : d.toLocaleString("es-MX", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" });
 }
 
+let posStatusMenuOrderId = null;
+
+function ensurePosStatusMenu() {
+  let menu = document.getElementById("posStatusMenu");
+  if (menu) return menu;
+  menu = document.createElement("div");
+  menu.id = "posStatusMenu";
+  menu.className = "pos-status-menu";
+  menu.innerHTML = `
+    <button type="button" data-status="0">Pendiente</button>
+    <button type="button" data-status="1">Activo / En preparación</button>
+    <button type="button" data-status="4">Listo</button>
+    <button type="button" data-status="2">Entregado</button>`;
+  menu.addEventListener("click", async (e) => {
+    const btn = e.target.closest("button[data-status]");
+    if (!btn || !posStatusMenuOrderId) return;
+    const status = Number(btn.dataset.status);
+    hidePosStatusMenu();
+    if (typeof updateOrderStatus === "function") await updateOrderStatus(posStatusMenuOrderId, status);
+  });
+  document.body.appendChild(menu);
+  document.addEventListener("click", hidePosStatusMenu);
+  document.addEventListener("scroll", hidePosStatusMenu, true);
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") hidePosStatusMenu(); });
+  return menu;
+}
+
+function showPosStatusMenu(event, orderId) {
+  event.preventDefault();
+  event.stopPropagation();
+  posStatusMenuOrderId = Number(orderId);
+  const menu = ensurePosStatusMenu();
+  menu.style.display = "grid";
+  const pad = 8;
+  const x = Math.min(event.clientX, window.innerWidth - 220 - pad);
+  const y = Math.min(event.clientY, window.innerHeight - 180 - pad);
+  menu.style.left = `${Math.max(pad, x)}px`;
+  menu.style.top = `${Math.max(pad, y)}px`;
+}
+
+function hidePosStatusMenu() {
+  const menu = document.getElementById("posStatusMenu");
+  if (menu) menu.style.display = "none";
+  posStatusMenuOrderId = null;
+}
+
 function renderPosOrderCard(order, opts = {}) {
   const info = getPosStatusInfo(order);
   const name = escapeHtml(order.customerName || "Cliente Mostrador");
@@ -172,7 +218,7 @@ function renderPosOrderCard(order, opts = {}) {
     ? `openPayOrderModal(${order.orderId})`
     : `openCashModal(${order.orderId})`;
   return `
-    <div class="order-card pos-order-pro ${Number(order.orderId) === selectedPosOrderId ? "selected" : ""}" onclick="selectPosOrder(${order.orderId})" role="button" tabindex="0" onkeydown="if(event.key==='Enter')selectPosOrder(${order.orderId})">
+    <div class="order-card pos-order-pro ${Number(order.orderId) === selectedPosOrderId ? "selected" : ""}" onclick="selectPosOrder(${order.orderId})" oncontextmenu="showPosStatusMenu(event, ${order.orderId})" role="button" tabindex="0" onkeydown="if(event.key==='Enter')selectPosOrder(${order.orderId})">
       <div class="pos-card-top">
         <div>
            <h3 class="pos-card-customer">#${order.orderId} <small>${date || "Sin fecha"}</small></h3>

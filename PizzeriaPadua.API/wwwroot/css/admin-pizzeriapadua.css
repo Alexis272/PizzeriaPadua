@@ -3448,6 +3448,11 @@ body:has(.module-mode) { overflow-y:auto !important; }
 
 @media (max-width:760px) { .user-create-form { grid-template-columns:1fr !important; } }
 
+/* Menú contextual de estado en tarjetas POS */
+.pos-status-menu { position:fixed; z-index:1400; display:none; min-width:210px; padding:6px; border:1px solid #dfe6ee; border-radius:12px; background:#fff; box-shadow:0 14px 36px rgba(23,35,61,.18); gap:2px; }
+.pos-status-menu button { width:100%; justify-content:flex-start; min-height:38px !important; padding:8px 12px !important; border-radius:8px !important; color:#243247 !important; background:transparent !important; font-size:13px !important; font-weight:600 !important; text-align:left; }
+.pos-status-menu button:hover { color:#fff !important; background:var(--pos-red) !important; }
+
 /* Asistente flotante de nuevo pedido, edición y cobro */
 body.pos-wizard-open { overflow:hidden !important; }
 body.pos-wizard-open #posTomarView, body.pos-wizard-open .pos-tabs-bar { visibility:hidden !important; }
