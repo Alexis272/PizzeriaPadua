@@ -3332,3 +3332,27 @@ html, body { background:var(--pos-bg) !important; }
 @media (max-width:1200px) { .pos-detail-panel { position:static; max-height:none; } .pos-kpis { gap:12px; } }
 @media (max-width:900px) { #pos #posTomarView .pos-catalog-panel, #pos #posTomarView .pos-order-panel { height:auto !important; min-height:480px; } .dashboard { display:block !important; } .module-mode .sidebar { position:relative; height:auto; }.module-mode .sidebar nav { display:flex; overflow-x:auto; } .module-mode .padua-logo { display:none; } }
 @media (max-width:640px) { .topbar-actions { display:none !important; }.module-mode.pos-mode .main-grid { padding:0 12px 20px !important; }.pos-kpis { grid-template-columns:1fr !important; }.pos-kpis > div { min-height:70px; }.pos-board-heading h2 { font-size:28px !important; }.pos-status-filters { flex-wrap:nowrap; overflow:auto; padding-bottom:6px; }.pos-status-filters button { white-space:nowrap; }.pos-order-pro .order-actions { flex-wrap:wrap !important; } }
+
+/* Corrección de viewport para la aplicación de escritorio */
+html, body { width:100%; min-width:0 !important; max-width:100%; overflow-x:hidden !important; }
+body:has(.module-mode) { overflow-y:auto !important; }
+.background { display:block !important; width:100%; min-width:0 !important; min-height:100vh; }
+.dashboard.module-mode { display:grid !important; width:100% !important; min-width:0 !important; max-width:none !important; margin:0 !important; grid-template-columns:252px minmax(0,1fr) !important; }
+.module-mode .content { display:flex !important; flex-direction:column; width:100%; min-width:0 !important; max-width:100%; }
+.module-mode .topbar { display:flex !important; width:100%; min-width:0; flex:0 0 auto; }
+.module-mode .main-grid { display:block !important; width:100%; min-width:0 !important; max-width:100%; height:auto !important; min-height:calc(100vh - 86px) !important; flex:1 0 auto; }
+.module-mode .admin-section.active { display:block !important; }
+.module-mode #pos.admin-section.active { display:flex !important; }
+#posActivosView > *, #posTomarView > * { min-width:0; max-width:100%; }
+@media (max-width:900px) {
+  .dashboard.module-mode { display:block !important; }
+  .module-mode .main-grid { min-height:0 !important; }
+}
+@media (min-width:901px) and (max-width:1200px) {
+  .dashboard.module-mode { grid-template-columns:210px minmax(0,1fr) !important; }
+  .sidebar { width:210px !important; }
+  .branch-selector { min-width:220px; }
+  .topbar { gap:12px !important; }
+  .topbar-actions { gap:6px !important; }
+  .topbar-actions .topbar-company, .topbar-actions i { display:none; }
+}
