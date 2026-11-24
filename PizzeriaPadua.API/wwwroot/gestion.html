@@ -6,7 +6,7 @@
   <title>Pizzería Padua | Panel POS</title>
   <link rel="stylesheet" href="css/apple-tokens.css" />
   <link rel="stylesheet" href="css/admin.css?v=20260715-customizations" />
-  <link rel="stylesheet" href="css/admin-pizzeriapadua.css?v=20261124-pos-fixed-kpis" />
+  <link rel="stylesheet" href="css/admin-pizzeriapadua.css?v=20261124-pos-wizard" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
   <style>
     .module-dashboard {
@@ -675,9 +675,53 @@
   </div>
 </div>
 
+<div id="posOrderWizard" class="pos-wizard-overlay" style="display:none;" role="dialog" aria-modal="true" aria-labelledby="posWizardTitle">
+  <section class="pos-wizard-modal">
+    <header class="pos-wizard-header">
+      <div><span class="pos-order-kicker">Punto de venta</span><h2 id="posWizardTitle">Nuevo pedido</h2></div>
+      <button type="button" class="pos-wizard-close" onclick="closePosOrderWizard()" aria-label="Cerrar">×</button>
+    </header>
+    <div class="pos-wizard-steps" aria-label="Progreso del pedido">
+      <span class="active" data-wizard-indicator="1"><b>1</b> Pizza</span>
+      <span data-wizard-indicator="2"><b>2</b> Cliente</span>
+      <span data-wizard-indicator="3"><b>3</b> Total</span>
+      <span data-wizard-indicator="4"><b>4</b> Cobro</span>
+    </div>
+
+    <div class="pos-wizard-body">
+      <section class="pos-wizard-step active" data-wizard-step="1">
+        <div class="pos-wizard-step-heading"><div><h3>Selecciona una pizza</h3><p>Elige el producto para el pedido.</p></div><input id="posWizardProductSearch" type="search" placeholder="Buscar pizza..." oninput="renderPosWizardProducts()" /></div>
+        <div id="posWizardProducts" class="pos-wizard-products"></div>
+        <div id="posWizardSelection" class="pos-wizard-selection"></div>
+      </section>
+      <section class="pos-wizard-step" data-wizard-step="2">
+        <h3>¿Para quién es el pedido?</h3><p>Escribe un nombre o selecciona un cliente existente.</p>
+        <label class="pos-wizard-customer-label">Nombre del cliente<input id="posWizardCustomer" type="text" list="posCustomerOptions" placeholder="Buscar o escribir nombre..." autocomplete="off" /></label>
+        <div class="pos-wizard-channel"><span>Tipo de pedido</span><div class="pos-channel-buttons"><button type="button" class="active" data-channel="Para Llevar" onclick="setWizardChannel('Para Llevar',this)">Para llevar</button><button type="button" data-channel="Entrega a Domicilio" onclick="setWizardChannel('Entrega a Domicilio',this)">A domicilio</button><button type="button" data-channel="Local / Mesa" onclick="setWizardChannel('Local / Mesa',this)">En mesa</button></div></div>
+      </section>
+      <section class="pos-wizard-step" data-wizard-step="3">
+        <h3>Resumen del pedido</h3><div id="posWizardSummary" class="pos-wizard-summary"></div>
+        <div class="pos-wizard-total"><span>Total a pagar</span><strong id="posWizardTotal">$0.00</strong></div>
+        <button type="button" id="posWizardSave" class="pos-wizard-save" onclick="savePosWizardOrder()">Guardar pedido sin cobrar</button>
+      </section>
+      <section class="pos-wizard-step" data-wizard-step="4">
+        <h3>Cobro en efectivo</h3><div class="pos-wizard-total"><span>Total a pagar</span><strong id="posWizardPayTotal">$0.00</strong></div>
+        <label class="pos-wizard-customer-label">¿Con cuánto pagó el cliente?<div class="pos-money-input"><span>$</span><input id="posWizardReceived" type="number" min="0" step="0.01" placeholder="0.00" oninput="updatePosWizardChange()" /></div></label>
+        <div class="pos-wizard-change"><span>Cambio</span><strong id="posWizardChange">$0.00</strong></div>
+        <div id="posWizardCashMessage" class="pos-wizard-message" aria-live="polite"></div>
+      </section>
+    </div>
+    <footer class="pos-wizard-footer">
+      <button type="button" id="posWizardBack" class="pos-wizard-back" onclick="previousPosWizardStep()">← Atrás</button>
+      <button type="button" id="posWizardNext" class="pos-wizard-next" onclick="nextPosWizardStep()">Siguiente →</button>
+      <button type="button" id="posWizardPay" class="pos-wizard-next" style="display:none;" onclick="payPosWizardOrder()">Confirmar pago</button>
+    </footer>
+  </section>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
-<script src="js/admin.js?v=20261124-pos-viewport"></script>
+<script src="js/admin.js?v=20261124-pos-wizard"></script>
 <script>
 // Funciñ para mostrar módulos (p�gina principal con iconos)
 function showModule(moduleId) {

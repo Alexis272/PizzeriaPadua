@@ -460,6 +460,7 @@ function switchPosTab(tab) {
   const tomar = tab === "tomar";
   const posSection = document.getElementById("pos");
   if (posSection) posSection.classList.toggle("pos-order-form-open", tomar);
+  if (!tomar) closePosOrderWizard();
   const tabs = document.querySelector(".pos-tabs-bar");
   if (tabs) tabs.style.display = tomar ? "flex" : "none";
   document.querySelectorAll(".pos-main-tab").forEach(btn => {
@@ -507,6 +508,136 @@ function startNewPosOrder() {
   resetPosOrderForm();
   updatePosFormUi();
   switchPosTab("tomar");
+  openPosOrderWizard();
+}
+
+let posWizardStep = 1;
+
+function openPosOrderWizard() {
+  posWizardStep = 1;
+  const modal = document.getElementById("posOrderWizard");
+  if (!modal) return;
+  modal.style.display = "flex";
+  document.body.classList.add("pos-wizard-open");
+  document.getElementById("posWizardTitle").textContent = editingOrderId ? `Editar pedido #${editingOrderId}` : "Nuevo pedido";
+  document.getElementById("posWizardCustomer").value = document.getElementById("posCustomerName")?.value || "";
+  document.getElementById("posWizardReceived").value = "";
+  document.getElementById("posWizardCashMessage").textContent = "";
+  const currentChannel = document.getElementById("posChannel")?.value || "Para Llevar";
+  document.querySelectorAll("#posOrderWizard [data-channel]").forEach(btn => btn.classList.toggle("active", btn.dataset.channel === currentChannel));
+  renderPosWizardProducts();
+  updatePosWizardStep();
+  if (!posProducts.length && typeof loadAdminProducts === "function") loadAdminProducts().then(renderPosWizardProducts);
+}
+
+function closePosOrderWizard() {
+  const modal = document.getElementById("posOrderWizard");
+  if (modal) modal.style.display = "none";
+  document.body.classList.remove("pos-wizard-open");
+}
+
+function updatePosWizardStep() {
+  document.querySelectorAll("[data-wizard-step]").forEach(step => step.classList.toggle("active", Number(step.dataset.wizardStep) === posWizardStep));
+  document.querySelectorAll("[data-wizard-indicator]").forEach(step => {
+    const number = Number(step.dataset.wizardIndicator);
+    step.classList.toggle("active", number === posWizardStep);
+    step.classList.toggle("done", number < posWizardStep);
+  });
+  document.getElementById("posWizardBack").style.visibility = posWizardStep === 1 ? "hidden" : "visible";
+  document.getElementById("posWizardNext").style.display = posWizardStep < 4 ? "inline-flex" : "none";
+  document.getElementById("posWizardNext").textContent = posWizardStep === 3 ? "Pagar →" : "Siguiente →";
+  document.getElementById("posWizardPay").style.display = posWizardStep === 4 ? "inline-flex" : "none";
+  document.getElementById("posWizardSave").style.display = "block";
+  if (posWizardStep >= 3) updatePosWizardSummary();
+  if (posWizardStep === 4) {
+    updatePosWizardChange();
+    setTimeout(() => document.getElementById("posWizardReceived")?.focus(), 50);
+  }
+}
+
+function nextPosWizardStep() {
+  if (posWizardStep === 1 && !posCart.length) { alert("Selecciona una pizza para continuar."); return; }
+  if (posWizardStep === 2) {
+    const name = document.getElementById("posWizardCustomer").value.trim() || "Cliente Mostrador";
+    document.getElementById("posCustomerName").value = name;
+  }
+  posWizardStep = Math.min(4, posWizardStep + 1);
+  updatePosWizardStep();
+}
+
+function previousPosWizardStep() {
+  if (posWizardStep === 2) document.getElementById("posWizardCustomer").value = document.getElementById("posCustomerName")?.value || "";
+  posWizardStep = Math.max(1, posWizardStep - 1);
+  updatePosWizardStep();
+}
+
+function renderPosWizardProducts() {
+  const grid = document.getElementById("posWizardProducts");
+  if (!grid) return;
+  const query = (document.getElementById("posWizardProductSearch")?.value || "").trim().toLocaleLowerCase("es-MX");
+  const products = (posProducts || []).filter(product => {
+    const name = product.name || "";
+    const category = product.category?.name || "";
+    return (/pizza/i.test(name + " " + category) || posCart.some(item => item.productId === product.productId)) && (!query || name.toLocaleLowerCase("es-MX").includes(query));
+  });
+  grid.innerHTML = products.map(product => {
+    const selected = posCart.find(item => item.productId === product.productId);
+    const safeName = escapeHtml(formatPosProductName(product.name));
+    const nameArg = JSON.stringify(product.name).replace(/"/g, "&quot;");
+    const imageArg = JSON.stringify(product.imageUrl || "img/pizza-padua.svg").replace(/"/g, "&quot;");
+    return `<button type="button" class="pos-wizard-product ${selected ? "selected" : ""}" onclick="selectPosWizardProduct(${product.productId},${nameArg},${Number(product.price || 0)},${imageArg})"><img src="${resolveImageUrl(product.imageUrl || "img/pizza-padua.svg")}" alt="${safeName}" /><strong>${safeName}</strong><span>$${Number(product.price || 0).toFixed(2)}</span>${selected ? `<b>${selected.quantity} seleccionada(s)</b>` : ""}</button>`;
+  }).join("") || '<p class="pos-empty-products">No se encontraron pizzas.</p>';
+  const selection = document.getElementById("posWizardSelection");
+  selection.innerHTML = posCart.map((item, index) => `<span>${escapeHtml(item.name)} <b>$${(item.price * item.quantity).toFixed(2)}</b><button type="button" onclick="posCart[${index}].quantity=Math.max(1,posCart[${index}].quantity-1);renderPosCart();renderPosWizardProducts()">−</button><strong>${item.quantity}</strong><button type="button" onclick="posCart[${index}].quantity++;renderPosCart();renderPosWizardProducts()">+</button><button type="button" class="remove" onclick="posCart.splice(${index},1);renderPosCart();renderPosWizardProducts()">×</button></span>`).join("");
+}
+
+function selectPosWizardProduct(productId, name, price, imageUrl) {
+  posAddToCart(productId, name, price, imageUrl);
+  renderPosWizardProducts();
+}
+
+function setWizardChannel(channel, button) {
+  setPosChannel(channel, document.querySelector(`.pos-channel-buttons [data-channel="${channel}"]`));
+  document.querySelectorAll("#posOrderWizard [data-channel]").forEach(btn => btn.classList.toggle("active", btn === button));
+}
+
+function updatePosWizardSummary() {
+  updatePosTotals();
+  const total = parseFloat((document.getElementById("posTotal")?.textContent || "$0").replace("$", "")) || 0;
+  const name = document.getElementById("posWizardCustomer")?.value.trim() || "Cliente Mostrador";
+  document.getElementById("posWizardSummary").innerHTML = `<p><b>Cliente:</b> ${escapeHtml(name)}</p><p><b>Tipo:</b> ${escapeHtml(document.getElementById("posChannel")?.value || "Para Llevar")}</p>` + posCart.map(item => `<p><span>${item.quantity} × ${escapeHtml(item.name)}</span><strong>$${(item.price * item.quantity).toFixed(2)}</strong></p>`).join("");
+  document.getElementById("posWizardTotal").textContent = "$" + total.toFixed(2);
+  document.getElementById("posWizardPayTotal").textContent = "$" + total.toFixed(2);
+}
+
+function updatePosWizardChange() {
+  const total = parseFloat((document.getElementById("posWizardPayTotal")?.textContent || "$0").replace("$", "")) || 0;
+  const received = parseFloat(document.getElementById("posWizardReceived")?.value) || 0;
+  document.getElementById("posWizardChange").textContent = "$" + Math.max(0, received - total).toFixed(2);
+  document.getElementById("posWizardCashMessage").textContent = received > 0 && received < total ? `Faltan $${(total - received).toFixed(2)} para completar el pago.` : "";
+}
+
+async function savePosWizardOrder() {
+  document.getElementById("posWizardSave").disabled = true;
+  try { await posSaveOpenAccount(); } finally { document.getElementById("posWizardSave").disabled = false; }
+}
+
+async function payPosWizardOrder() {
+  const total = parseFloat((document.getElementById("posWizardPayTotal")?.textContent || "$0").replace("$", "")) || 0;
+  const received = parseFloat(document.getElementById("posWizardReceived")?.value) || 0;
+  if (received + 0.001 < total) { updatePosWizardChange(); return; }
+  document.getElementById("checkoutMethod").value = "Efectivo";
+  document.getElementById("checkoutReceived").value = received.toFixed(2);
+  document.getElementById("checkoutTip").value = document.getElementById("posTip")?.value || "0";
+  document.getElementById("checkoutRef").value = "";
+  document.getElementById("posWizardPay").disabled = true;
+  try {
+    const paid = await submitCheckout();
+    if (paid) {
+      closePosOrderWizard();
+      switchPosTab("activos");
+    }
+  } finally { document.getElementById("posWizardPay").disabled = false; }
 }
 
 function resetPosOrderForm() {
@@ -613,6 +744,7 @@ function editActiveOrder(orderId) {
   }
   updatePosFormUi();
   switchPosTab("tomar");
+  openPosOrderWizard();
 }
 
 function parseAdminCustomizationOptions(value) {
@@ -2528,13 +2660,20 @@ async function submitCheckout() {
       await loadOrders();
       if (typeof loadSummary === "function") loadSummary();
       if (typeof loadPosHomeOrders === "function") loadPosHomeOrders();
+      return true;
     } else {
       if (msg) { msg.textContent = data.message || "Error al cobrar"; msg.style.color = "#e74c3c"; }
+      const wizardMsg = document.getElementById("posWizardCashMessage");
+      if (wizardMsg) wizardMsg.textContent = data.message || "No se pudo completar el cobro.";
+      return false;
     }
   } catch (err) {
     console.error("Error:", err);
     const msg = document.getElementById("posMsg");
     if (msg) { msg.textContent = "Error de conexión"; msg.style.color = "#e74c3c"; }
+    const wizardMsg = document.getElementById("posWizardCashMessage");
+    if (wizardMsg) wizardMsg.textContent = "Error de conexión. Intenta nuevamente.";
+    return false;
   }
 }
 
