@@ -499,6 +499,21 @@ namespace PizzeriaPadua.API.Controllers
                         }
                     }
                 }
+                else
+                {
+                    if (order.Status != OrderStatusEnum.ReadyForDelivery)
+                        order.CompletedDate = null;
+                    if (order.Status == OrderStatusEnum.OpenAccount)
+                    {
+                        order.IsOpenAccount = true;
+                        order.SaleState = "CuentaAbierta";
+                    }
+                    else if (order.Status == OrderStatusEnum.Pending || order.Status == OrderStatusEnum.InProgress)
+                    {
+                        order.SaleState = "Registrada";
+                        order.CancelledAt = null;
+                    }
+                }
 
                 _context.Orders.Update(order);
                 await _context.SaveChangesAsync();

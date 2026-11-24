@@ -326,12 +326,12 @@ function renderPosOrderDetail(order) {
     <div class="detail-meta">◷ ${formatPosDate(order.orderDate) || "Sin fecha"}<br>♟ ${escapeHtml(order.customerName || "Cliente Mostrador")}<br>▣ ${escapeHtml(order.channel || "Mostrador")}</div>
     <hr><h3>Productos</h3><div class="pos-detail-products">${itemRows}</div><hr>
     <div class="detail-total"><p>Subtotal: <b>$${subtotal.toFixed(2)}</b></p><p>Costo de envío: <b>$0.00</b></p>${fee > 0 ? `<p>Cargo de pago: <b>$${fee.toFixed(2)}</b></p>` : ""}<strong>Total: <big>$${Number(order.totalAmount || 0).toFixed(2)}</big></strong></div>
-    <button class="detail-accept" onclick="updateOrderStatus(${order.orderId},1)" ${Number(order.status) !== 0 ? "disabled" : ""}>✓ Aceptar pedido</button>
-    <button class="detail-ready" onclick="updateOrderStatus(${order.orderId},4)" ${![0,1,6].includes(Number(order.status)) ? "disabled" : ""}>♨ Marcar listo</button>
-    ${Number(order.status) === 4 ? `<button class="detail-deliver" onclick="updateOrderStatus(${order.orderId},2)">✓ Marcar entregado</button>` : ""}
-    <button class="detail-charge" onclick="${charge}" ${Number(order.status) === 2 ? "disabled" : ""}>▣ Cobrar</button>
+    <button class="detail-accept" onclick="updateOrderStatus(${order.orderId},1)">✓ Aceptar pedido</button>
+    <button class="detail-ready" onclick="updateOrderStatus(${order.orderId},4)">♨ Marcar listo</button>
+    <button class="detail-deliver" onclick="updateOrderStatus(${order.orderId},2)">✓ Marcar entregado</button>
+    <button class="detail-charge" onclick="${charge}">▣ Cobrar</button>
     <button class="detail-edit" onclick="editActiveOrder(${order.orderId})">Editar pedido</button>
-    <button class="detail-cancel" onclick="cancelPosOrder(${order.orderId})" ${[2,3].includes(Number(order.status)) ? "disabled" : ""}>Cancelar pedido</button>`;
+    <button class="detail-cancel" onclick="cancelPosOrder(${order.orderId})">Cancelar pedido</button>`;
 }
 
 function renderOrderPaymentFee(order) {
