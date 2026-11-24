@@ -6,7 +6,7 @@
   <title>Pizzería Padua | Panel POS</title>
   <link rel="stylesheet" href="css/apple-tokens.css" />
   <link rel="stylesheet" href="css/admin.css?v=20260715-customizations" />
-  <link rel="stylesheet" href="css/admin-pizzeriapadua.css?v=20261124-pos-context" />
+  <link rel="stylesheet" href="css/admin-pizzeriapadua.css?v=20261124-pos-clean" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
   <style>
     .module-dashboard {
@@ -184,66 +184,24 @@
             <button type="button" class="pos-main-tab active" data-tab="activos" onclick="switchPosTab('activos')">← Pedidos</button>
           </div>
 
-          <div id="posTomarView" class="pos-view" aria-hidden="true">
-            <div class="pos-tomar-layout">
-              <section class="pos-catalog-panel">
-                <div class="pos-catalog-toolbar">
-                  <label class="pos-search-box"><span class="pos-search-icon" aria-hidden="true">⌕</span><input id="posSearch" type="search" placeholder="Buscar producto..." oninput="filterPosProducts()" /></label>
-                  <div class="pos-category-tabs" role="tablist" aria-label="Categorías">
-                    <button type="button" class="active" onclick="setPosCategory('all', this)">Todas</button>
-                    <button type="button" onclick="setPosCategory('pizza', this)">Pizzas</button>
-                    <button type="button" onclick="setPosCategory('bebida', this)">Bebidas</button>
-                    <button type="button" onclick="setPosCategory('complemento', this)">Complementos</button>
-                  </div>
-                </div>
-                <div id="posProductGrid" class="product-grid-admin pos-catalog-grid"></div>
-              </section>
-
-              <aside class="pos-order-panel" id="posOrderEditor">
-                <div class="pos-order-editor-head">
-                  <div>
-                    <span class="pos-order-kicker">Pedido actual</span>
-                    <h3 id="posFormTitle">Nuevo pedido</h3>
-                  </div>
-                  <div class="pos-order-editor-actions">
-                    <span id="posEditBadge" class="pos-edit-badge" style="display:none;">Editando</span>
-                    <button type="button" id="posNewOrderBtn" class="btn-pos-secondary" style="display:none;" onclick="startNewPosOrder()">Nuevo</button>
-                  </div>
-                </div>
-
-                <div class="pos-order-scroll">
-                  <div class="pos-order-fields">
-                    <div class="pos-field-row pos-client-row"><label for="posCustomerName">Cliente</label><input type="text" id="posCustomerName" placeholder="Buscar o seleccionar cliente..." list="posCustomerOptions" /><datalist id="posCustomerOptions"><option value="Cliente Mostrador"></option></datalist></div>
-                    <div class="pos-field-row"><label for="posChannel">Tipo de pedido</label><div class="pos-field-stack"><div class="pos-channel-buttons"><button type="button" data-channel="Para Llevar" class="active" onclick="setPosChannel('Para Llevar', this)">Para llevar</button><button type="button" data-channel="Entrega a Domicilio" onclick="setPosChannel('Entrega a Domicilio', this)">A domicilio</button><button type="button" data-channel="Local / Mesa" onclick="setPosChannel('Local / Mesa', this)">En mesa</button></div>
-                      <select id="posChannel" aria-label="Tipo de pedido"><option value="Para Llevar" selected>Para Llevar</option><option value="Mostrador">Mostrador</option><option value="Entrega a Domicilio">A domicilio</option><option value="Local / Mesa">En mesa</option><option value="Teléfono">Teléfono</option></select></div>
-                    </div>
-                    <div class="pos-field-row pos-table-row"><label for="posTable">Mesa</label><select id="posTable"><option value="">Sin mesa</option></select></div>
-                  </div>
-
-                  <div id="posCartItems" class="pos-cart-items"></div>
-
-                  <div class="pos-extra-fields">
-                    <label>Descuento (%)<input type="number" id="posDiscount" placeholder="0" min="0" max="100" /></label>
-                    <label>Cupón / promo<input type="text" id="posPromoCode" placeholder="Código" /></label>
-                    <label>Propina<input type="number" id="posTip" placeholder="$0.00" min="0" step="0.01" /></label>
-                  </div>
-                  <div id="posMsg" class="pos-msg" aria-live="polite"></div>
-                </div>
-
-                <div class="pos-order-footer">
-                  <div class="pos-total-box">
-                    <div class="pos-total-line"><span>Subtotal:</span><strong id="posSubtotal">$0.00</strong></div>
-                    <div class="pos-total-line"><span>IVA incluido (16%):</span><strong id="posTax">$0.00</strong></div>
-                    <div class="pos-total-line"><span>Descuento:</span><strong id="posDiscountAmt">-$0.00</strong></div>
-                    <div class="pos-total-line"><span>Propina:</span><strong id="posTipAmt">$0.00</strong></div>
-                    <div class="pos-grand-total"><span>Total:</span><strong id="posTotal">$0.00</strong></div>
-                  </div>
-                  <div class="pos-actions">
-                    <button type="button" id="posSecondaryBtn" class="pos-save-button" onclick="posSaveOpenAccount()">Crear pedido</button>
-                    <button type="button" id="posPrimaryBtn" class="pos-charge-button" onclick="posCheckout()">Cobrar <span id="posChargeTotal">$0.00</span></button>
-                  </div>
-                </div>
-              </aside>
+          <div id="posTomarView" class="pos-view" aria-hidden="true" style="display:none;">
+            <div id="posCompat" style="display:none;" aria-hidden="true">
+              <input id="posSearch" type="search" />
+              <div id="posProductGrid"></div>
+              <h3 id="posFormTitle">Nuevo pedido</h3>
+              <span id="posEditBadge"></span>
+              <button type="button" id="posNewOrderBtn"></button>
+              <input id="posCustomerName" type="text" list="posCustomerOptions" />
+              <datalist id="posCustomerOptions"><option value="Cliente Mostrador"></option></datalist>
+              <select id="posChannel"><option value="Para Llevar" selected>Para Llevar</option><option value="Mostrador">Mostrador</option><option value="Entrega a Domicilio">A domicilio</option><option value="Local / Mesa">En mesa</option><option value="Teléfono">Teléfono</option></select>
+              <select id="posTable"><option value="">Sin mesa</option></select>
+              <div id="posCartItems"></div>
+              <input id="posDiscount" type="number" value="0" />
+              <input id="posPromoCode" type="text" />
+              <input id="posTip" type="number" value="0" />
+              <div id="posMsg"></div>
+              <span id="posSubtotal">$0.00</span><span id="posTax">$0.00</span><span id="posDiscountAmt">$0.00</span><span id="posTipAmt">$0.00</span><span id="posTotal">$0.00</span><span id="posChargeTotal">$0.00</span>
+              <button type="button" id="posSecondaryBtn"></button><button type="button" id="posPrimaryBtn"></button>
             </div>
           </div>
 
