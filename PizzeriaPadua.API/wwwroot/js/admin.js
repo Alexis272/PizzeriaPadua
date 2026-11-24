@@ -2017,6 +2017,31 @@ async function saveHistoryToFile(forceDownload = false) {
   }
 }
 
+async function createClientUser() {
+  const nameInput = document.getElementById("newClientName");
+  const phoneInput = document.getElementById("newClientPhone");
+  const msg = document.getElementById("userCreateMsg");
+  const username = (nameInput?.value || "").trim();
+  const phoneNumber = (phoneInput?.value || "").trim();
+  if (!username) { if (msg) { msg.textContent = "Escribe el nombre del cliente."; msg.style.color = "#c0392b"; } return; }
+  if (!phoneNumber) { if (msg) { msg.textContent = "Escribe el número del cliente."; msg.style.color = "#c0392b"; } return; }
+  try {
+    const res = await fetch("/PizzeriaPadua/api/v1/Accounts/create-client", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username, phoneNumber })
+    });
+    const data = await res.json();
+    if (!res.ok || !data.success) throw new Error(data.message || "No se pudo crear el usuario.");
+    if (nameInput) nameInput.value = "";
+    if (phoneInput) phoneInput.value = "";
+    if (msg) { msg.textContent = `Usuario "${data.user?.username || username}" creado correctamente.`; msg.style.color = "#27ae60"; }
+    await loadUsers();
+  } catch (err) {
+    if (msg) { msg.textContent = err.message || "Error al crear el usuario."; msg.style.color = "#c0392b"; }
+  }
+}
+
 async function loadUsers() {
   if (usersRefreshInProgress) return;
   usersRefreshInProgress = true;
@@ -2025,23 +2050,23 @@ async function loadUsers() {
     if (!res.ok) throw new Error("HTTP " + res.status);
     const users = await res.json();
     const tbody = document.getElementById("usersTableBody");
+    if (!tbody) return;
     tbody.innerHTML = users.map(u => `
       <tr style="${u.isBlocked ? 'background:#ffe5e5;' : ''}">
         <td>${u.id}</td>
-        <td>${u.username} ${u.isBlocked ? '<span style="color:#e74c3c;font-size:11px;">(Bloqueado)</span>' : ''}</td>
-        <td>${u.email}</td>
+        <td>${escapeHtml(u.username || "")} ${u.isBlocked ? '<span style="color:#e74c3c;font-size:11px;">(Bloqueado)</span>' : ''}</td>
+        <td>${escapeHtml(u.email || "")}</td>
+        <td>${escapeHtml(u.phoneNumber || "—")}</td>
+        <td>${u.isBlocked ? '<span style="color:#c0392b;font-weight:700;">Bloqueado</span>' : '<span style="color:#1f8f5f;font-weight:700;">Activo</span>'}</td>
         <td><span class="session-status ${u.isOnline ? 'session-online' : 'session-offline'}">${u.isOnline ? 'En línea' : 'Desconectado'}</span></td>
-        <td>${renderLoginProvider(u.loginProvider)}</td>
-        <td>${u.lastSeenAt || 'Sin actividad reciente'}</td>
-        <td>${u.createdAt}</td>
+        <td>${escapeHtml(u.createdAt || "")}</td>
         <td><div class="user-actions">
           <button class="user-action-btn btn-session" onclick="forceLogoutUser(${u.id})" ${u.isOnline ? '' : 'disabled'}>Cerrar sesión</button>
-          <button class="user-action-btn ${u.isBlocked ? 'btn-user-unblock' : 'btn-user-block'}" onclick="blockUser(${u.id}, '${u.username}', ${!u.isBlocked})">${u.isBlocked ? 'Desbloquear' : 'Bloquear'}</button>
-          <button class="user-action-btn btn-user-delete" onclick="deleteUser(${u.id}, '${u.username}')">Eliminar</button>
-        </div>
-        </td>
+          <button class="user-action-btn ${u.isBlocked ? 'btn-user-unblock' : 'btn-user-block'}" onclick="blockUser(${u.id}, '${escapeHtml(u.username || "")}', ${!u.isBlocked})">${u.isBlocked ? 'Desbloquear' : 'Bloquear'}</button>
+          <button class="user-action-btn btn-user-delete" onclick="deleteUser(${u.id}, '${escapeHtml(u.username || "")}')">Eliminar</button>
+        </div></td>
       </tr>
-    `).join("");
+    `).join("") || '<tr><td colspan="8" style="text-align:center;color:#766d86;padding:18px;">No hay usuarios registrados.</td></tr>';
     await saveHistoryToFile();
   } catch (err) {
     console.error("Error al cargar usuarios:", err);

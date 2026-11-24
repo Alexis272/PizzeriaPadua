@@ -98,10 +98,9 @@
       <div class="padua-logo" aria-label="Pizzería Buen Apetito"><span>🍕</span><strong>PIZZERÍA<em>Buen Apetito</em></strong></div>
       <nav>
         <a class="active tab-link" data-tab="pos" onclick="showModule('pos')"><span>▣</span> Ventas</a>
-        <a class="tab-link" data-tab="openaccounts" onclick="showModule('openaccounts')"><span>▤</span> Pedidos</a>
+        <a class="tab-link" data-tab="users" onclick="showModule('users')"><span>♟</span> Usuarios</a>
         <a class="tab-link" data-tab="catalog" onclick="showModule('catalog')"><span>◉</span> Menú</a>
-        <a class="tab-link" data-tab="openaccounts" onclick="showModule('openaccounts')"><span>♜</span> Mesas</a>
-        <a class="tab-link" data-tab="history" onclick="showModule('history')"><span>♟</span> Clientes</a>
+        <a class="tab-link" data-tab="history" onclick="showModule('history')"><span>▤</span> Historial</a>
         <a class="tab-link" data-tab="catalog" onclick="showModule('catalog')"><span>▰</span> Inventario</a>
         <a class="tab-link" data-tab="reports" onclick="showModule('reports')"><span>▥</span> Reportes</a>
         <a class="tab-link" data-tab="config" onclick="showModule('config')"><span>⚙</span> Configuración</a>
@@ -135,9 +134,9 @@
               <span class="module-icon"><svg viewBox="0 0 64 64" aria-hidden="true"><path d="M18 10h28v41l-5-4-5 4-5-4-5 4-8-4z"/><path d="M25 23h14M25 31h14M25 39h10"/></svg></span>
               <div class="module-title">Terminal POS</div>
             </div>
-            <div class="module-card" role="link" tabindex="0" onclick="openModule('openaccounts')" onkeydown="activateModule(event, 'openaccounts')">
-              <span class="module-icon"><svg viewBox="0 0 64 64" aria-hidden="true"><rect x="18" y="13" width="28" height="40" rx="2"/><path d="M26 13v-3h12v3M25 26h14M25 34h14M25 42h9"/></svg></span>
-              <div class="module-title">Cuentas Abiertas</div>
+            <div class="module-card" role="link" tabindex="0" onclick="openModule('users')" onkeydown="activateModule(event, 'users')">
+              <span class="module-icon"><svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="24" cy="22" r="8"/><path d="M10 50c0-8 6-14 14-14s14 6 14 14"/><circle cx="44" cy="26" r="6"/><path d="M36 50c0-5 4-10 10-10s10 5 10 10"/></svg></span>
+              <div class="module-title">Usuarios</div>
             </div>
             <div class="module-card" role="link" tabindex="0" onclick="openModule('cash')" onkeydown="activateModule(event, 'cash')">
               <span class="module-icon"><svg viewBox="0 0 64 64" aria-hidden="true"><rect x="12" y="27" width="40" height="25" rx="3"/><path d="M20 27v-7h24v7M28 20v-7h9v7M20 36h2M29 36h2M38 36h2M20 44h2M29 44h2M38 44h2"/></svg></span>
@@ -267,15 +266,27 @@
             </div>
           </div>
         </div>
-        <!-- ==================== CUENTAS ABIERTAS ==================== -->
-        <div class="admin-section" id="openaccounts">
+        <!-- ==================== USUARIOS ==================== -->
+        <div class="admin-section" id="users">
           <div class="module-header">
-            <button class="back-btn" onclick="showModule('dashboard')">? Inicio</button>
-            <h2>Cuentas Abiertas / Pendientes</h2>
+            <button class="back-btn" onclick="showModule('dashboard')">← Inicio</button>
+            <h2>Usuarios / Clientes</h2>
           </div>
           <div class="table-card">
-            <div class="orders-toolbar"><span>Cuentas abiertas por mesa y cliente</span></div>
-            <div id="openAccountsList" class="orders-list"></div>
+            <div class="orders-toolbar"><span>Crear usuario cliente</span></div>
+            <div class="user-create-form" style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto;gap:12px;margin-bottom:18px;align-items:end;">
+              <label style="display:grid;gap:6px;font-size:13px;color:#536278;font-weight:600;">Nombre<input id="newClientName" type="text" placeholder="Nombre del cliente" maxlength="80" /></label>
+              <label style="display:grid;gap:6px;font-size:13px;color:#536278;font-weight:600;">Número<input id="newClientPhone" type="text" placeholder="10 dígitos" maxlength="20" /></label>
+              <button type="button" class="btn-primary" onclick="createClientUser()" style="min-height:44px;">Crear usuario</button>
+            </div>
+            <div id="userCreateMsg" style="min-height:20px;margin-bottom:10px;font-size:13px;"></div>
+            <div class="orders-toolbar" style="margin-top:8px;"><span>Usuarios registrados</span></div>
+            <div style="overflow:auto;">
+              <table style="width:100%;border-collapse:collapse;">
+                <thead><tr><th>ID</th><th>Nombre</th><th>Correo</th><th>Teléfono</th><th>Estado</th><th>Sesión</th><th>Registro</th><th>Acciones</th></tr></thead>
+                <tbody id="usersTableBody"></tbody>
+              </table>
+            </div>
           </div>
         </div>
 
@@ -744,7 +755,7 @@ function showModule(moduleId) {
   var titles = {
     dashboard: "Panel de Gestiñ POS",
     pos: "Terminal de Venta (POS)",
-    openaccounts: "Cuentas Abiertas",
+    users: "Usuarios / Clientes",
     cash: "Caja y Cortes",
      daily: "Acumulado del Día",
      history: "Históricos de pedidos",
@@ -759,7 +770,7 @@ function showModule(moduleId) {
 
   // Load module data
    if (moduleId === "pos") { if (typeof showPosHome === "function") showPosHome(); }
-  if (moduleId === "openaccounts") { if (typeof loadOpenAccounts === "function") loadOpenAccounts(); }
+  if (moduleId === "users") { if (typeof loadUsers === "function") loadUsers(); }
   if (moduleId === "cash") { if (typeof loadCashStatus === "function") loadCashStatus(); }
    if (moduleId === "daily" || moduleId === "reports" || moduleId === "executive") { if (typeof loadSummary === "function") loadSummary(); }
    if (moduleId === "history") { if (typeof loadSalesHistory === "function") loadSalesHistory(); }

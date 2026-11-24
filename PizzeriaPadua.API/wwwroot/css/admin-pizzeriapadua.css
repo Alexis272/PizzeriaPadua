@@ -3446,6 +3446,8 @@ body:has(.module-mode) { overflow-y:auto !important; }
 @media (max-width:760px) { .module-mode .topbar { height:auto; flex-wrap:wrap; padding:10px 12px !important; }.topbar > .pos-kpis { order:3; flex-basis:100%; max-width:none; }.topbar > .pos-kpis > div { min-height:48px; }.pos-board-heading { flex-wrap:wrap; }.pos-board-heading .global-search { order:3; flex-basis:100%; max-width:none; margin:0; } }
 @media (max-width:480px) { .topbar > .pos-kpis { gap:5px; }.topbar > .pos-kpis > div { padding:7px; }.topbar > .pos-kpis strong { font-size:15px; }.topbar > .pos-kpis span { font-size:9px; } }
 
+@media (max-width:760px) { .user-create-form { grid-template-columns:1fr !important; } }
+
 /* Asistente flotante de nuevo pedido, edición y cobro */
 body.pos-wizard-open { overflow:hidden !important; }
 .pos-wizard-overlay { position:fixed; inset:0; z-index:1200; display:flex; align-items:center; justify-content:center; padding:24px; background:rgba(19,28,45,.48); backdrop-filter:blur(6px); }

@@ -350,6 +350,50 @@ namespace PizzeriaPadua.API.Controllers
             return Ok(new { success = true, user = new { user.Id, user.Username, user.Email, user.PhoneNumber } });
         }
 
+        public class CreateClientRequest
+        {
+            public string Username { get; set; } = "";
+            public string PhoneNumber { get; set; } = "";
+        }
+
+        [HttpPost("create-client")]
+        public async Task<IActionResult> CreateClient([FromBody] CreateClientRequest req)
+        {
+            var username = (req.Username ?? "").Trim();
+            var phone = NormalizeMexicanPhoneNumber(req.PhoneNumber);
+            if (string.IsNullOrWhiteSpace(username))
+                return BadRequest(new { success = false, message = "El nombre es obligatorio" });
+            if (string.IsNullOrWhiteSpace(phone))
+                return BadRequest(new { success = false, message = "El número es obligatorio" });
+
+            var digits = new string(phone.Where(char.IsDigit).ToArray());
+            if (digits.Length < 10)
+                return BadRequest(new { success = false, message = "Ingresa un número válido" });
+
+            if (await _db.Users.AnyAsync(u => u.Username.ToLower() == username.ToLower()))
+                return Conflict(new { success = false, message = "Ya existe un usuario con ese nombre" });
+            if (await _db.Users.AnyAsync(u => u.PhoneNumber == phone))
+                return Conflict(new { success = false, message = "Ya existe un usuario con ese número" });
+
+            var email = $"cliente_{digits}@padua.local";
+            if (await _db.Users.AnyAsync(u => u.Email == email))
+                email = $"cliente_{digits}_{Random.Shared.Next(1000,9999)}@padua.local";
+
+            var user = new User
+            {
+                Username = username,
+                Email = email,
+                PhoneNumber = phone,
+                CreatedAt = DateTime.UtcNow
+            };
+            user.PasswordHash = new PasswordHasher<User>().HashPassword(user, Guid.NewGuid().ToString());
+            _db.Users.Add(user);
+            await _db.SaveChangesAsync();
+            NotifySessionChanged(user.Id);
+
+            return Ok(new { success = true, user = new { user.Id, user.Username, user.Email, user.PhoneNumber, createdAt = user.CreatedAt.ToString("dd/MM/yyyy HH:mm") } });
+        }
+
         [HttpDelete("{userId}")]
         public async Task<IActionResult> DeleteUser(int userId)
         {
