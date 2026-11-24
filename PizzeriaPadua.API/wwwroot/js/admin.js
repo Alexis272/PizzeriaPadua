@@ -527,6 +527,7 @@ function openPosOrderWizard() {
   document.querySelectorAll("#posOrderWizard [data-channel]").forEach(btn => btn.classList.toggle("active", btn.dataset.channel === currentChannel));
   renderPosWizardProducts();
   updatePosWizardStep();
+  loadPosCustomers();
   if (!posProducts.length && typeof loadAdminProducts === "function") loadAdminProducts().then(renderPosWizardProducts);
 }
 
@@ -2017,6 +2018,26 @@ async function saveHistoryToFile(forceDownload = false) {
   }
 }
 
+async function loadPosCustomers() {
+  try {
+    const res = await fetch("/PizzeriaPadua/api/v1/Accounts");
+    if (!res.ok) return;
+    const users = await res.json();
+    const datalist = document.getElementById("posCustomerOptions");
+    if (!datalist) return;
+    const options = ['<option value="Cliente Mostrador"></option>']
+      .concat(users.map(u => {
+        const name = escapeHtml(u.username || "");
+        const phone = escapeHtml(u.phoneNumber || "");
+        const label = phone ? `${name} (${phone})` : name;
+        return `<option value="${name}" label="${label}"></option>`;
+      }));
+    datalist.innerHTML = options.join("");
+  } catch (err) {
+    console.error("Error cargando clientes:", err);
+  }
+}
+
 async function createClientUser() {
   const nameInput = document.getElementById("newClientName");
   const phoneInput = document.getElementById("newClientPhone");
@@ -2037,6 +2058,7 @@ async function createClientUser() {
     if (phoneInput) phoneInput.value = "";
     if (msg) { msg.textContent = `Usuario "${data.user?.username || username}" creado correctamente.`; msg.style.color = "#27ae60"; }
     await loadUsers();
+    await loadPosCustomers();
   } catch (err) {
     if (msg) { msg.textContent = err.message || "Error al crear el usuario."; msg.style.color = "#c0392b"; }
   }
@@ -2890,6 +2912,7 @@ function renderPosProductGrid(products) {
 }
 loadAdminProducts = async function() {
   await _originalLoadAdminProducts();
+  loadPosCustomers();
   // Also populate POS product grid
   try {
     var res = await fetch("/PizzeriaPadua/api/v1/Products");
