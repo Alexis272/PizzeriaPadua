@@ -519,7 +519,12 @@ function openPosOrderWizard() {
   if (!modal) return;
   modal.style.display = "flex";
   document.body.classList.add("pos-wizard-open");
-  document.getElementById("posWizardTitle").textContent = editingOrderId ? `Editar pedido #${editingOrderId}` : "Nuevo pedido";
+  const isEdit = !!editingOrderId;
+  document.getElementById("posWizardTitle").textContent = isEdit ? `Editar pedido #${editingOrderId}` : "Nuevo pedido";
+  document.querySelectorAll("[data-wizard-indicator]").forEach((step, idx) => {
+    const labels = isEdit ? ["Pizza", "Cliente", "Ajuste", "Pago"] : ["Pizza", "Cliente", "Total", "Cobro"];
+    step.innerHTML = `<b>${idx + 1}</b> ${labels[idx]}`;
+  });
   document.getElementById("posWizardCustomer").value = document.getElementById("posCustomerName")?.value || "";
   document.getElementById("posWizardReceived").value = "";
   document.getElementById("posWizardCashMessage").textContent = "";
@@ -537,7 +542,14 @@ function closePosOrderWizard() {
   document.body.classList.remove("pos-wizard-open");
 }
 
+function getPosWizardDifference() {
+  const total = parseFloat((document.getElementById("posTotal")?.textContent || "$0").replace("$", "")) || 0;
+  return Number((total - Number(editingOrderOriginalTotal || 0)).toFixed(2));
+}
+
 function updatePosWizardStep() {
+  const isEdit = !!editingOrderId;
+  const diff = isEdit ? getPosWizardDifference() : 0;
   document.querySelectorAll("[data-wizard-step]").forEach(step => step.classList.toggle("active", Number(step.dataset.wizardStep) === posWizardStep));
   document.querySelectorAll("[data-wizard-indicator]").forEach(step => {
     const number = Number(step.dataset.wizardIndicator);
@@ -545,14 +557,48 @@ function updatePosWizardStep() {
     step.classList.toggle("done", number < posWizardStep);
   });
   document.getElementById("posWizardBack").style.visibility = posWizardStep === 1 ? "hidden" : "visible";
-  document.getElementById("posWizardNext").style.display = posWizardStep < 4 ? "inline-flex" : "none";
-  document.getElementById("posWizardNext").textContent = posWizardStep === 3 ? "Pagar →" : "Siguiente →";
-  document.getElementById("posWizardPay").style.display = posWizardStep === 4 ? "inline-flex" : "none";
-  document.getElementById("posWizardSave").style.display = "block";
+  const next = document.getElementById("posWizardNext");
+  const pay = document.getElementById("posWizardPay");
+  const save = document.getElementById("posWizardSave");
+  const step4Title = document.querySelector('[data-wizard-step="4"] h3');
+  const receivedLabel = document.querySelector('[data-wizard-step="4"] .pos-wizard-customer-label');
+  const changeLabel = document.querySelector(".pos-wizard-change span");
+
+  if (isEdit) {
+    document.querySelector(".pos-wizard-channel").style.display = "none";
+    if (step4Title) step4Title.textContent = diff > 0 ? "Cobrar diferencia" : "Devolver diferencia";
+    if (receivedLabel) receivedLabel.style.display = diff > 0 ? "grid" : "none";
+    if (changeLabel) changeLabel.textContent = diff > 0 ? "Cambio" : "Monto a devolver";
+    if (save) { save.style.display = "block"; save.textContent = "Guardar cambios"; }
+    if (posWizardStep === 3) {
+      next.style.display = "inline-flex";
+      next.textContent = diff === 0 ? "Guardar cambios" : "Continuar →";
+      pay.style.display = "none";
+    } else if (posWizardStep === 4) {
+      next.style.display = "none";
+      pay.style.display = "inline-flex";
+      pay.textContent = diff > 0 ? "Confirmar cobro" : "Confirmar devolución";
+    } else {
+      next.style.display = "inline-flex";
+      next.textContent = "Siguiente →";
+      pay.style.display = "none";
+    }
+  } else {
+    document.querySelector(".pos-wizard-channel").style.display = "block";
+    if (step4Title) step4Title.textContent = "Cobro en efectivo";
+    if (receivedLabel) receivedLabel.style.display = "grid";
+    if (changeLabel) changeLabel.textContent = "Cambio";
+    if (save) { save.style.display = "block"; save.textContent = "Guardar pedido sin cobrar"; }
+    next.style.display = posWizardStep < 4 ? "inline-flex" : "none";
+    next.textContent = posWizardStep === 3 ? "Pagar →" : "Siguiente →";
+    pay.style.display = posWizardStep === 4 ? "inline-flex" : "none";
+    pay.textContent = "Confirmar pago";
+  }
+
   if (posWizardStep >= 3) updatePosWizardSummary();
   if (posWizardStep === 4) {
     updatePosWizardChange();
-    setTimeout(() => document.getElementById("posWizardReceived")?.focus(), 50);
+    if (!isEdit || diff > 0) setTimeout(() => document.getElementById("posWizardReceived")?.focus(), 50);
   }
 }
 
@@ -561,6 +607,10 @@ function nextPosWizardStep() {
   if (posWizardStep === 2) {
     const name = document.getElementById("posWizardCustomer").value.trim() || "Cliente Mostrador";
     document.getElementById("posCustomerName").value = name;
+  }
+  if (editingOrderId && posWizardStep === 3) {
+    const diff = getPosWizardDifference();
+    if (diff === 0) { savePosWizardOrder(); return; }
   }
   posWizardStep = Math.min(4, posWizardStep + 1);
   updatePosWizardStep();
@@ -606,37 +656,71 @@ function updatePosWizardSummary() {
   updatePosTotals();
   const total = parseFloat((document.getElementById("posTotal")?.textContent || "$0").replace("$", "")) || 0;
   const name = document.getElementById("posWizardCustomer")?.value.trim() || "Cliente Mostrador";
-  document.getElementById("posWizardSummary").innerHTML = `<p><b>Cliente:</b> ${escapeHtml(name)}</p><p><b>Tipo:</b> ${escapeHtml(document.getElementById("posChannel")?.value || "Para Llevar")}</p>` + posCart.map(item => `<p><span>${item.quantity} × ${escapeHtml(item.name)}</span><strong>$${(item.price * item.quantity).toFixed(2)}</strong></p>`).join("");
+  const isEdit = !!editingOrderId;
+  const diff = isEdit ? getPosWizardDifference() : 0;
+  let html = `<p><b>Cliente:</b> ${escapeHtml(name)}</p>`;
+  if (!isEdit) html += `<p><b>Tipo:</b> ${escapeHtml(document.getElementById("posChannel")?.value || "Para Llevar")}</p>`;
+  html += posCart.map(item => `<p><span>${item.quantity} × ${escapeHtml(item.name)}</span><strong>$${(item.price * item.quantity).toFixed(2)}</strong></p>`).join("");
+  if (isEdit) {
+    html += `<hr style="border:0;border-top:1px solid #e7ecef;margin:12px 0;"><p><span>Total anterior</span><strong>$${Number(editingOrderOriginalTotal || 0).toFixed(2)}</strong></p>`;
+    html += `<p><span>Nuevo total</span><strong>$${total.toFixed(2)}</strong></p>`;
+    html += `<p style="font-weight:700;color:${diff > 0 ? '#b42332' : diff < 0 ? '#1f8f5f' : '#536278'};"><span>${diff > 0 ? 'Cobrar de más' : diff < 0 ? 'Regresar al cliente' : 'Sin diferencia'}</span><strong>$${Math.abs(diff).toFixed(2)}</strong></p>`;
+  }
+  document.getElementById("posWizardSummary").innerHTML = html;
   document.getElementById("posWizardTotal").textContent = "$" + total.toFixed(2);
-  document.getElementById("posWizardPayTotal").textContent = "$" + total.toFixed(2);
+  const payTotal = isEdit ? Math.abs(diff) : total;
+  document.getElementById("posWizardPayTotal").textContent = "$" + payTotal.toFixed(2);
+  const step4 = document.querySelector('[data-wizard-step="4"]');
+  if (step4) step4.querySelector(".pos-wizard-total span").textContent = isEdit ? (diff > 0 ? "Monto a cobrar" : "Monto a devolver") : "Total a pagar";
 }
 
 function updatePosWizardChange() {
-  const total = parseFloat((document.getElementById("posWizardPayTotal")?.textContent || "$0").replace("$", "")) || 0;
+  const isEdit = !!editingOrderId;
+  const diff = isEdit ? getPosWizardDifference() : 0;
+  const due = isEdit ? Math.abs(diff) : (parseFloat((document.getElementById("posWizardPayTotal")?.textContent || "$0").replace("$", "")) || 0);
   const received = parseFloat(document.getElementById("posWizardReceived")?.value) || 0;
-  document.getElementById("posWizardChange").textContent = "$" + Math.max(0, received - total).toFixed(2);
-  document.getElementById("posWizardCashMessage").textContent = received > 0 && received < total ? `Faltan $${(total - received).toFixed(2)} para completar el pago.` : "";
+  const change = isEdit && diff < 0 ? 0 : Math.max(0, received - due);
+  document.getElementById("posWizardChange").textContent = "$" + change.toFixed(2);
+  const msg = document.getElementById("posWizardCashMessage");
+  if (isEdit && diff < 0) msg.textContent = `Se devolverán $${due.toFixed(2)} al cliente al confirmar.`;
+  else if (received > 0 && received < due) msg.textContent = `Faltan $${(due - received).toFixed(2)} para completar el pago.`;
+  else msg.textContent = "";
 }
 
 async function savePosWizardOrder() {
   document.getElementById("posWizardSave").disabled = true;
-  try { await posSaveOpenAccount(); } finally { document.getElementById("posWizardSave").disabled = false; }
+  try {
+    if (editingOrderId) await saveEditedPosOrder();
+    else await posSaveOpenAccount();
+  } finally { document.getElementById("posWizardSave").disabled = false; }
 }
 
 async function payPosWizardOrder() {
-  const total = parseFloat((document.getElementById("posWizardPayTotal")?.textContent || "$0").replace("$", "")) || 0;
+  const isEdit = !!editingOrderId;
+  const diff = isEdit ? getPosWizardDifference() : 0;
+  const due = isEdit ? Math.abs(diff) : (parseFloat((document.getElementById("posWizardPayTotal")?.textContent || "$0").replace("$", "")) || 0);
   const received = parseFloat(document.getElementById("posWizardReceived")?.value) || 0;
-  if (received + 0.001 < total) { updatePosWizardChange(); return; }
-  document.getElementById("checkoutMethod").value = "Efectivo";
-  document.getElementById("checkoutReceived").value = received.toFixed(2);
-  document.getElementById("checkoutTip").value = document.getElementById("posTip")?.value || "0";
-  document.getElementById("checkoutRef").value = "";
+  if (isEdit && diff < 0) {
+    document.getElementById("posWizardPay").disabled = true;
+    try {
+      const ok = await saveEditedPosOrder({ closeWizard: false, successMessage: `Cambios guardados. Devuelve $${due.toFixed(2)} al cliente.` });
+      if (ok) setTimeout(() => { closePosOrderWizard(); switchPosTab("activos"); }, 1200);
+    } finally { document.getElementById("posWizardPay").disabled = false; }
+    return;
+  }
+  if (received + 0.001 < due) { updatePosWizardChange(); return; }
   document.getElementById("posWizardPay").disabled = true;
   try {
-    const paid = await submitCheckout();
-    if (paid) {
-      closePosOrderWizard();
-      switchPosTab("activos");
+    if (isEdit && diff > 0) {
+      const ok = await saveEditedPosOrder({ closeWizard: false, successMessage: `Pedido actualizado. Cobra $${due.toFixed(2)} adicionales. Cambio: $${Math.max(0, received - due).toFixed(2)}.` });
+      if (ok) setTimeout(() => { closePosOrderWizard(); switchPosTab("activos"); }, 1200);
+    } else {
+      document.getElementById("checkoutMethod").value = "Efectivo";
+      document.getElementById("checkoutReceived").value = received.toFixed(2);
+      document.getElementById("checkoutTip").value = document.getElementById("posTip")?.value || "0";
+      document.getElementById("checkoutRef").value = "";
+      const paid = await submitCheckout();
+      if (paid) { closePosOrderWizard(); switchPosTab("activos"); }
     }
   } finally { document.getElementById("posWizardPay").disabled = false; }
 }
@@ -644,6 +728,7 @@ async function payPosWizardOrder() {
 function resetPosOrderForm() {
   editingOrderId = null;
   editingOrderFolio = null;
+  editingOrderOriginalTotal = 0;
   posCart = [];
   if (document.getElementById("posCustomerName")) document.getElementById("posCustomerName").value = "";
   if (document.getElementById("posDiscount")) document.getElementById("posDiscount").value = "";
@@ -712,6 +797,7 @@ async function loadPosHomeOrders() {
 
 let editingOrderId = null;
 let editingOrderFolio = null;
+let editingOrderOriginalTotal = 0;
 
 function editActiveOrder(orderId) {
   const orders = JSON.parse(sessionStorage.getItem("adminOrders") || "[]");
@@ -720,6 +806,7 @@ function editActiveOrder(orderId) {
 
   editingOrderId = orderId;
   editingOrderFolio = order.folio || order.Folio || null;
+  editingOrderOriginalTotal = Number(order.totalAmount || 0);
   posCart = (order.orderItems || []).map(item => ({
     productId: item.productId,
     name: item.product?.name || `Producto #${item.productId}`,
@@ -2602,11 +2689,12 @@ async function posSaveOpenAccount() {
   }
 }
 
-async function saveEditedPosOrder() {
+async function saveEditedPosOrder(opts = {}) {
   const orderId = editingOrderId;
   const msg = document.getElementById("posMsg");
+  const wizardMsg = document.getElementById("posWizardCashMessage");
   const payload = {
-    customerName: document.getElementById("posCustomerName")?.value || "Cliente Mostrador",
+    customerName: (document.getElementById("posWizardCustomer")?.value || document.getElementById("posCustomerName")?.value || "Cliente Mostrador").trim(),
     channel: document.getElementById("posChannel")?.value || "Mostrador",
     tableId: document.getElementById("posTable")?.value ? parseInt(document.getElementById("posTable").value) : null,
     items: posCart.map(item => ({
@@ -2624,15 +2712,17 @@ async function saveEditedPosOrder() {
     const data = await res.json();
     if (!res.ok || !data.success) throw new Error(data.message || "No se pudo editar el pedido");
     if (msg) { msg.textContent = `Pedido #${orderId} actualizado correctamente.`; msg.style.color = "#27ae60"; }
-    const keepMsg = msg ? msg.textContent : "";
-    const keepColor = msg ? msg.style.color : "";
+    if (wizardMsg) { wizardMsg.textContent = opts.successMessage || `Pedido #${orderId} actualizado correctamente.`; wizardMsg.style.color = "#1f8f5f"; }
     resetPosOrderForm();
-    if (msg && keepMsg) { msg.textContent = keepMsg; msg.style.color = keepColor; }
     await loadOrders();
     if (typeof loadOpenAccounts === "function") loadOpenAccounts();
     if (typeof loadPosHomeOrders === "function") loadPosHomeOrders();
+    if (opts.closeWizard !== false) { closePosOrderWizard(); switchPosTab("activos"); }
+    return true;
   } catch (err) {
     if (msg) { msg.textContent = err.message || "No se pudo editar el pedido"; msg.style.color = "#c0392b"; }
+    if (wizardMsg) { wizardMsg.textContent = err.message || "No se pudo editar el pedido"; wizardMsg.style.color = "#c0392b"; }
+    return false;
   }
 }
 
