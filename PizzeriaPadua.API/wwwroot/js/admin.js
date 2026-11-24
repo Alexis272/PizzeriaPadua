@@ -175,11 +175,11 @@ function renderPosOrderCard(order, opts = {}) {
     <div class="order-card pos-order-pro">
       <div class="pos-card-top">
         <div>
-          <h3 class="pos-card-customer">${name}</h3>
-          <p class="pos-card-meta">Pedido #${order.orderId} · ${date || "Sin fecha"}</p>
+           <h3 class="pos-card-customer">#${order.orderId} <small>${date || "Sin fecha"}</small></h3>
+           <p class="pos-card-meta">♟ &nbsp; ${name}</p>
         </div>
         <div class="pos-card-badges">
-          <span class="pos-chip">${channel}</span>
+           <span class="pos-chip pos-channel">${channel}</span>
           <span class="pos-chip ${info.cls}">${info.label}</span>
         </div>
       </div>

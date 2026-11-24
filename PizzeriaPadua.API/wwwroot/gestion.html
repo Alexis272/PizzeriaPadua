@@ -95,25 +95,15 @@
   <main class="dashboard">
 
     <aside class="sidebar">
-      <div class="odoo-brand">
-        <span class="odoo-brand-mark">P</span>
-        <div><strong>Padua</strong><small>Gestiñ empresarial</small></div>
-      </div>
-      <div class="sidebar-caption">Aplicaciones</div>
+      <div class="padua-logo" aria-label="Pizzería Buen Apetito"><span>🍕</span><strong>PIZZERÍA<em>Buen Apetito</em></strong></div>
       <nav>
-        <a class="active tab-link" data-tab="dashboard" onclick="showModule('dashboard')"><span>�</span> Inicio</a>
-        <div class="nav-group-label">Ventas</div>
-        <a class="tab-link" data-tab="pos" onclick="showModule('pos')"><span>▣</span> Punto de venta</a>
-        <a class="tab-link" data-tab="openaccounts" onclick="showModule('openaccounts')"><span>▤</span> Cuentas abiertas</a>
-        <a class="tab-link" data-tab="cash" onclick="showModule('cash')"><span>$</span> Caja y cortes</a>
-        <div class="nav-group-label">An�lisis</div>
-         <a class="tab-link" data-tab="daily" onclick="showModule('daily')"><span>▥</span> Acumulado del día</a>
-         <a class="tab-link" data-tab="history" onclick="showModule('history')"><span>▤</span> Históricos</a>
-        <a class="tab-link" data-tab="reports" onclick="showModule('reports')"><span>▤</span> Reportes</a>
-        <a class="tab-link" data-tab="executive" onclick="showModule('executive')"><span>▣</span> Panel ejecutivo</a>
-        <div class="nav-group-label">Administración</div>
-        <a class="tab-link" data-tab="controls" onclick="showModule('controls')"><span>↺</span> Cancelaciones</a>
-        <a class="tab-link" data-tab="catalog" onclick="showModule('catalog')"><span>▦</span> Catálogos</a>
+        <a class="active tab-link" data-tab="pos" onclick="showModule('pos')"><span>▣</span> Ventas</a>
+        <a class="tab-link" data-tab="openaccounts" onclick="showModule('openaccounts')"><span>▤</span> Pedidos</a>
+        <a class="tab-link" data-tab="catalog" onclick="showModule('catalog')"><span>◉</span> Menú</a>
+        <a class="tab-link" data-tab="tables" onclick="showModule('tables')"><span>♜</span> Mesas</a>
+        <a class="tab-link" data-tab="users" onclick="showModule('users')"><span>♟</span> Clientes</a>
+        <a class="tab-link" data-tab="catalog" onclick="showModule('catalog')"><span>▰</span> Inventario</a>
+        <a class="tab-link" data-tab="reports" onclick="showModule('reports')"><span>▥</span> Reportes</a>
         <a class="tab-link" data-tab="config" onclick="showModule('config')"><span>⚙</span> Configuración</a>
         <a class="logout-link" href="/PizzeriaPadua/admin.html" onclick="sessionStorage.removeItem('adminAuthToken');document.cookie='auth=; path=/PizzeriaPadua; max-age=0';"><span>⎋</span> Cerrar sesión</a>
       </nav>
@@ -122,18 +112,15 @@
     <section class="content">
 
       <header class="topbar">
-        <button class="app-switcher" type="button" onclick="showModule('dashboard')" aria-label="Abrir aplicaciones">▦</button>
-        <div>
-          <span class="topbar-kicker">Pizzería Padua / Operaciones</span>
-          <h1 id="topbarTitle">Panel de Gestión POS</h1>
-        </div>
-        <div class="topbar-actions"><span class="topbar-company">Sucursal Matriz</span><div class="icons">●</div></div>
+        <button class="branch-selector" type="button">▣ &nbsp; Sucursal Principal <span>⌄</span></button>
+        <label class="global-search">⌕ <input type="search" placeholder="Buscar pedidos, clientes o productos..." /></label>
+        <div class="topbar-actions"><span class="online-dot">●</span><span class="topbar-company">Conectado</span><i></i><div class="user-avatar">●</div><strong>Alexis</strong><span>⌄</span></div>
       </header>
 
       <div class="main-grid">
 
         <!-- ==================== DASHBOARD (PÁGINA PRINCIPAL) ==================== -->
-        <div class="admin-section active" id="dashboard">
+        <div class="admin-section" id="dashboard">
           <div class="dashboard-welcome">
             <h2>Panel de Gestión POS</h2>
             <p>Selecciona un módulo para comenzar a trabajar</p>
@@ -184,7 +171,7 @@
         </div>
 
         <!-- ==================== TERMINAL POS ==================== -->
-        <div class="admin-section" id="pos">
+        <div class="admin-section active" id="pos">
           <div id="posTerminalHeader" class="module-header pos-terminal-header">
             <button class="back-btn" type="button" onclick="showModule('dashboard')">← Inicio</button>
             <h2>Terminal de Venta (POS)</h2>
@@ -258,10 +245,17 @@
           </div>
 
           <div id="posActivosView" class="pos-view active" aria-hidden="false">
-            <div class="pos-activos-toolbar">
-              <button type="button" class="pos-new-order-btn" onclick="startNewPosOrder()">+ Nuevo pedido</button>
+            <div class="pos-kpis">
+              <div><b>🛒</b><strong id="posKpiOrders">12</strong><span>Pedidos de hoy</span></div>
+              <div><b>💲</b><strong>$2,845.00</strong><span>Ventas de hoy</span></div>
+              <div><b>◷</b><strong id="posKpiPending">3</strong><span>Pedidos pendientes</span></div>
             </div>
+            <div class="pos-board-heading"><h2>Pedidos</h2><button type="button" class="pos-new-order-btn" onclick="startNewPosOrder()">＋ Nuevo pedido</button></div>
+            <div class="pos-status-filters"><button class="active" onclick="filterPosBoard('all',this)">☷ &nbsp; Todos (12)</button><button onclick="filterPosBoard('preparing',this)">♟ &nbsp; En preparación (3)</button><button onclick="filterPosBoard('ready',this)">✓ &nbsp; Listos (4)</button><button onclick="filterPosBoard('shipping',this)">▰ &nbsp; En camino (2)</button><button onclick="filterPosBoard('delivered',this)">● &nbsp; Entregados (3)</button></div>
+            <div class="pos-board-layout">
             <div id="ordersList" class="orders-list pos-orders-list"></div>
+            <aside class="pos-detail-panel"><h2>Pedido #1007 <span>🚚 En camino</span></h2><div class="detail-meta">◷ &nbsp; 09:42 AM &nbsp;&nbsp; ♟ &nbsp; María López</div><hr><h3>Productos</h3><p><b>1 × Mexicana</b><strong>$159.00</strong></p><p><b>1 × Alitas (6 pzas)</b><strong>$90.00</strong></p><hr><div class="detail-total"><p>Subtotal: <b>$249.00</b></p><p>Costo de envío: <b>$0.00</b></p><strong>Total: <big>$249.00</big></strong></div><button class="detail-accept">✓ &nbsp; Aceptar pedido</button><button class="detail-ready">♨ &nbsp; Marcar listo</button><button class="detail-charge">▣ &nbsp; Cobrar</button></aside>
+            </div>
           </div>
         </div>
         <!-- ==================== CUENTAS ABIERTAS ==================== -->
